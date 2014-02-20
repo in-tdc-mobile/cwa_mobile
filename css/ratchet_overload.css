@@ -1,0 +1,3 @@
+.chevron, .my_chevron, .list [class*="button"], .list [class*="my-count"], .list .toggle {
+    right: -45px;
+}

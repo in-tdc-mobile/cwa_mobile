@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <widget xmlns = "http://www.w3.org/ns/widgets" 
+        xmlns:gap = "http://phonegap.com/ns/1.0"
+		id="com.bsm-spendtracker"
+		version = "1.0.1"
+		versionCode = "78">
+
+    <name>SpendTracker</name>
+
+    <description>
+        Track the SDC wise vendor spend of BSM.
+    </description>
+
+    <author href="http://vsagar.me" email="vidya.sagar@bs-shipmanagement.com">Vidya Sagar. S</author>
+        
+    <!-- ICONS -->
+        
+    <icon src="cordova/cordova_128.png"/>
+    <icon src="cordova/cordova_android_36.png" gap:platform="android" gap:density="ldpi"/>
+    <icon src="cordova/cordova_android_48.png" gap:platform="android" gap:density="mdpi"/>
+    <icon src="cordova/cordova_android_72.png" gap:platform="android" gap:density="hdpi"/>
+    <icon src="cordova/cordova_android_96.png" gap:platform="android" gap:density="xhdpi"/>
+    <icon src="cordova/cordova_bb_80.png" gap:platform="blackberry"/>
+    <icon src="cordova/cordova_bb_80.png" gap:platform="blackberry" gap:state="hover"/>
+    <icon src="cordova/cordova_ios_57.png" gap:platform="ios" width="57" height="57"/>
+    <icon src="cordova/cordova_ios_72.png" gap:platform="ios" width="72" height="72"/>
+    <icon src="cordova/cordova_ios_114.png" gap:platform="ios" width="114" height="114"/>
+    <icon src="cordova/cordova_ios_144.png" gap:platform="ios" width="144" height="144"/>
+    <icon src="cordova/cordova_64.png" gap:platform="webos"/>
+    <icon src="cordova/cordova_48.png" gap:platform="winphone"/>
+    <icon src="cordova/cordova_173.png" gap:platform="winphone" gap:role="background"/>
+
+    <gap:splash src="cordova/res/screen/android_ldpi_portrait.png.png" gap:platform="android" gap:density="ldpi"/>
+    <gap:splash src="cordova/res/screen/android_mdpi_portrait.png" gap:platform="android" gap:density="mdpi"/>
+    <gap:splash src="cordova/res/screen/android_hdpi_portrait.png" gap:platform="android" gap:density="hdpi"/>
+    <gap:splash src="cordova/res/screen/android_xhdpi_portrait.png" gap:platform="android" gap:density="xhdpi"/>
+    <gap:splash src="cordova/res/screen/blackberry_transparent_300.png" gap:platform="blackberry"/>
+    <gap:splash src="cordova/res/screen/iphone_portrait.png" gap:platform="ios" width="320" height="480"/>
+    <gap:splash src="cordova/res/screen/iphone_retina_portrait.png" gap:platform="ios" width="640" height="960"/>
+    <gap:splash src="cordova/res/screen/ipad_portrait.png" gap:platform="ios" width="768" height="1024"/>
+    <gap:splash src="cordova/res/screen/ipad_landscape.png" gap:platform="ios" width="1024" height="768"/>
+    <gap:splash src="cordova/res/screen/windows_phone_portrait.jpg" gap:platform="winphone"/>
+
+    <!-- PLATFORM SELECTION -->
+
+    <gap:platform name="ios" />
+    <gap:platform name="android" />
+    <gap:platform name="winphone" />
+        
+    <!-- GENERAL PREFERENCES -->
+        
+    <preference name="phonegap-version" value="3.1.0" />
+    <preference name="orientation" value="default" />
+    <preference name="fullscreen" value="true" /> <!-- remove the upper bar on iOS and Android -->
+        
+    <!-- iOS PREFERENCES -->
+    
+    <preference name="target-device" value="universal" />
+    <preference name="prerendered-icon" value="true" />
+    <preference name="ios-statusbarstyle" value="black-opaque" />
+    <preference name="detect-data-types" value="false" />
+    <preference name="exit-on-suspend" value="false" />
+
+    <preference name="webviewbounce" value="false" />
+    <preference name="stay-in-webview" value="false" />
+    <preference name="show-splash-screen-spinner" value="false" />
+    <preference name="auto-hide-splash-screen" value="true" /> <!-- if set to false, the splash screen must be hidden using a JavaScript API -->
+        
+    <!-- ANDROID PREFERENCES -->
+        
+    <preference name="android-minSdkVersion" value="7" /> <!-- minimum Android 2.1 -->
+    <!-- <preference name="android-maxSdkVersion" value="19" /> maximum Android 4.4 -->
+    <preference name="android-targetSdkVersion" value="19" /> <!-- targeting Android 4.4 -->
+    <preference name="android-installLocation" value="auto" />
+    <preference name="android-windowSoftInputMode" value="stateVisible|adjustResize" />
+    <preference name="splash-screen-duration" value="5000" />
+
+    <preference name="load-url-timeout" value="20000" />
+        
+    <!-- PHONEGAP API FEATURES PREFERENCES -->
+        
+    <preference name="permissions" value="none"/>
+    
+    <!--
+    <feature name="http://api.phonegap.com/1.0/battery"/>
+    <feature name="http://api.phonegap.com/1.0/camera"/>
+    <feature name="http://api.phonegap.com/1.0/contacts"/>
+    <feature name="http://api.phonegap.com/1.0/file"/>
+    <feature name="http://api.phonegap.com/1.0/geolocation"/>
+    <feature name="http://api.phonegap.com/1.0/media"/>
+    <feature name="http://api.phonegap.com/1.0/network"/>
+    <feature name="http://api.phonegap.com/1.0/notification"/>
+    -->
+
+    <access origin="*" />
+
+</widget>

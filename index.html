@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="CWA Mobile">
+  <title></title>
+
+  <link href="kendo-styles/kendoui.common.min.css" rel="stylesheet" />
+  <link href="kendo-styles/kendo.default.min.css" rel="stylesheet" />
+  <link href="kendo-styles/kendo.dataviz.min.css" rel="stylesheet" />
+  <link href="kendo-styles/kendo.dataviz.default.min.css" rel="stylesheet" />
+  <link href="css/hamburger.css" rel="stylesheet" />
+
+  <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+  <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png"/>
+
+
+  <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
+  <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css">
+  <link rel="stylesheet" href="css/index.css">
+
+  <!-- Extra Codiqa features -->
+  <link rel="stylesheet" href="css/codiqa.ext.css">  
+
+  <script src="kendo-js/jquery.min.js"></script>
+
+  <!-- jQuery and jQuery Mobile -->
+  <!--<script charset="UTF-8" type="text/javascript" src="https://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0&s=1"></script>-->
+  <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true&libraries=weather"></script>
+  <script src="js/jquery-1.9.0.min.js"></script>
+  <script src="js/jquery.mobile-1.3.1.min.js"></script>
+  <script src="js/jquery-ui-1.10/jquery-ui-1.10.4.custom.js"></script>
+  <script src="js/hamburger.js"></script>
+
+  <script src="kendo-js/kendo.all.min.js"></script>
+
+
+  <!-- Extra Codiqa features -->
+  <script src="js/codiqa.ext.js"></script>
+
+</head>
+<body>
+  <!--This wrapping container is used to get the width of the whole content-->
+    <div id="container">
+
+        <!--The Hamburger Button in the Header-->
+        <header>
+            <h3 style="overflow: visible; position: absolute; top: -5px; width: 100%; text-align: center; color: #fff; font-family: Helvetica,Arial,sans-serif; font-size: large; text-shadow:none">
+              <img src='img/logo_big.png' style="height: 19px; padding-top:2px; padding-right: 5px;"/> CWA Mobile
+            </h3>
+            <div id="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </header>
+
+        <!--The mobile navigation Markup hidden via css-->
+        <nav class="mobileNav">
+            <ul>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Crewing</a></li>
+                <li><a href="#">Accounts</a></li>
+                <li><a href="#">PMS/Purchase</a></li>
+                <li><a href="#">Reports</a></li>
+            </ul>
+        </nav>
+
+        <!--The Layer that will be layed over the content
+        so that the content is unclickable while menu is shown-->
+        <div id="contentLayer"></div>
+
+        <!--The content of the site-->
+        <div id="content">
+          <div class='error' id='ajax_error' style="display: none;margin: 0px;font-style: italic;font-size: 14px;color: rgb(146,146,146);padding: 20px;"> 
+            Sorry, there was a temporary error. Please try again in a minute.<br/>-vidya.sagar@bs-shipmanagement.com
+          </div>
+          <div class='login'>
+            <div class='login_title'><h3>Please login to CWA Mobile.</h3></div>
+            <form id='login_form'>
+              <div class="input-group">
+                <div class="input-row">
+                  <label>BSM Email</label>
+                  <input type="text" placeholder="user@bs-shipmanagement.com" id='login_email'>
+                </div>
+                <div class="input-row">
+                  <label>Password</label>
+                  <input type="password" id='login_password'>
+                </div>
+              </div>
+              <!-- <a class="button-main button-block" id='login_submit'>Sign In</a> -->
+              <input type="submit" value="Sign In" id='login_submit'/>
+            </form>
+          </div>
+          <div id="index_content" style="display: block;">
+          </div>
+          <div id='view_title'></div>
+          <div id='owners' class="my-navbar-content"></div>
+          <div id='dashboard' class="my-navbar-content"></div>
+          <div class='spinner_index'>
+            <img src="img/spinner.gif" width="20px" height="20px" style="display:block;margin:auto;"/>
+          </div>
+        </div>
+    </div>
+<script type="text/javascript" src="js/index.js"></script>
+<script src="js/jstorage.js"></script>
+<script type="text/javascript">
+  app.initialize();
+</script>
+</body>
+</html>
