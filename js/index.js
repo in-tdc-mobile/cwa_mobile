@@ -143,6 +143,10 @@ function login_failure() {
   $("#ajax_error").attr('style','display:block; text-align:center;');
 }
 
+$.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+    options.url = 'https://getVesselTracker.com/cwa_mobile_dev/' + options.url + "&pal_user_id=" + $.jStorage.get("pal_user_id");
+});
+
 $('#login_form').submit(function(){
     var username = $('#login_email').val();
     var password = $('#login_password').val();
@@ -153,7 +157,7 @@ $('#login_form').submit(function(){
         'password': password
     };
     req = $.ajax({
-        url: 'https://getVesselTracker.com/cwa_mobile_dev/ldap_test_cwa.php',
+        url: 'ldap_test_cwa.php?a=1',
         type: "post",
         data: form_data,
         beforeSend: function() {
@@ -185,8 +189,8 @@ $('#login_form').submit(function(){
 function show_owners(){
     hide_all();
     $.ajax({
-      url: "https://www.getvesseltracker.com/cwa_mobile_dev/get_user_owners.php?" +
-      "pal_user_id=" + $.jStorage.get("pal_user_id") + "&userid=" + pal_user_id + "&appid=" + cwa_app_id ,
+      url: "get_user_owners.php?" +
+      "userid=" + pal_user_id + "&appid=" + cwa_app_id ,
       datatype: 'json',
       beforeSend: function() {
         $(".spinner_index").css('display','block');
@@ -225,7 +229,7 @@ function show_owners(){
             if($.isArray(dashboard_settings) == false){
                 dashboard_settings = $.makeArray(data['dashboard_settings']);
             }
-            
+
             show_dashboard(owners_array[0].ID);
         }
 
@@ -241,8 +245,8 @@ function show_dashboard_ajax(owner_id){
     hide_all();
     selected_owner_id = owner_id;
     $.ajax({
-      url: "https://www.getvesseltracker.com/cwa_mobile_dev/get_owner_vessel.php?" +
-      "pal_user_id=" + $.jStorage.get("pal_user_id") + "&owner_id=" + owner_id  + "&userid=" + pal_user_id + "&appid=" + cwa_app_id,
+      url: "get_owner_vessel.php?" +
+      "owner_id=" + owner_id  + "&userid=" + pal_user_id + "&appid=" + cwa_app_id,
       datatype: 'json',
       beforeSend: function() {
         $(".spinner_index").css('display','block');
@@ -310,9 +314,8 @@ function owner_vessel_selected(){
     if(selected_vessel > 0){
         selected_vessel_id = selected_vessel;
         $.ajax({
-          url: "https://www.getvesseltracker.com/cwa_mobile_dev/get_owner_dashboard.php?" +
-          "pal_user_id=" + $.jStorage.get("pal_user_id") + "&owner_id=" + selected_owner_id  
-          + "&vessel_object_id=" + selected_vessel_id ,
+          url: "get_owner_dashboard.php?" +
+          "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel_id ,
           datatype: 'json',
         beforeSend: function() {
             $(".spinner_index").css('display','block');
@@ -601,7 +604,7 @@ function get_imo( ownerMode) {
     }
     imodata += '"]';
     $.ajax({
-        url: 'https://www.getvesseltracker.com/cwa_mobile_dev/get_vessel_positions_cwa.php?'+imodata,
+        url: 'get_vessel_positions_cwa.php?'+imodata,
         datatype: 'text',
         beforeSend: function() {
             $(".spinner_index").css('display','block');
