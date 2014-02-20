@@ -162,7 +162,7 @@ $('#login_form').submit(function(){
         },
 
         success : function(response) {
-            if (response != '') {
+            if (response != '' && response != 'failed') {
                 // $('#hamburger').show();
                 $('.login').hide();
                 var str = response.split(",")
@@ -170,15 +170,16 @@ $('#login_form').submit(function(){
                 cwa_app_id = str[1];
                 show_owners();
             // location.reload();
-        } else {
-            login_failure();
+            } else {
+                login_failure();
+                hide_spinner();
+            }
         }
-    }
-});
-  //}
-  $('#login_password').blur();
-  $('#login_email').blur();
-  return false;
+    });
+      //}
+      $('#login_password').blur();
+      $('#login_email').blur();
+      return false;
 });
 
 function show_owners(){
@@ -192,21 +193,18 @@ function show_owners(){
         $(".spinner_index").center();
     },
     success: function(data){
-        owners_array = data;
+        owners_array = data["owners_array"];
         if($.isArray(owners_array) == false){
-            owners_array = $.makeArray(data);
+            owners_array = $.makeArray(data["owners_array"]);
         }
-
-        var results_div = "<ul data-role='listview' data-divider-theme='b' data-inset='true' id='listview'>";
-        for(var i=0; i< owners_array.length; i++) {
-         results_div += "<li data-theme='c'>";
-         results_div += "<a data-transition='slide' href='javascript:show_dashboard(\""+ owners_array[i]['ID'] +"\")' id='"+ owners_array[i]['ID'] +"'>"+ owners_array[i]['label'];
-         results_div += "</a></li>";
-     }
-     results_div += "</ul>";
-
-            // console.log(owners_array.length);
-
+        if(owners_array.length!=1){
+            var results_div = "<ul data-role='listview' data-divider-theme='b' data-inset='true' id='listview'>";
+            for(var i=0; i< owners_array.length; i++) {
+                results_div += "<li data-theme='c'>";
+                results_div += "<a data-transition='slide' href='javascript:show_dashboard_ajax(\""+ owners_array[i]['ID'] +"\")' id='"+ owners_array[i]['ID'] +"'>"+ owners_array[i]['label'];
+                results_div += "</a></li>";
+            }
+            results_div += "</ul>";
             $('.spinner_index').hide();
             
             $('#view_title').show();
@@ -216,16 +214,30 @@ function show_owners(){
             $('#owners').show();
 
             $('#listview').listview();
-
-        },
-        error: function() {        
-            alert('Please try again in a minute.');
-            $('.spinner_index').hide();
         }
+        else{
+            owner_vessels = data['owner_vessels'];
+            dashboard_settings = data['dashboard_settings'];
+
+            if($.isArray(owner_vessels) == false){
+                owner_vessels = $.makeArray(data['owner_vessels']);
+            }
+            if($.isArray(dashboard_settings) == false){
+                dashboard_settings = $.makeArray(data['dashboard_settings']);
+            }
+            
+            show_dashboard(owners_array[0].ID);
+        }
+
+    },
+    error: function() {        
+        alert('Please try again in a minute.');
+        $('.spinner_index').hide();
+    }
     });
 }
 
-function show_dashboard(owner_id){
+function show_dashboard_ajax(owner_id){
     hide_all();
     selected_owner_id = owner_id;
     $.ajax({
@@ -247,41 +259,50 @@ function show_dashboard(owner_id){
             dashboard_settings = $.makeArray(data['dashboard_settings']);
         }
 
-        var results_div = "<select id='sel_owner_vessel' onchange='owner_vessel_selected()'>";
-        results_div += "<option value='-1'>Select Vessel</option>";
-        for (var i = 0; i < owner_vessels.length; i++) {
-            results_div += "<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>"
-        };
-        results_div += "</select>";
-        results_div += "<div id='dashboard_tiles' style='width:100%;'>";
-        results_div += "<div class='dashboard_tiles' id='vsltrk_tile'><h3 style='text-align: center;'>Vessel Tracker</h3><div id='trackerMap'></div></div>";
-        results_div += "<div id='accordion'></div>";
-        results_div += "</div>";
-        // $("#accordion").accordion();
-        
-        $('.spinner_index').hide();
-        
-        // $('#view_title').show();
-        // $('#view_title').html('Dashboard');
-        $('#dashboard').html(results_div);
+        show_dashboard(owner_id);
 
-        $('#sel_owner_vessel').selectmenu();
-
-        $('#dashboard').show();
-        show_vessel_tracker = $.grep(dashboard_settings , function(e){ return e.code == 'VSLTRK'; });
-        if(show_vessel_tracker.length > 0){
-            GetMap();
-            get_imo("O");
-        }
-        else{
-            $('#vsltrk_tile').hide();
-        }
         },
         error: function() {        
             alert('Please try again in a minute.');
             $('.spinner_index').hide();
         }
     });
+}
+
+function show_dashboard(owner_id){
+    hide_all();
+    selected_owner_id = owner_id;
+
+    var results_div = "<select id='sel_owner_vessel' onchange='owner_vessel_selected()'>";
+    results_div += "<option value='-1'>Select Vessel</option>";
+    for (var i = 0; i < owner_vessels.length; i++) {
+        results_div += "<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>"
+    };
+    results_div += "</select>";
+    results_div += "<div id='dashboard_tiles' style='width:100%;'>";
+    results_div += "<div class='dashboard_tiles' id='vsltrk_tile'><h3 style='text-align: center;'>Vessel Tracker</h3><div id='trackerMap'></div></div>";
+    results_div += "<div id='accordion'></div>";
+    results_div += "</div>";
+    // $("#accordion").accordion();
+    
+    $('.spinner_index').hide();
+    
+    // $('#view_title').show();
+    // $('#view_title').html('Dashboard');
+    $('#dashboard').html(results_div);
+
+    $('#sel_owner_vessel').selectmenu();
+
+    $('#dashboard').show();
+    show_vessel_tracker = $.grep(dashboard_settings , function(e){ return e.code == 'VSLTRK'; });
+    if(show_vessel_tracker.length > 0){
+        GetMap();
+        get_imo("O");
+    }
+    else{
+        $('#vsltrk_tile').hide();
+    }
+
 }
 var temp ;
 function owner_vessel_selected(){
