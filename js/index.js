@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+"use strict";
 
 var vessel_markers_with_imo = new Array();
 var vessel_markers = new Array();
@@ -105,7 +106,7 @@ function hide_all() {
     $('#view_title').hide();
     $('#owners').hide();
     $('#dashboard').hide();
-
+    $('body').scrollTop(0);
 }
 
 var step_back = function() {};
@@ -123,18 +124,29 @@ var selected_vessel_id;
 var vessel_location;
 var show_vessel_tracker;
 
-try{
-    pal_user_name = $.jStorage.get("pal_user_id");
-    $.jStorage.set("pal_user_id", '');
-}
-catch(err){    
-}
-if (pal_user_name == null) {
-  hide_all();
-  $('.login').show();
-} else {
-  show_owners();
-}
+window.addEventListener('load', function () {
+    FastClick.attach(document.body);
+}, false);
+
+$(document).ready(function() {  
+    try{
+        pal_user_name = $.jStorage.get("pal_user_name");
+        // $.jStorage.set("pal_user_email", '');
+        if (pal_user_name == null) {
+          hide_all();
+          $('.login').show();
+        } else {
+            pal_user_id = $.jStorage.get("pal_user_id");
+            cwa_app_id = $.jStorage.get("cwa_app_id");
+            $('#hamburger').show();
+            $('.login').hide();
+            show_owners();
+        }
+    }
+    catch(err){    
+    }
+    
+});
 
 function login_failure() {
   $(".spinner").css('display','none');
@@ -144,19 +156,19 @@ function login_failure() {
 }
 
 $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
-    options.url = 'https://getVesselTracker.com/cwa_mobile_dev/' + options.url + "&pal_user_id=" + $.jStorage.get("pal_user_id");
+    options.url = 'https://getVesselTracker.com/cwa_mobile_dev/' + options.url + "&pal_user_email=" + $.jStorage.get("pal_user_name");
 });
 
 $('#login_form').submit(function(){
     var username = $('#login_email').val();
     var password = $('#login_password').val();
 
-    $.jStorage.set("pal_user_id", username);
+    $.jStorage.set("pal_user_name", username);
     var form_data= {
         'username': username,
         'password': password
     };
-    req = $.ajax({
+    var req = $.ajax({
         url: 'ldap_test_cwa.php?a=1',
         type: "post",
         data: form_data,
@@ -167,11 +179,13 @@ $('#login_form').submit(function(){
 
         success : function(response) {
             if (response != '' && response != 'failed') {
-                // $('#hamburger').show();
+                $('#hamburger').show();
                 $('.login').hide();
                 var str = response.split(",")
                 pal_user_id = str[0];
                 cwa_app_id = str[1];
+                $.jStorage.set("pal_user_id", pal_user_id);
+                $.jStorage.set("cwa_app_id", cwa_app_id);
                 show_owners();
             // location.reload();
             } else {
@@ -202,19 +216,21 @@ function show_owners(){
             owners_array = $.makeArray(data["owners_array"]);
         }
         if(owners_array.length!=1){
-            var results_div = "<ul data-role='listview' data-divider-theme='b' data-inset='true' id='listview'>";
+            var results_array = new Array();
+            results_array.push("<ul data-role='listview' data-divider-theme='b' data-inset='true' id='listview'>");
             for(var i=0; i< owners_array.length; i++) {
-                results_div += "<li data-theme='c'>";
-                results_div += "<a data-transition='slide' href='javascript:show_dashboard_ajax(\""+ owners_array[i]['ID'] +"\")' id='"+ owners_array[i]['ID'] +"'>"+ owners_array[i]['label'];
-                results_div += "</a></li>";
+                results_array.push("<li data-theme='c'>");
+                results_array.push("<a data-transition='slide' href='javascript:show_dashboard_ajax(\""+ owners_array[i]['ID'] +"\")' id='"+ owners_array[i]['ID'] +"'>"+ owners_array[i]['label']);
+                results_array.push("</a></li>");
             }
-            results_div += "</ul>";
+            results_array.push("</ul>");
+
             $('.spinner_index').hide();
             
             $('#view_title').show();
             $('#view_title').html('Owners');
 
-            $('#owners').html(results_div);
+            $('#owners').html(results_array.join(""));
             $('#owners').show();
 
             $('#listview').listview();
@@ -276,24 +292,25 @@ function show_dashboard_ajax(owner_id){
 function show_dashboard(owner_id){
     hide_all();
     selected_owner_id = owner_id;
+    var results_array = new Array();
 
-    var results_div = "<select id='sel_owner_vessel' onchange='owner_vessel_selected()'>";
-    results_div += "<option value='-1'>Select Vessel</option>";
+    results_array.push("<select id='sel_owner_vessel' onchange='owner_vessel_selected()'>");
+    results_array.push("<option value='-1'>Select Vessel</option>");
     for (var i = 0; i < owner_vessels.length; i++) {
-        results_div += "<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>"
+        results_array.push("<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>");
     };
-    results_div += "</select>";
-    results_div += "<div id='dashboard_tiles' style='width:100%;'>";
-    results_div += "<div class='dashboard_tiles' id='vsltrk_tile'><h3 style='text-align: center;'>Vessel Tracker</h3><div id='trackerMap'></div></div>";
-    results_div += "<div id='accordion'></div>";
-    results_div += "</div>";
+    results_array.push("</select>");
+    results_array.push("<div id='dashboard_tiles' style='width:100%;'>");
+    results_array.push("<div class='dashboard_tiles' id='vsltrk_tile'><h3 style='text-align: center;'>Vessel Tracker</h3><div id='trackerMap'></div></div>");
+    results_array.push("<div id='accordion'></div>");
+    results_array.push("</div>");
     // $("#accordion").accordion();
-    
+
     $('.spinner_index').hide();
     
     // $('#view_title').show();
     // $('#view_title').html('Dashboard');
-    $('#dashboard').html(results_div);
+    $('#dashboard').html(results_array.join(""));
 
     $('#sel_owner_vessel').selectmenu();
 
@@ -348,39 +365,41 @@ function owner_vessel_selected(){
             EngineRPMData.reverse();
 
             chartDs.push({ name: "Engine RPM", data: EngineRPMData, color: "#00004A" }, { name: "Speed Knots", data: speedData, color: "Brown" }, { name: "FO Consumption", data: FoConsumptionData, color: "#6A5ACD" }, { name: "Slip(%)", data: slipData, color: "DarkGreen" });
-            
-            var results_div ="<div class='dashboard_tiles' id='contact_info_tile'><h3 style='text-align: center;'>Contact Info</h3>";
-            results_div += "<div style='padding: 5px'> <ul id='ol_contact' data-role='listview'> ";
-            results_div += "<li class='dashboard-list'> Manager : " + data["vessel_info"].primary_manager_name + "</li>"
-            results_div += "<li class='dashboard-list'> Email : <span> <a href='mailto:" + data["vessel_info"].email + "'>" + data["vessel_info"].email + "</a></span></li>";
-            results_div += "<li class='dashboard-list'> Phone : ";
+            var results_array = new Array();
+            results_array.push("<div class='dashboard_tiles' id='contact_info_tile'><h3 style='text-align: center;'>Contact Info</h3>");
+            results_array.push("<div style='padding: 5px'> <ul id='ol_contact' data-role='listview'> ");
+            results_array.push("<li class='dashboard-list'> Manager : " + data["vessel_info"].primary_manager_name + "</li>");
+            results_array.push("<li class='dashboard-list'> Email : <span> <a href='mailto:" + data["vessel_info"].email + "'>" + data["vessel_info"].email + "</a></span></li>");
+            results_array.push("<li class='dashboard-list'> Phone : ");
             if(data["vessel_info"].telephone_1 != null){
-                results_div += "<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>";
+                results_array.push("<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
             }
             if(data["vessel_info"].telephone_1 != null){
-                results_div += "<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>";
+                results_array.push("<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
             }
             if(data["vessel_info"].telephone_1 != null){
-                results_div += "<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>";
+                results_array.push("<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
             }
-            results_div += "</li>"
-            results_div += "</ul></div></div>";
+            results_array.push("</li>");
+            results_array.push("</ul></div></div>");
 
-            results_div += "<div class='dashboard_tiles' id='vslperf_tile'><h3 style='text-align: center;'>Noon Report</h3><div style='width:100%'><div id='noon_report_chart'></div></div></div>";
+            results_array.push("<div class='dashboard_tiles' id='vslperf_tile'><h3 style='text-align: center;'>Noon Report</h3><div style='width:100%'><div id='noon_report_chart'></div></div></div>");
             // results_div += "<div style='background:black' height='5px'/>"
-            results_div += "<div class='dashboard_tiles' id='crew_tile'><h3 style='text-align: center;'>Crew List</h3><div id='crew_list' style='padding:10px;' class='my-navbar-content'></div></div>";
+            results_array.push("<div class='dashboard_tiles' id='crew_tile'><h3 style='text-align: center;'>Crew List</h3><div id='crew_list' style='padding:10px;' class='my-navbar-content'></div></div>");
 
-            var crew_div = "<ul id='ol_crew_list' data-role='listview'>";
+            var crew_array = new Array();
+
+            crew_array.push("<ul id='ol_crew_list' data-role='listview'>");
             for (var i = 0; i < data["crew_list"].length; i++) {
                 dataitem = data["crew_list"][i];
-                crew_div += "<li>";
-                crew_div += "<span class='dashboard-list'> <span style='color:rgb(15,15,15); font-weight: normal'>" + toTitleCase(dataitem.rank) + "</span> - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> (" + toTitleCase(dataitem.nationality) + ")</span>";
-                crew_div += "</li>"
+                crew_array.push("<li>");
+                crew_array.push("<span class='dashboard-list'> <span style='color:rgb(15,15,15); font-weight: normal'>" + toTitleCase(dataitem.rank) + "</span> - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> (" + toTitleCase(dataitem.nationality) + ")</span>");
+                crew_array.push("</li>");
             };
-            crew_div += "</ul>";
+            crew_array.push("</ul>");
 
-            $('#accordion').html(results_div);
-            $('#crew_list').html(crew_div);
+            $('#accordion').html(results_array.join(""));
+            $('#crew_list').html(crew_array.join(""));
             $('#ol_crew_list').listview();
             $('#ol_contact').listview();
 
@@ -550,8 +569,8 @@ function show_popup_at_marker(marker, name, latitude, longitude, speed, datetime
 
 function popup_data(marker, name, latitude, longitude, speed, datetime, imo, degree) {
     var content = "<h2><b>" + name + "</b></h2>" ;
-        content+= "<b>Lag / Log: </b>"+prsflt(latitude)+"/"+prsflt(longitude)+"("+datetime+")<br/> <b>Speed / Course: </b>"+speed+"<br/>";
-        content +='<span class="popup_label"><button onclick="show_vessel_path('+imo+','+degree+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>';
+    content += "<b>Lag / Log: </b>"+prsflt(latitude)+"/"+prsflt(longitude)+"("+datetime+")<br/> <b>Speed / Course: </b>"+speed+"<br/>";
+    content +='<span class="popup_label"><button onclick="show_vessel_path('+imo+','+degree+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>';
         //html = "<div class='star'><a class='star_a' id='"+ description[4] +"' href='javascript:void(0)' onclick='add_bookmark(this.id);'><img src='img/star.png' class='star_i' id='i_"+ description[4] +"' width=25 height=25 /></a></div>";
 /*        html += '<span class="popup_label"><button onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana;padding:5px;" title="vessel wiki">Additional Details</button></span>';
         html +='<span class="popup_label"><button onclick="show_vessel_path('+description[4]+','+description[5]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>';*/
