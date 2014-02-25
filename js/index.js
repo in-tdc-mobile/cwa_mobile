@@ -97,15 +97,19 @@ Number.prototype.formatMoney = function(c, d, t){
 };
 $('#hamburger').hide();
 
-function hide_all() {
+function hide_all() {    
+    if($("#contentLayer:visible").length>0){
+        $('#contentLayer').trigger('click');
+    }
     $('#btnBack').hide();
     $('#navbar').hide();
-    $('.spinner_index').hide();
+    hide_spinner();
     $('#index_content').hide();
     $('#ajax_error').hide();
     $('#view_title').hide();
     $('#owners').hide();
     $('#dashboard').hide();
+    $('#pms').hide();
     $('body').scrollTop(0);
 }
 
@@ -119,6 +123,7 @@ var pal_user_name;
 var owners_array;
 var owner_vessels;
 var dashboard_settings;
+var user_rights_settings;
 var selected_owner_id;
 var selected_vessel_id;
 var vessel_location;
@@ -173,8 +178,7 @@ $('#login_form').submit(function(){
         type: "post",
         data: form_data,
         beforeSend: function() {
-            $(".spinner_index").css('display','inline');
-            $(".spinner_index").center();
+            show_spinner();
         },
 
         success : function(response) {
@@ -207,8 +211,7 @@ function show_owners(){
       "userid=" + pal_user_id + "&appid=" + cwa_app_id ,
       datatype: 'json',
       beforeSend: function() {
-        $(".spinner_index").css('display','block');
-        $(".spinner_index").center();
+        show_spinner();
     },
     success: function(data){
         owners_array = data["owners_array"];
@@ -225,7 +228,7 @@ function show_owners(){
             }
             results_array.push("</ul>");
 
-            $('.spinner_index').hide();
+            hide_spinner();
             
             $('#view_title').show();
             $('#view_title').html('Owners');
@@ -238,6 +241,7 @@ function show_owners(){
         else{
             owner_vessels = data['owner_vessels'];
             dashboard_settings = data['dashboard_settings'];
+            user_rights_settings = data['user_rights_settings'];
 
             if($.isArray(owner_vessels) == false){
                 owner_vessels = $.makeArray(data['owner_vessels']);
@@ -252,7 +256,7 @@ function show_owners(){
     },
     error: function() {        
         alert('Please try again in a minute.');
-        $('.spinner_index').hide();
+        hide_spinner();
     }
     });
 }
@@ -265,8 +269,7 @@ function show_dashboard_ajax(owner_id){
       "owner_id=" + owner_id  + "&userid=" + pal_user_id + "&appid=" + cwa_app_id,
       datatype: 'json',
       beforeSend: function() {
-        $(".spinner_index").css('display','block');
-        $(".spinner_index").center();
+        show_spinner();
     },
     success: function(data){
         owner_vessels = data['owner_vessels'];
@@ -284,7 +287,7 @@ function show_dashboard_ajax(owner_id){
         },
         error: function() {        
             alert('Please try again in a minute.');
-            $('.spinner_index').hide();
+            hide_spinner();
         }
     });
 }
@@ -306,7 +309,7 @@ function show_dashboard(owner_id){
     results_array.push("</div>");
     // $("#accordion").accordion();
 
-    $('.spinner_index').hide();
+    hide_spinner();
     
     // $('#view_title').show();
     // $('#view_title').html('Dashboard');
@@ -335,8 +338,7 @@ function owner_vessel_selected(){
           "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel_id ,
           datatype: 'json',
         beforeSend: function() {
-            $(".spinner_index").css('display','block');
-            $(".spinner_index").center();
+            show_spinner();
         },
         success: function(data){
             
@@ -365,6 +367,7 @@ function owner_vessel_selected(){
             EngineRPMData.reverse();
 
             chartDs.push({ name: "Engine RPM", data: EngineRPMData, color: "#00004A" }, { name: "Speed Knots", data: speedData, color: "Brown" }, { name: "FO Consumption", data: FoConsumptionData, color: "#6A5ACD" }, { name: "Slip(%)", data: slipData, color: "DarkGreen" });
+
             var results_array = new Array();
             results_array.push("<div class='dashboard_tiles' id='contact_info_tile'><h3 style='text-align: center;'>Contact Info</h3>");
             results_array.push("<div style='padding: 5px'> <ul id='ol_contact' data-role='listview'> ");
@@ -405,16 +408,6 @@ function owner_vessel_selected(){
 
             createNoonChart(chartDs, dates);
             
-            // $("#accordion").accordion({
-            //   heightStyle: "fill"
-            // });
-
-            $("#noon_report_chart").data("kendoChart").options.chartArea.width = $('#dashboard_tiles').width();
-            $("#noon_report_chart").data("kendoChart").options.chartArea.height = 300;
-            // $("#noon_report_chart").data("kendoChart").options.chartArea.refresh();
-            // GetMap();
-            // RequestData(selected_owner_id);
-
             if($.grep(dashboard_settings , function(e){ return e.code == 'CREW'; }).length == 0){
                 $('#crew_tile').hide();
             }
@@ -436,12 +429,12 @@ function owner_vessel_selected(){
                 };
             }
 
-            $('.spinner_index').hide();
+            hide_spinner();
         },
 
         error: function() {        
             alert('Please try again in a minute.');
-            $('.spinner_index').hide();
+            hide_spinner();
         }
     });
 
@@ -488,8 +481,10 @@ function createNoonChart(chartDs, dates) {
                 categories: dates,
                 majorGridLines: {
                     visible: false
+                },
+                labels: {
+                    rotation: -45
                 }
-
             },
             tooltip: {
                 visible: true,
@@ -626,8 +621,7 @@ function get_imo( ownerMode) {
         url: 'get_vessel_positions_cwa.php?'+imodata,
         datatype: 'text',
         beforeSend: function() {
-            $(".spinner_index").css('display','block');
-            $(".spinner_index").center();
+            show_spinner();
     },
     success: function(data){
         var dat = [], randomLatitude, randomLongitude;
@@ -644,13 +638,13 @@ function get_imo( ownerMode) {
                       data[i]['i-m-o-number'], data[i]['heading-value-of-value'], false));
             vessel_location = dat;
         }
-        $('.spinner_index').hide();
+        hide_spinner();
     },
     error: function() {        
         alert('Please try again in a minute.');
-        $('.spinner_index').hide();
+        hide_spinner();
     }
-    });      
+    });
 }
 
 function parse_lat_lon(response) {
@@ -754,4 +748,252 @@ function show_spinner() {
 
 function hide_spinner() {
     $(".spinner_index").hide();
+}
+
+
+function show_pms(){
+    hide_all();
+
+    var results_array = new Array();
+
+    results_array.push("<select id='sel_owner_vessel_pms' onchange='owner_vessel_pms_selected()'>");
+    results_array.push("<option value='-1'>Select Vessel</option>");
+    for (var i = 0; i < owner_vessels.length; i++) {
+        results_array.push("<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>");
+    };
+    results_array.push("</select>");
+    results_array.push("<div class='dashboard_tiles' id='maintenance_analysis'>");
+    results_array.push("<h3 style='text-align: center;'>Maintenance Analysis</h3>");
+    results_array.push("<div style='width:100%'>");
+    results_array.push("<div id='maintenance_analysis_chart_1'></div>");
+    results_array.push("<hr>");
+    results_array.push("<div id='maintenance_analysis_chart_2'></div>");
+    results_array.push("</div>");
+    results_array.push("</div>");
+
+    $('#pms').html(results_array.join(""));
+
+    $('#maintenance_analysis').hide();
+    $('#pms').show();
+    $('#sel_owner_vessel_pms').selectmenu();
+    
+}
+
+function owner_vessel_pms_selected(){
+    var show_maintenance_analysis = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Maintenance Analysis'});
+
+    if(show_maintenance_analysis.length == 0){
+        return;
+    }
+
+    var selected_vessel = document.getElementById("sel_owner_vessel_pms").value;
+    $.ajax({
+        url: 'get_owner_pms.php?' + 
+        "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel + "&app_id=" + cwa_app_id,
+        datatype: 'text',
+        beforeSend: function() {
+            show_spinner();
+        },
+        success: function(data){            
+            hide_spinner();
+            create_maintenance_analysis_chart(data["maintenance_analysis"]);
+            $('#maintenance_analysis').show();
+            var chart = $("#maintenance_analysis_chart_1").data("kendoChart");
+            chart.refresh();
+            chart = $("#maintenance_analysis_chart_2").data("kendoChart");
+            chart.refresh();
+
+        },
+        error: function() {        
+            alert('Please try again in a minute.');
+            hide_spinner();            
+        }
+    });
+}
+
+function create_maintenance_analysis_chart(data){
+    // var len = noon_report_data.length;
+    temp = data;
+    var chartDs = [];
+    var chartDs_1 = [];
+    var dates = [];
+    var due_this_month = [];
+    var completed_this_month = [];
+    var completed_this_month_non_critical = [];
+    var percentage_outstanding = [];
+
+    var overdue_this_month_critical = [];
+    var overdue_current_month = [];
+    var overdue_completed = [];
+    var overdue_not_completed = [];
+    var additional_jobs = [];
+    var outside_pms_jobs = [];
+    
+    var d = new Date();
+    var month = new Array();
+    month[0]="Jan";
+    month[1]="Feb";
+    month[2]="Mar";
+    month[3]="Apr";
+    month[4]="May";
+    month[5]="Jun";
+    month[6]="Jul";
+    month[7]="Aug";
+    month[8]="Sep";
+    month[9]="Oct";
+    month[10]="Nov";
+    month[11]="Dec";
+    for (var i = 0; i < 12; i++) {
+        dates.push(month[d.getMonth()]);
+        d.setMonth(d.getMonth()-1);
+        due_this_month.push($.grep(data, function(e) {return e.record_flag == 'DUE_THIS_MONTH'})[0]["m"+(i+1)]);
+        completed_this_month.push($.grep(data, function(e) {return e.record_flag == 'COMPLETED_THIS_MONTH'})[0]["m"+(i+1)]);
+        completed_this_month_non_critical.push($.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]["m"+(i+1)]);
+        percentage_outstanding.push($.grep(data, function(e) {return e.record_flag == 'PERCENTAGE_OUTSTANDING'})[0]["m"+(i+1)]);
+        
+        overdue_this_month_critical.push($.grep(data, function(e) {return e.record_flag == 'OVERDUE_THIS_MONTH_CRITICAL'})[0]["m"+(i+1)]);
+        overdue_current_month.push($.grep(data, function(e) {return e.record_flag == 'OVERDUE_CURRENT_MONTH'})[0]["m"+(i+1)]);
+        overdue_completed.push($.grep(data, function(e) {return e.record_flag == 'OVERDUE_COMPLETED'})[0]["m"+(i+1)]);
+        overdue_not_completed.push($.grep(data, function(e) {return e.record_flag == 'OVERDUE_NOT_COMPLETED'})[0]["m"+(i+1)]);
+        additional_jobs.push($.grep(data, function(e) {return e.record_flag == 'ADDITIONAL_JOBS'})[0]["m"+(i+1)]);
+        outside_pms_jobs.push($.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]["m"+(i+1)]);
+
+    };
+
+
+    // DUE_THIS_MONTH
+    // COMPLETED_THIS_MONTH
+    // OVER_DUE_THIS_MONTH_NON_CRITICAL
+    // PERCENTAGE_OUTSTANDING
+
+    // OVERDUE_THIS_MONTH_CRITICAL
+    // OVERDUE_CURRENT_MONTH
+    // OVERDUE_COMPLETED
+    // OVERDUE_NOT_COMPLETED
+    // ADDITIONAL_JOBS
+    // OUTSIDE_PMS_JOBS
+
+    dates.reverse();
+
+    // for (var x = 0; x < 5; x++) {
+    //     var dataitem = noon_report_data[x];
+    //     dates.push(kendo.format('{0:dd-MM-yyyy}', dataitem.report_date.split("T")[0]));
+    //     slipData.push(dataitem.slip);
+    //     FoConsumptionData.push(dataitem.me_fo_consumption);
+    //     speedData.push(dataitem.speed);
+    //     EngineRPMData.push(dataitem.engine_rpm);
+    // }
+
+    // dates.reverse();
+    // slipData.reverse();
+    // FoConsumptionData.reverse();
+    // speedData.reverse();
+    // EngineRPMData.reverse();
+
+
+    chartDs.push({ name: $.grep(data, function(e) {return e.record_flag == 'DUE_THIS_MONTH'})[0]['activity'], data: due_this_month, color: "#00004A" }, 
+                 { name: $.grep(data, function(e) {return e.record_flag == 'COMPLETED_THIS_MONTH'})[0]['activity'], data: completed_this_month, color: "Brown" }, 
+                 { name: $.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]['activity'], data: completed_this_month_non_critical, color: "#6A5ACD" }, 
+                 { name: $.grep(data, function(e) {return e.record_flag == 'PERCENTAGE_OUTSTANDING'})[0]['activity'], data: percentage_outstanding, color: "DarkGreen" });
+
+    chartDs_1.push({ name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_THIS_MONTH_CRITICAL'})[0]['activity'], data: overdue_this_month_critical, color: "#00004A" }, 
+                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_CURRENT_MONTH'})[0]['activity'], data: overdue_current_month, color: "Brown" }, 
+                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_COMPLETED'})[0]['activity'], data: overdue_completed, color: "#6A5ACD" }, 
+                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_NOT_COMPLETED'})[0]['activity'], data: overdue_not_completed, color: "#6A5ACD" }, 
+                   { name: $.grep(data, function(e) {return e.record_flag == 'ADDITIONAL_JOBS'})[0]['activity'], data: additional_jobs, color: "#6A5ACD" }, 
+                   { name: $.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]['activity'], data: outside_pms_jobs, color: "DarkGreen" });
+
+
+    $("#maintenance_analysis_chart_1").kendoChart({
+        title: {
+            text: ""
+        },
+        legend: {
+            position: "bottom"
+        },
+        chartArea: {
+            background: ""
+        },
+        seriesDefaults: {
+            type: "line",
+            style: "smooth"
+        },
+        series: chartDs,
+        valueAxis: {
+            line: {
+                visible: false
+            },
+            //axisCrossingValue: -15,
+            //majorUnit: 15,
+            title: {
+                text: "Performance",
+                font: "12px Arial,Helvetica,sans-serif",
+                fontweight:"bold"
+            },
+        },
+        categoryAxis: {
+            categories: dates,
+            majorGridLines: {
+                visible: false
+            },
+            labels: {
+                rotation: -45
+            }
+        },
+        tooltip: {
+            visible: true,
+            template: "<span style='color:white'>#= series.name #: #= value #</span>"
+        },
+        axisDefaults: {
+            labels: {
+                font: "10px Arial,Helvetica,sans-serif",
+            }
+        }
+    });
+    $("#maintenance_analysis_chart_2").kendoChart({
+        title: {
+            text: ""
+        },
+        legend: {
+            position: "bottom"
+        },
+        chartArea: {
+            background: ""
+        },
+        seriesDefaults: {
+            type: "line",
+            style: "smooth"
+        },
+        series: chartDs_1,
+        valueAxis: {
+            line: {
+                visible: false
+            },
+            //axisCrossingValue: -15,
+            //majorUnit: 15,
+            title: {
+                text: "Performance",
+                font: "12px Arial,Helvetica,sans-serif",
+                fontweight:"bold"
+            },
+        },
+        categoryAxis: {
+            categories: dates,
+            majorGridLines: {
+                visible: false
+            },
+            labels: {
+                rotation: -45
+            }
+        },
+        tooltip: {
+            visible: true,
+            template: "<span style='color:white'>#= series.name #: #= value #</span>"
+        },
+        axisDefaults: {
+            labels: {
+                font: "10px Arial,Helvetica,sans-serif"
+            }
+        }
+    });
 }
