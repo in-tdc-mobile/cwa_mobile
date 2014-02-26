@@ -236,3 +236,16 @@ h1 {
     font-weight: bold;
     font-size: 15px;
 }
+
+#content h3{
+    -webkit-margin-before: 0em;
+    -webkit-margin-after: 0.3em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    text-align: center;
+}
+
+.crew_table{
+    width: 100%;
+    text-align: left;
+}

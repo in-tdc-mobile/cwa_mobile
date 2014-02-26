@@ -109,6 +109,7 @@ function hide_all() {
     $('#view_title').hide();
     $('#owners').hide();
     $('#dashboard').hide();
+    $('#crew_cv').hide();
     $('#pms').hide();
     $('body').scrollTop(0);
 }
@@ -122,6 +123,7 @@ var cwa_app_id;
 var pal_user_name;
 var owners_array;
 var owner_vessels;
+var owner_crew;
 var dashboard_settings;
 var user_rights_settings;
 var selected_owner_id;
@@ -328,7 +330,7 @@ function show_dashboard(owner_id){
     }
 
 }
-var temp ;
+var temp;
 function owner_vessel_selected(){
     var selected_vessel = document.getElementById("sel_owner_vessel").value;
     if(selected_vessel > 0){
@@ -391,12 +393,13 @@ function owner_vessel_selected(){
             results_array.push("<div class='dashboard_tiles' id='crew_tile'><h3 style='text-align: center;'>Crew List</h3><div id='crew_list' style='padding:10px;' class='my-navbar-content'></div></div>");
 
             var crew_array = new Array();
+            owner_crew = data["crew_list"];
 
             crew_array.push("<ul id='ol_crew_list' data-role='listview'>");
             for (var i = 0; i < data["crew_list"].length; i++) {
                 dataitem = data["crew_list"][i];
                 crew_array.push("<li>");
-                crew_array.push("<span class='dashboard-list'> <span style='color:rgb(15,15,15); font-weight: normal'>" + toTitleCase(dataitem.rank) + "</span> - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> (" + toTitleCase(dataitem.nationality) + ")</span>");
+                crew_array.push("<a href='javascript:show_crew_cv("+ dataitem.emp_id +")'><span class='dashboard-list'> <span style='color:rgb(15,15,15); font-weight: normal'>" + toTitleCase(dataitem.rank) + "</span> - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> (" + toTitleCase(dataitem.nationality) + ")</span></a>");
                 crew_array.push("</li>");
             };
             crew_array.push("</ul>");
@@ -498,6 +501,104 @@ function createNoonChart(chartDs, dates) {
         });       
 }
 
+function show_crew_cv (emp_id) {
+    $.ajax({
+        url: 'get_crew_cv.php?' + 
+        "emp_id=" + emp_id,
+        datatype: 'text',
+        beforeSend: function() {
+            show_spinner();
+        },
+        success: function(data){            
+            hide_spinner();
+            $('body').scrollTop(0);
+            temp = data;
+            data = data.crew_cv;
+
+             $('#dashboard').hide();
+            var selected_crew = $.grep(owner_crew , function(e){ return e.emp_id == emp_id; })[0];
+
+            var results_array = new Array();
+            results_array.push("<h3>Crew CV</h3>");
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<ul class='crew_list_view' data-role='listview'>");
+            results_array.push("<li>Name : "+ toTitleCase(selected_crew.emp_name) + "</li>");
+            results_array.push("<li>Nationality : "+ toTitleCase(selected_crew.nationality) + "</li>");
+            results_array.push("<li>Rank : "+ toTitleCase(selected_crew.rank) + "</li>");
+            results_array.push("</ul>");            
+            results_array.push("</div>");
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<ul class='crew_list_view' data-role='listview'>");
+            results_array.push("<h3>Experience</h3>");
+            results_array.push("<li>" + toTitleCase(data.SummaryByRanks.SummaryEntity.Rank) + " : " + data.SummaryByRanks.SummaryEntity.Duration + "</li>");
+            results_array.push("<li>" + toTitleCase(data.SummaryByVesselTypes.SummaryEntity.VesselType) + " : " + data.SummaryByVesselTypes.SummaryEntity.Duration + "</li>");
+            results_array.push("</ul>");
+            results_array.push("</div>");
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<h3>Sea Service with Company</h3>");
+            results_array.push("<table class='crew_table'>");
+            results_array.push("<tr>");
+            results_array.push("<th>Company</th>");
+            results_array.push("<th>Rank</th>");
+            results_array.push("<th>Sign-on Date</th>");
+            results_array.push("<th>Sign-off Date</th>");
+            results_array.push("<th>Veseel</th>");
+            results_array.push("</tr>");
+
+            for (var i = 0; i < data.SeaServiceData.SeaServiceEntity.length; i++) {
+                var dataitem = data.SeaServiceData.SeaServiceEntity[i];
+                results_array.push("<tr>");
+                results_array.push("<td>" + dataitem.Company + "</td>");
+                results_array.push("<td>" + toTitleCase(dataitem.Rank) + "</td>");
+                results_array.push("<td>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td>" + dataitem.Vessel + "</td>");
+                results_array.push("</tr>");
+            };
+            results_array.push("</table>");
+            results_array.push("</div>");
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<h3>Sea Service with Other Companies</h3>");            
+            results_array.push("<table class='crew_table'>");
+            results_array.push("<tr>");
+            results_array.push("<th>Company</th>");
+            results_array.push("<th>Rank</th>");
+            results_array.push("<th>Sign-on Date</th>");
+            results_array.push("<th>Sign-off Date</th>");
+            results_array.push("<th>Veseel</th>");
+            results_array.push("</tr>");
+
+            for (var i = 0; i < data.SeaServiceOtherData.SeaServiceEntity.length; i++) {
+                var dataitem = data.SeaServiceOtherData.SeaServiceEntity[i];
+                results_array.push("<tr>");
+                results_array.push("<td>" + dataitem.Company + "</td>");
+                results_array.push("<td>" + toTitleCase(dataitem.Rank) + "</td>");
+                results_array.push("<td>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td>" + dataitem.Vessel + "</td>");
+                results_array.push("</tr>");
+            };
+            results_array.push("</table>");
+            results_array.push("</div>");
+
+
+
+            $('#crew_cv').html(results_array.join(""));
+            $('#crew_cv').show();
+
+            $('.crew_list_view').listview();
+            $('.crew_table').table({ defaults: true });
+        },
+        error: function() {        
+            alert('Please try again in a minute.');
+            hide_spinner();            
+        }
+    });
+}
 
 /*-----Start Bing Map-------*/
 
@@ -768,6 +869,8 @@ function show_pms(){
     results_array.push("<div id='maintenance_analysis_chart_1'></div>");
     results_array.push("<hr>");
     results_array.push("<div id='maintenance_analysis_chart_2'></div>");
+    results_array.push("<hr>");
+    results_array.push("<div id='maintenance_analysis_chart_3'></div>");
     results_array.push("</div>");
     results_array.push("</div>");
 
@@ -776,6 +879,11 @@ function show_pms(){
     $('#maintenance_analysis').hide();
     $('#pms').show();
     $('#sel_owner_vessel_pms').selectmenu();
+
+    if(selected_vessel_id>0){    
+        $('#sel_owner_vessel_pms').val(selected_vessel_id);
+        $('#sel_owner_vessel_pms').selectmenu('refresh', true);    
+    }
     
 }
 
@@ -802,6 +910,8 @@ function owner_vessel_pms_selected(){
             chart.refresh();
             chart = $("#maintenance_analysis_chart_2").data("kendoChart");
             chart.refresh();
+            chart = $("#maintenance_analysis_chart_3").data("kendoChart");
+            chart.refresh();
 
         },
         error: function() {        
@@ -812,14 +922,14 @@ function owner_vessel_pms_selected(){
 }
 
 function create_maintenance_analysis_chart(data){
-    // var len = noon_report_data.length;
-    temp = data;
-    var chartDs = [];
+    // var len = noon_report_data.length;    
     var chartDs_1 = [];
+    var chartDs_2 = [];
+    var chartDs_3 = [];
     var dates = [];
     var due_this_month = [];
     var completed_this_month = [];
-    var completed_this_month_non_critical = [];
+    var over_due_this_month_non_critical = [];
     var percentage_outstanding = [];
 
     var overdue_this_month_critical = [];
@@ -843,65 +953,53 @@ function create_maintenance_analysis_chart(data){
     month[9]="Oct";
     month[10]="Nov";
     month[11]="Dec";
-    for (var i = 0; i < 12; i++) {
+    for (var i = 7; i < 12; i++) {
         dates.push(month[d.getMonth()]);
         d.setMonth(d.getMonth()-1);
+
         due_this_month.push($.grep(data, function(e) {return e.record_flag == 'DUE_THIS_MONTH'})[0]["m"+(i+1)]);
         completed_this_month.push($.grep(data, function(e) {return e.record_flag == 'COMPLETED_THIS_MONTH'})[0]["m"+(i+1)]);
-        completed_this_month_non_critical.push($.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]["m"+(i+1)]);
         percentage_outstanding.push($.grep(data, function(e) {return e.record_flag == 'PERCENTAGE_OUTSTANDING'})[0]["m"+(i+1)]);
         
         overdue_this_month_critical.push($.grep(data, function(e) {return e.record_flag == 'OVERDUE_THIS_MONTH_CRITICAL'})[0]["m"+(i+1)]);
-        overdue_current_month.push($.grep(data, function(e) {return e.record_flag == 'OVERDUE_CURRENT_MONTH'})[0]["m"+(i+1)]);
+        over_due_this_month_non_critical.push($.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]["m"+(i+1)]);
+        
         overdue_completed.push($.grep(data, function(e) {return e.record_flag == 'OVERDUE_COMPLETED'})[0]["m"+(i+1)]);
         overdue_not_completed.push($.grep(data, function(e) {return e.record_flag == 'OVERDUE_NOT_COMPLETED'})[0]["m"+(i+1)]);
+        overdue_current_month.push($.grep(data, function(e) {return e.record_flag == 'OVERDUE_CURRENT_MONTH'})[0]["m"+(i+1)]);
         additional_jobs.push($.grep(data, function(e) {return e.record_flag == 'ADDITIONAL_JOBS'})[0]["m"+(i+1)]);
         outside_pms_jobs.push($.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]["m"+(i+1)]);
 
     };
 
-
     // DUE_THIS_MONTH
     // COMPLETED_THIS_MONTH
-    // OVER_DUE_THIS_MONTH_NON_CRITICAL
     // PERCENTAGE_OUTSTANDING
 
     // OVERDUE_THIS_MONTH_CRITICAL
-    // OVERDUE_CURRENT_MONTH
+    // OVER_DUE_THIS_MONTH_NON_CRITICAL
+
     // OVERDUE_COMPLETED
     // OVERDUE_NOT_COMPLETED
+    // OVERDUE_CURRENT_MONTH
     // ADDITIONAL_JOBS
     // OUTSIDE_PMS_JOBS
 
     dates.reverse();
 
-    // for (var x = 0; x < 5; x++) {
-    //     var dataitem = noon_report_data[x];
-    //     dates.push(kendo.format('{0:dd-MM-yyyy}', dataitem.report_date.split("T")[0]));
-    //     slipData.push(dataitem.slip);
-    //     FoConsumptionData.push(dataitem.me_fo_consumption);
-    //     speedData.push(dataitem.speed);
-    //     EngineRPMData.push(dataitem.engine_rpm);
-    // }
+    chartDs_1.push({ name: $.grep(data, function(e) {return e.record_flag == 'DUE_THIS_MONTH'})[0]['activity'], data: due_this_month, color: "#00004A" }, 
+                   { name: $.grep(data, function(e) {return e.record_flag == 'COMPLETED_THIS_MONTH'})[0]['activity'], data: completed_this_month, color: "Brown" }, 
+                   { name: $.grep(data, function(e) {return e.record_flag == 'PERCENTAGE_OUTSTANDING'})[0]['activity'], data: percentage_outstanding, color: "DarkGreen" });
 
-    // dates.reverse();
-    // slipData.reverse();
-    // FoConsumptionData.reverse();
-    // speedData.reverse();
-    // EngineRPMData.reverse();
+    chartDs_2.push({ name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_THIS_MONTH_CRITICAL'})[0]['activity'], data: overdue_this_month_critical, color: "#00004A" }, 
+                   { name: $.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]['activity'], data: over_due_this_month_non_critical, color: "#6A5ACD" });
 
 
-    chartDs.push({ name: $.grep(data, function(e) {return e.record_flag == 'DUE_THIS_MONTH'})[0]['activity'], data: due_this_month, color: "#00004A" }, 
-                 { name: $.grep(data, function(e) {return e.record_flag == 'COMPLETED_THIS_MONTH'})[0]['activity'], data: completed_this_month, color: "Brown" }, 
-                 { name: $.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]['activity'], data: completed_this_month_non_critical, color: "#6A5ACD" }, 
-                 { name: $.grep(data, function(e) {return e.record_flag == 'PERCENTAGE_OUTSTANDING'})[0]['activity'], data: percentage_outstanding, color: "DarkGreen" });
-
-    chartDs_1.push({ name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_THIS_MONTH_CRITICAL'})[0]['activity'], data: overdue_this_month_critical, color: "#00004A" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_CURRENT_MONTH'})[0]['activity'], data: overdue_current_month, color: "Brown" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_COMPLETED'})[0]['activity'], data: overdue_completed, color: "#6A5ACD" }, 
+    chartDs_3.push({ name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_COMPLETED'})[0]['activity'], data: overdue_completed, color: "#6A5ACD" }, 
                    { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_NOT_COMPLETED'})[0]['activity'], data: overdue_not_completed, color: "#6A5ACD" }, 
+                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_CURRENT_MONTH'})[0]['activity'], data: overdue_current_month, color: "Brown" },                    
                    { name: $.grep(data, function(e) {return e.record_flag == 'ADDITIONAL_JOBS'})[0]['activity'], data: additional_jobs, color: "#6A5ACD" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]['activity'], data: outside_pms_jobs, color: "DarkGreen" });
+                   { name: $.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]['activity'], data: outside_pms_jobs, color: "DarkGreen" })
 
 
     $("#maintenance_analysis_chart_1").kendoChart({
@@ -918,7 +1016,7 @@ function create_maintenance_analysis_chart(data){
             type: "line",
             style: "smooth"
         },
-        series: chartDs,
+        series: chartDs_1,
         valueAxis: {
             line: {
                 visible: false
@@ -926,7 +1024,6 @@ function create_maintenance_analysis_chart(data){
             //axisCrossingValue: -15,
             //majorUnit: 15,
             title: {
-                text: "Performance",
                 font: "12px Arial,Helvetica,sans-serif",
                 fontweight:"bold"
             },
@@ -964,7 +1061,7 @@ function create_maintenance_analysis_chart(data){
             type: "line",
             style: "smooth"
         },
-        series: chartDs_1,
+        series: chartDs_2,
         valueAxis: {
             line: {
                 visible: false
@@ -972,7 +1069,51 @@ function create_maintenance_analysis_chart(data){
             //axisCrossingValue: -15,
             //majorUnit: 15,
             title: {
-                text: "Performance",
+                font: "12px Arial,Helvetica,sans-serif",
+                fontweight:"bold"
+            },
+        },
+        categoryAxis: {
+            categories: dates,
+            majorGridLines: {
+                visible: false
+            },
+            labels: {
+                rotation: -45
+            }
+        },
+        tooltip: {
+            visible: true,
+            template: "<span style='color:white'>#= series.name #: #= value #</span>"
+        },
+        axisDefaults: {
+            labels: {
+                font: "10px Arial,Helvetica,sans-serif"
+            }
+        }
+    });
+    $("#maintenance_analysis_chart_3").kendoChart({
+        title: {
+            text: ""
+        },
+        legend: {
+            position: "bottom"
+        },
+        chartArea: {
+            background: ""
+        },
+        seriesDefaults: {
+            type: "line",
+            style: "smooth"
+        },
+        series: chartDs_3,
+        valueAxis: {
+            line: {
+                visible: false
+            },
+            //axisCrossingValue: -15,
+            //majorUnit: 15,
+            title: {
                 font: "12px Arial,Helvetica,sans-serif",
                 fontweight:"bold"
             },
@@ -997,3 +1138,21 @@ function create_maintenance_analysis_chart(data){
         }
     });
 }
+
+//Ajax templete
+// $.ajax({
+//     url: 'get_owner_pms.php?' + 
+//     "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel + "&app_id=" + cwa_app_id,
+//     datatype: 'text',
+//     beforeSend: function() {
+//         show_spinner();
+//     },
+//     success: function(data){            
+//         hide_spinner();
+//
+//     },
+//     error: function() {        
+//         alert('Please try again in a minute.');
+//         hide_spinner();            
+//     }
+// });

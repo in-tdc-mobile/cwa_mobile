@@ -18,7 +18,7 @@ header {
     padding: 10px;
     text-decoration: none;
     position: fixed;
-    width: 100%;
+    width: 98.5%;
     z-index: 4;
     -webkit-box-shadow:  0px 3px 7px 0px rgba(0, 0, 0, 0.4);
     box-shadow:  0px 3px 7px 0px rgba(0, 0, 0, 0.4);
@@ -48,7 +48,8 @@ the hamburger button with a little gradient effekt
     display: block;
     height: 24px;
     padding: 3px 4px 3px;
-    position: relative;
+    position: absolute;
+    right: 35px;
     width: 25px;
     background: #F9F9F9;
     background: -moz-linear-gradient(top, #3E3C3D 0%,#EEE 100%);
@@ -78,9 +79,9 @@ The white stripes in the hamburger button
 The navigation container in the background
 */
 nav {
-    left: 0px;
+    right: 0px;
     top: 0px;
-    position: fixed;
+    position: absolute;
     z-index: 0;
     width: 70%;
     height: 100%;
@@ -132,7 +133,7 @@ so that the content is unclickable while menu is shown
     overflow-x: hidden;
     overflow-y: auto;
     position: absolute;
-    right: 0;
+    left: 0;
     top: 0;
     width: 30%;
     z-index: 5;
