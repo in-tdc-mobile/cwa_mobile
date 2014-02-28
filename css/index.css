@@ -249,3 +249,12 @@ h1 {
     width: 100%;
     text-align: left;
 }
+
+ .crew_detail{
+    display: none;
+ }
+
+ .li-data-list-small{
+    color:rgb(15,15,15); 
+    font-weight: normal
+ }
