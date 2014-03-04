@@ -135,7 +135,21 @@ window.addEventListener('load', function () {
     FastClick.attach(document.body);
 }, false);
 
-$(document).ready(function() {  
+$(document).ready(function() {    
+    var menuBtn = document.querySelector('#hamburger-btn');
+    var container = document.querySelector('#container');
+    var slidemenu = document.querySelector('#sidemenu');
+    var content = document.querySelector('#content');
+
+    menuBtn.addEventListener('click', showSidemenu, false);
+
+    function showSidemenu () {
+      container.classList.toggle('opened');
+      slidemenu.classList.toggle('sidemenu--opened');
+      content.style.height = "auto";
+      // $('#container').resize();
+      
+    }
     try{
         pal_user_name = $.jStorage.get("pal_user_name");
         // $.jStorage.set("pal_user_email", '');
@@ -222,9 +236,9 @@ function show_owners(){
         }
         if(owners_array.length!=1){
             var results_array = new Array();
-            results_array.push("<ul data-role='listview' data-divider-theme='b' data-inset='true' id='listview'>");
+            results_array.push("<ul class='topcoat-list__container' id='listview'>");
             for(var i=0; i< owners_array.length; i++) {
-                results_array.push("<li data-theme='c'>");
+                results_array.push("<li class='topcoat-list__item'>");
                 results_array.push("<a data-transition='slide' href='javascript:show_dashboard_ajax(\""+ owners_array[i]['ID'] +"\")' id='"+ owners_array[i]['ID'] +"'>"+ owners_array[i]['label']);
                 results_array.push("</a></li>");
             }
@@ -238,7 +252,7 @@ function show_owners(){
             $('#owners').html(results_array.join(""));
             $('#owners').show();
 
-            $('#listview').listview();
+            // $('#listview').listview();
         }
         else{
             owner_vessels = data['owner_vessels'];
@@ -299,7 +313,7 @@ function show_dashboard(owner_id){
     selected_owner_id = owner_id;
     var results_array = new Array();
 
-    results_array.push("<select id='sel_owner_vessel' onchange='owner_vessel_selected()'>");
+    results_array.push("<select id='sel_owner_vessel' class='topcoat-select' onchange='owner_vessel_selected()'>");
     results_array.push("<option value='-1'>Select Vessel</option>");
     for (var i = 0; i < owner_vessels.length; i++) {
         results_array.push("<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>");
@@ -317,7 +331,7 @@ function show_dashboard(owner_id){
     // $('#view_title').html('Dashboard');
     $('#dashboard').html(results_array.join(""));
 
-    $('#sel_owner_vessel').selectmenu();
+    // $('#sel_owner_vessel').selectmenu();
 
     $('#dashboard').show();
     show_vessel_tracker = $.grep(dashboard_settings , function(e){ return e.code == 'VSLTRK'; });
@@ -372,10 +386,10 @@ function owner_vessel_selected(){
 
             var results_array = new Array();
             results_array.push("<div class='dashboard_tiles' id='contact_info_tile'><h3 style='text-align: center;'>Contact Info</h3>");
-            results_array.push("<div style='padding: 5px'> <ul id='ol_contact' data-role='listview'> ");
-            results_array.push("<li class='dashboard-list'> Manager : " + data["vessel_info"].primary_manager_name + "</li>");
-            results_array.push("<li class='dashboard-list'> Email : <span> <a href='mailto:" + data["vessel_info"].email + "'>" + data["vessel_info"].email + "</a></span></li>");
-            results_array.push("<li class='dashboard-list'> Phone : ");
+            results_array.push("<div style='padding: 5px'> <ul id='ol_contact' class='topcoat-list list'> ");
+            results_array.push("<li class='topcoat-list__item dashboard-list'> Manager : " + data["vessel_info"].primary_manager_name + "</li>");
+            results_array.push("<li class='topcoat-list__item dashboard-list'> Email : <span> <a href='mailto:" + data["vessel_info"].email + "'>" + data["vessel_info"].email + "</a></span></li>");
+            results_array.push("<li class='topcoat-list__item dashboard-list'> Phone : ");
             if(data["vessel_info"].telephone_1 != null){
                 results_array.push("<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
             }
@@ -395,19 +409,23 @@ function owner_vessel_selected(){
             var crew_array = new Array();
             owner_crew = data["crew_list"];
 
-            crew_array.push("<ul id='ol_crew_list' data-role='listview'>");
+            crew_array.push("<ul id='ol_crew_list' class='topcoat-list list'>");
             for (var i = 0; i < data["crew_list"].length; i++) {
                 dataitem = data["crew_list"][i];
-                crew_array.push("<li>");
-                crew_array.push("<a href='javascript:show_crew_cv("+ dataitem.emp_id +")'><span class='dashboard-list'> <span class='li-data-list-small'>" + toTitleCase(dataitem.rank) + "</span> - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> (" + toTitleCase(dataitem.nationality) + ")</span></a>");
+                crew_array.push("<li class='topcoat-list__item'>");
+                crew_array.push("<a href='javascript:show_crew_cv("+ dataitem.emp_id +")'>" +
+                    "<span class='dashboard-list'> " +
+                    "<span class='li-data-list-small'>" + toTitleCase(dataitem.rank) + "</span>" + 
+                    " - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> " + 
+                    "(" + toTitleCase(dataitem.nationality) + ")</span><span class='chevron'></span></a>");
                 crew_array.push("</li>");
             };
             crew_array.push("</ul>");
 
             $('#accordion').html(results_array.join(""));
             $('#crew_list').html(crew_array.join(""));
-            $('#ol_crew_list').listview();
-            $('#ol_contact').listview();
+            // $('#ol_crew_list').listview();
+            // $('#ol_contact').listview();
 
             createNoonChart(chartDs, dates);
             
@@ -522,18 +540,18 @@ function show_crew_cv (emp_id) {
 
             results_array.push("<div class='dashboard_tiles'>");
             results_array.push("<h3>Crew CV</h3>");
-            results_array.push("<ul class='crew_list_view' data-role='listview'>");
-            results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Name : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.emp_name) + "</span></li>");
-            results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Nationality : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.nationality) + "</span></li>");
-            results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Rank : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.rank) + "</span></li>");
+            results_array.push("<ul class='topcoat-list list' data-role='listview'>");
+            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Name : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.emp_name) + "</span></li>");
+            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Nationality : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.nationality) + "</span></li>");
+            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Rank : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.rank) + "</span></li>");
             results_array.push("</ul>");            
             results_array.push("</div>");
 
             results_array.push("<div class='dashboard_tiles'>");
             results_array.push("<h3>Experience</h3>");
-            results_array.push("<ul class='crew_list_view' data-role='listview'>");
-            results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByRanks.SummaryEntity.Rank) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByRanks.SummaryEntity.Duration + "</span></li>");
-            results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByVesselTypes.SummaryEntity.VesselType) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByVesselTypes.SummaryEntity.Duration + "</span></li>");
+            results_array.push("<ul class='topcoat-list list' data-role='listview'>");
+            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByRanks.SummaryEntity.Rank) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByRanks.SummaryEntity.Duration + "</span></li>");
+            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByVesselTypes.SummaryEntity.VesselType) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByVesselTypes.SummaryEntity.Duration + "</span></li>");
             results_array.push("</ul>");
             results_array.push("</div>");
 
@@ -556,7 +574,7 @@ function show_crew_cv (emp_id) {
                 results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
                 results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
                 results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                results_array.push('<td><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></td>');
+                results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
                 results_array.push("</tr>");
             };
             results_array.push("</table>");
@@ -581,7 +599,7 @@ function show_crew_cv (emp_id) {
                 results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
                 results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
                 results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                results_array.push('<td><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></td>');
+                results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
                 results_array.push("</tr>");
             };
             results_array.push("</table>");
@@ -597,8 +615,8 @@ function show_crew_cv (emp_id) {
                 $('html, body').animate({scrollTop: $('#crew_tile').offset().top-55}, 'slow');
             };
 
-            $('.crew_list_view').listview();
-            $('.crew_table').table({ defaults: true });
+            // $('.crew_list_view').listview();
+            // $('.crew_table').table({ defaults: true });
 
             $('.itemRow').click(function() {
                 $(this).closest('table').find('.temp_tr').remove();
@@ -606,16 +624,16 @@ function show_crew_cv (emp_id) {
                 results_array.push('<tr class="temp_tr">');
                 results_array.push('<td colspan="100%">');
                 results_array.push('<div>');
-                results_array.push('<ul class="temp_ul">');
-                results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Vessel : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(4)').html() + "</span></li>");
-                results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Sign-on Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
-                results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Sign-off Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
+                results_array.push('<ul class="topcoat-list list">');
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Vessel : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(4)').html() + "</span></li>");
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Sign-on Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Sign-off Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
                 results_array.push('</ul>');
                 results_array.push('</div>');
                 results_array.push('</td>');
                 results_array.push('</tr>');
                 $(this).after(results_array.join(""));
-                $('.temp_ul').listview();
+                // $('.temp_ul').listview();
                 // alert($(this).find('td:eq(0)').html());
             });
 
@@ -720,7 +738,7 @@ function show_vessel_dashbord(name){
         }
     };
     $('#sel_owner_vessel').val(vsl.object_id);
-    $('#sel_owner_vessel').selectmenu('refresh', true);
+    // $('#sel_owner_vessel').selectmenu('refresh', true);
 
     owner_vessel_selected();
 }
@@ -885,7 +903,7 @@ function show_pms(){
 
     var results_array = new Array();
 
-    results_array.push("<select id='sel_owner_vessel_pms' onchange='owner_vessel_pms_selected()'>");
+    results_array.push("<select class='topcoat-select' id='sel_owner_vessel_pms' onchange='owner_vessel_pms_selected()'>");
     results_array.push("<option value='-1'>Select Vessel</option>");
     for (var i = 0; i < owner_vessels.length; i++) {
         results_array.push("<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>");
@@ -906,7 +924,7 @@ function show_pms(){
 
     $('#maintenance_analysis').hide();
     $('#pms').show();
-    $('#sel_owner_vessel_pms').selectmenu();
+    // $('#sel_owner_vessel_pms').selectmenu();
 
     if(selected_vessel_id>0){    
         $('#sel_owner_vessel_pms').val(selected_vessel_id);

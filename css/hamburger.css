@@ -59,6 +59,7 @@ the hamburger button with a little gradient effekt
     background: -ms-linear-gradient(top,  #3E3C3D 0%,#6D6F74 100%);
     background: linear-gradient(to bottom,  #3E3C3D 0%,#6D6F74 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3E3C3D', endColorstr='#6D6F74',GradientType=0 );
+    top: 15px;
 }
 
 /*#F9F9F9,#EEE*/
