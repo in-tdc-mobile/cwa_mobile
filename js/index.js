@@ -101,13 +101,16 @@ function hide_all() {
     // if($("#contentLayer:visible").length>0){
     //     $('#contentLayer').trigger('click');
     // }
-    if($( "#container" ).hasClass( "opened" )){
+    if($("#container").hasClass( "opened" )){
         var container = document.querySelector('#container');
         var slidemenu = document.querySelector('#sidemenu');
         var content = document.querySelector('#content');
+        var contentlayer = document.querySelector('#contentLayer');
+
         container.classList.toggle('opened');
         slidemenu.classList.toggle('sidemenu--opened');
         content.style.height = "auto";
+        contentlayer.classList.toggle('contentlayer-opened');
     }
     $('#btnBack').hide();
     // $('#navbar').hide();
@@ -117,6 +120,7 @@ function hide_all() {
     $('#view_title').hide();
     $('#owners').hide();
     $('#dashboard').hide();
+    $('#crew').hide();
     $('#crew_cv').hide();
     $('#pms').hide();
     $('body').scrollTop(0);
@@ -132,11 +136,13 @@ function route(event) {
 
     if (hash === "#pms") {
         show_pms();
+    } else if (hash === "#crew") {
+        show_crew_list();
     } else if (hash === "#crew_cv") {
         show_crew_cv(window.location.hash.split('/')[1]);
     } else if (hash === "#back_crewcv") {
         hide_all();
-        $('#dashboard').show();
+        $('#crew').show();
         // $('html, body').animate({scrollTop: $('#crew_tile').position().top-50}, 'slow');
         $('body').scrollTop(0);
     }
@@ -175,12 +181,14 @@ $(document).ready(function() {
     var container = document.querySelector('#container');
     var slidemenu = document.querySelector('#sidemenu');
     var content = document.querySelector('#content');
-
+    var contentlayer = document.querySelector('#contentLayer');
     menuBtn.addEventListener('click', showSidemenu, false);
+    contentlayer.addEventListener('click', showSidemenu, false);
 
     function showSidemenu () {
       container.classList.toggle('opened');
       slidemenu.classList.toggle('sidemenu--opened');
+      contentlayer.classList.toggle('contentlayer-opened');
       content.style.height = "auto";
       $('#container').resize();
       
@@ -423,42 +431,42 @@ function owner_vessel_selected(){
             results_array.push("<div class='dashboard_tiles' id='contact_info_tile'><h3 style='text-align: center;'>Contact Info</h3>");
             results_array.push("<div style='padding: 5px'> <ul id='ol_contact' class='topcoat-list list'> ");
             results_array.push("<li class='topcoat-list__item dashboard-list'> Manager : " + data["vessel_info"].primary_manager_name + "</li>");
-            results_array.push("<li class='topcoat-list__item dashboard-list'> Email : <span> <a href='mailto:" + data["vessel_info"].email + "'>" + data["vessel_info"].email + "</a></span></li>");
+            results_array.push("<li class='topcoat-list__item dashboard-list'> Email : <span> <a style='text-decoration: underline' href='mailto:" + data["vessel_info"].email + "'>" + data["vessel_info"].email + "</a></span></li>");
             results_array.push("<li class='topcoat-list__item dashboard-list'> Phone : ");
             if(data["vessel_info"].telephone_1 != null){
-                results_array.push("<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
+                results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
             }
-            if(data["vessel_info"].telephone_1 != null){
-                results_array.push("<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
+            if(data["vessel_info"].telephone_2 != null){
+                results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_2 + "'>00870-" + data["vessel_info"].telephone_2 + "</a></span>");
             }
-            if(data["vessel_info"].telephone_1 != null){
-                results_array.push("<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
+            if(data["vessel_info"].telephone_3 != null){
+                results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_3 + "'>00870-" + data["vessel_info"].telephone_3 + "</a></span>");
             }
             results_array.push("</li>");
             results_array.push("</ul></div></div>");
 
             results_array.push("<div class='dashboard_tiles' id='vslperf_tile'><h3 style='text-align: center;'>Noon Report</h3><div style='width:100%'><div id='noon_report_chart'></div></div></div>");
             // results_div += "<div style='background:black' height='5px'/>"
-            results_array.push("<div class='dashboard_tiles' id='crew_tile'><h3 style='text-align: center;'>Crew List</h3><div id='crew_list' style='padding:10px;' class='my-navbar-content'></div></div>");
+            // results_array.push("<div class='dashboard_tiles' id='crew_tile'><h3 style='text-align: center;'>Crew List</h3><div id='crew_list' style='padding:10px;' class='my-navbar-content'></div></div>");
 
-            var crew_array = new Array();
-            owner_crew = data["crew_list"];
+            // var crew_array = new Array();
+            // owner_crew = data["crew_list"];
 
-            crew_array.push("<ul id='ol_crew_list' class='topcoat-list list'>");
-            for (var i = 0; i < data["crew_list"].length; i++) {
-                dataitem = data["crew_list"][i];
-                crew_array.push("<li class='topcoat-list__item'>");
-                crew_array.push("<a href='#crew_cv/"+ dataitem.emp_id +"'>" +
-                    "<span class='dashboard-list'> " +
-                    "<span class='li-data-list-small'>" + toTitleCase(dataitem.rank) + "</span>" + 
-                    " - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> " + 
-                    "(" + toTitleCase(dataitem.nationality) + ")</span><span class='chevron'></span></a>");
-                crew_array.push("</li>");
-            };
-            crew_array.push("</ul>");
+            // crew_array.push("<ul id='ol_crew_list' class='topcoat-list list'>");
+            // for (var i = 0; i < data["crew_list"].length; i++) {
+            //     dataitem = data["crew_list"][i];
+            //     crew_array.push("<li class='topcoat-list__item'>");
+            //     crew_array.push("<a href='#crew_cv/"+ dataitem.emp_id +"'>" +
+            //         "<span class='dashboard-list'> " +
+            //         "<span class='li-data-list-small'>" + toTitleCase(dataitem.rank) + "</span>" + 
+            //         " - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> " + 
+            //         "(" + toTitleCase(dataitem.nationality) + ")</span><span class='chevron'></span></a>");
+            //     crew_array.push("</li>");
+            // };
+            // crew_array.push("</ul>");
 
             $('#accordion').html(results_array.join(""));
-            $('#crew_list').html(crew_array.join(""));
+            // $('#crew_list').html(crew_array.join(""));
             // $('#ol_crew_list').listview();
             // $('#ol_contact').listview();
 
@@ -552,146 +560,6 @@ function createNoonChart(chartDs, dates) {
                 }
             }
         });       
-}
-
-function show_crew_cv (emp_id) {
-    $.ajax({
-        url: 'get_crew_cv.php?' + 
-        "emp_id=" + emp_id,
-        datatype: 'text',
-        beforeSend: function() {
-            show_spinner();
-        },
-        success: function(data){            
-            hide_spinner();
-            // $('html, body').animate({scrollTop: $('#crew_tile').offset().top-80}, 'slow');
-            data = data.crew_cv;
-
-            $('#dashboard').hide();
-            $('body').scrollTop(0);
-            var selected_crew = $.grep(owner_crew , function(e){ return e.emp_id == emp_id; })[0];
-
-            var results_array = new Array();
-
-            results_array.push("<div class='dashboard_tiles'>");
-            results_array.push("<h3>Crew CV</h3>");
-            results_array.push("<ul class='topcoat-list list' data-role='listview'>");
-            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Name : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.emp_name) + "</span></li>");
-            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Nationality : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.nationality) + "</span></li>");
-            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Rank : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.rank) + "</span></li>");
-            results_array.push("</ul>");            
-            results_array.push("</div>");
-
-            results_array.push("<div class='dashboard_tiles'>");
-            results_array.push("<h3>Experience</h3>");
-            results_array.push("<ul class='topcoat-list list' data-role='listview'>");
-            if (data.SummaryByRanks.SummaryEntity.Rank!=undefined) {
-                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByRanks.SummaryEntity.Rank) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByRanks.SummaryEntity.Duration + "</span></li>");
-                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByVesselTypes.SummaryEntity.VesselType) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByVesselTypes.SummaryEntity.Duration + "</span></li>");
-            }
-            else{
-                for (var i = data.SummaryByRanks.SummaryEntity.length - 1; i >= 0; i--) {
-                    var item = data.SummaryByRanks.SummaryEntity[i];
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.Rank) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
-                };
-                for (var i = data.SummaryByVesselTypes.SummaryEntity.length - 1; i >= 0; i--) {
-                    var item = data.SummaryByVesselTypes.SummaryEntity[i];
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.VesselType) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
-                };
-            };
-            results_array.push("</ul>");
-            results_array.push("</div>");
-
-            results_array.push("<div class='dashboard_tiles'>");
-            results_array.push("<h3>Sea Service with Company</h3>");
-            results_array.push("<table class='crew_table'>");
-            results_array.push("<tr>");
-            results_array.push("<th>Company</th>");
-            results_array.push("<th>Rank</th>");
-            results_array.push("<th class='crew_detail'>Sign-on Date</th>");
-            results_array.push("<th class='crew_detail'>Sign-off Date</th>");
-            results_array.push("<th class='crew_detail'>Veseel</th>");
-            results_array.push("</tr>");
-
-            for (var i = 0; i < data.SeaServiceData.SeaServiceEntity.length; i++) {
-                var dataitem = data.SeaServiceData.SeaServiceEntity[i];
-                results_array.push("<tr class='itemRow'>");
-                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + dataitem.Company + "</span></td>");
-                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
-                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
-                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
-                results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
-                results_array.push("</tr>");
-            };
-            results_array.push("</table>");
-            results_array.push("</div>");
-
-            results_array.push("<div class='dashboard_tiles'>");
-            results_array.push("<h3>Sea Service with Other Companies</h3>");            
-            results_array.push("<table class='crew_table'>");
-            results_array.push("<tr>");
-            results_array.push("<th>Company</th>");
-            results_array.push("<th>Rank</th>");
-            results_array.push("<th class='crew_detail'>Sign-on Date</th>");
-            results_array.push("<th class='crew_detail'>Sign-off Date</th>");
-            results_array.push("<th class='crew_detail'>Veseel</th>");
-            results_array.push("</tr>");
-
-            for (var i = 0; i < data.SeaServiceOtherData.SeaServiceEntity.length; i++) {
-                var dataitem = data.SeaServiceOtherData.SeaServiceEntity[i];
-                results_array.push("<tr class='itemRow'>");
-                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Company) + "</span></td>");
-                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
-                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
-                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
-                results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
-                results_array.push("</tr>");
-            };
-            results_array.push("</table>");
-            results_array.push("</div>");
-
-            $('#crew_cv').html(results_array.join(""));
-            $('#crew_cv').show();
-            $('#btnBack').show();
-
-            step_back = function(){
-                // hide_all();
-                // $('#dashboard').show();
-                // $('html, body').animate({scrollTop: $('#crew_tile').offset().top-55}, 'slow');
-                window.location.href = "#back_crewcv"
-            };
-
-            // $('.crew_list_view').listview();
-            // $('.crew_table').table({ defaults: true });
-
-            $('.itemRow').click(function() {
-                $(this).closest('table').find('.temp_tr').remove();
-                var results_array = new Array();
-                results_array.push('<tr class="temp_tr">');
-                results_array.push('<td colspan="100%">');
-                results_array.push('<div>');
-                results_array.push('<ul class="topcoat-list list">');
-                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Vessel : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(4)').html() + "</span></li>");
-                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Sign-on Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
-                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Sign-off Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
-                results_array.push('</ul>');
-                results_array.push('</div>');
-                results_array.push('</td>');
-                results_array.push('</tr>');
-                $(this).after(results_array.join(""));
-                // $('.temp_ul').listview();
-                // alert($(this).find('td:eq(0)').html());
-            });
-
-            $('.crew_detail').hide();
-        },
-        error: function() {        
-            alert('Please try again in a minute.');
-            hide_spinner();            
-        }
-    });
 }
 
 /*-----Start Bing Map-------*/
@@ -937,8 +805,8 @@ function plot_vessel_track(current_position_lat_lon,previous_positions_lat_lon) 
 /******************************End Vessel path*********************************************/
 
 function show_spinner() {
-        $(".spinner_index").css('display','inline');
-        $(".spinner_index").center();
+    $(".spinner_index").css('display','inline');
+    $(".spinner_index").center();
 }
 
 function hide_spinner() {
@@ -990,6 +858,7 @@ function owner_vessel_pms_selected(){
     }
 
     var selected_vessel = document.getElementById("sel_owner_vessel_pms").value;
+    selected_vessel_id = selected_vessel;
     $.ajax({
         url: 'get_owner_pms.php?' + 
         "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel + "&app_id=" + cwa_app_id,
@@ -1230,6 +1099,223 @@ function create_maintenance_analysis_chart(data){
             labels: {
                 font: "10px Arial,Helvetica,sans-serif"
             }
+        }
+    });
+}
+
+function show_crew_list(){
+    hide_all();
+
+    var results_array = new Array();
+
+    results_array.push("<select class='topcoat-select' id='sel_owner_vessel_crew' onchange='owner_vessel_crew_selected()'>");
+    results_array.push("<option value='-1'>Select Vessel</option>");
+    for (var i = 0; i < owner_vessels.length; i++) {
+        results_array.push("<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>");
+    };
+    results_array.push("</select>");
+
+    results_array.push("<div class='dashboard_tiles' id='crew_tile'>");
+    results_array.push("<h3 style='text-align: center;'>Crew List</h3>");
+    results_array.push("<div id='crew_list' style='padding:10px;' class='my-navbar-content'>");
+    results_array.push("</div></div>");
+
+    $('#crew').html(results_array.join(""));
+
+    $('#crew_tile').hide();
+    $('#crew').show();
+    // $('#sel_owner_vessel_crew').selectmenu();
+
+    if(selected_vessel_id>0){    
+        $('#sel_owner_vessel_crew').val(selected_vessel_id);
+        // $('#sel_owner_vessel_crew').selectmenu('refresh', true);
+        owner_vessel_crew_selected();
+    }
+}
+
+function owner_vessel_crew_selected (argument) {
+    var show_maintenance_analysis = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Maintenance Analysis'});
+
+    if(show_maintenance_analysis.length == 0){
+        return;
+    }
+
+    var selected_vessel = document.getElementById("sel_owner_vessel_crew").value;
+    selected_vessel_id = selected_vessel;
+    $.ajax({
+        url: 'get_vessel_crew_list.php?' + 
+        "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel,
+        datatype: 'text',
+        beforeSend: function() {
+            show_spinner();
+        },
+        success: function(data){            
+            hide_spinner();
+
+            $('#crew_tile').show();
+
+            var crew_array = new Array();
+            owner_crew = data["crew_list"];
+
+            crew_array.push("<ul id='ol_crew_list' class='topcoat-list list'>");
+            for (var i = 0; i < data["crew_list"].length; i++) {
+                var dataitem = data["crew_list"][i];
+                crew_array.push("<li class='topcoat-list__item'>");
+                crew_array.push("<a href='#crew_cv/"+ dataitem.emp_id +"'>" +
+                    "<div class='dashboard-list'> " +
+                    "<span class='li-data-list-small'>" + toTitleCase(dataitem.rank) + "</span>" + 
+                    " - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> " + 
+                    "(" + toTitleCase(dataitem.nationality) + ")</span><span class='chevron'></div></a>");
+                crew_array.push("</li>");
+            };
+            crew_array.push("</ul>");
+            $('#crew_list').html(crew_array.join(""));
+
+        },
+        error: function() {        
+            alert('Please try again in a minute.');
+            hide_spinner();            
+        }
+    });
+}
+
+
+function show_crew_cv (emp_id) {
+    $.ajax({
+        url: 'get_crew_cv.php?' + 
+        "emp_id=" + emp_id,
+        datatype: 'text',
+        beforeSend: function() {
+            show_spinner();
+        },
+        success: function(data){            
+            hide_spinner();
+            // $('html, body').animate({scrollTop: $('#crew_tile').offset().top-80}, 'slow');
+            data = data.crew_cv;
+
+            $('#crew').hide();
+            $('body').scrollTop(0);
+            var selected_crew = $.grep(owner_crew , function(e){ return e.emp_id == emp_id; })[0];
+
+            var results_array = new Array();
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<h3>Crew CV</h3>");
+            results_array.push("<ul class='topcoat-list list' data-role='listview'>");
+            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Name : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.emp_name) + "</span></li>");
+            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Nationality : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.nationality) + "</span></li>");
+            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Rank : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.rank) + "</span></li>");
+            results_array.push("</ul>");            
+            results_array.push("</div>");
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<h3>Experience</h3>");
+            results_array.push("<ul class='topcoat-list list' data-role='listview'>");
+            if (data.SummaryByRanks.SummaryEntity.Rank!=undefined) {
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByRanks.SummaryEntity.Rank) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByRanks.SummaryEntity.Duration + "</span></li>");
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByVesselTypes.SummaryEntity.VesselType) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByVesselTypes.SummaryEntity.Duration + "</span></li>");
+            }
+            else{
+                for (var i = data.SummaryByRanks.SummaryEntity.length - 1; i >= 0; i--) {
+                    var item = data.SummaryByRanks.SummaryEntity[i];
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.Rank) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
+                };
+                for (var i = data.SummaryByVesselTypes.SummaryEntity.length - 1; i >= 0; i--) {
+                    var item = data.SummaryByVesselTypes.SummaryEntity[i];
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.VesselType) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
+                };
+            };
+            results_array.push("</ul>");
+            results_array.push("</div>");
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<h3>Sea Service with Company</h3>");
+            results_array.push("<table class='crew_table'>");
+            results_array.push("<tr>");
+            results_array.push("<th>Company</th>");
+            results_array.push("<th>Rank</th>");
+            results_array.push("<th class='crew_detail'>Sign-on Date</th>");
+            results_array.push("<th class='crew_detail'>Sign-off Date</th>");
+            results_array.push("<th class='crew_detail'>Veseel</th>");
+            results_array.push("</tr>");
+
+            for (var i = 0; i < data.SeaServiceData.SeaServiceEntity.length; i++) {
+                var dataitem = data.SeaServiceData.SeaServiceEntity[i];
+                results_array.push("<tr class='itemRow'>");
+                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + dataitem.Company + "</span></td>");
+                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
+                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
+                results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                results_array.push("</tr>");
+            };
+            results_array.push("</table>");
+            results_array.push("</div>");
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<h3>Sea Service with Other Companies</h3>");            
+            results_array.push("<table class='crew_table'>");
+            results_array.push("<tr>");
+            results_array.push("<th>Company</th>");
+            results_array.push("<th>Rank</th>");
+            results_array.push("<th class='crew_detail'>Sign-on Date</th>");
+            results_array.push("<th class='crew_detail'>Sign-off Date</th>");
+            results_array.push("<th class='crew_detail'>Veseel</th>");
+            results_array.push("</tr>");
+
+            for (var i = 0; i < data.SeaServiceOtherData.SeaServiceEntity.length; i++) {
+                var dataitem = data.SeaServiceOtherData.SeaServiceEntity[i];
+                results_array.push("<tr class='itemRow'>");
+                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Company) + "</span></td>");
+                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
+                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
+                results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                results_array.push("</tr>");
+            };
+            results_array.push("</table>");
+            results_array.push("</div>");
+
+            $('#crew_cv').html(results_array.join(""));
+            $('#crew_cv').show();
+            $('#btnBack').show();
+
+            step_back = function(){
+                // hide_all();
+                // $('#dashboard').show();
+                // $('html, body').animate({scrollTop: $('#crew_tile').offset().top-55}, 'slow');
+                window.location.href = "#back_crewcv"
+            };
+
+            // $('.crew_list_view').listview();
+            // $('.crew_table').table({ defaults: true });
+
+            $('.itemRow').click(function() {
+                $(this).closest('table').find('.temp_tr').remove();
+                var results_array = new Array();
+                results_array.push('<tr class="temp_tr">');
+                results_array.push('<td colspan="100%">');
+                results_array.push('<div>');
+                results_array.push('<ul class="topcoat-list list">');
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Vessel : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(4)').html() + "</span></li>");
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Sign-on Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Sign-off Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
+                results_array.push('</ul>');
+                results_array.push('</div>');
+                results_array.push('</td>');
+                results_array.push('</tr>');
+                $(this).after(results_array.join(""));
+                // $('.temp_ul').listview();
+                // alert($(this).find('td:eq(0)').html());
+            });
+
+            $('.crew_detail').hide();
+        },
+        error: function() {        
+            alert('Please try again in a minute.');
+            hide_spinner();            
         }
     });
 }

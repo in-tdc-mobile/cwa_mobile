@@ -3555,7 +3555,7 @@ body {
 }
 
 .topcoat-icon--menu-stack {
-  background: url("../img/hamburger_dark.svg") no-repeat;
+  background: url("../img/hamburger_light.svg") no-repeat;
   background-size: cover;
 }
 
