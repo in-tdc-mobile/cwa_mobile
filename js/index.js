@@ -101,8 +101,16 @@ function hide_all() {
     if($("#contentLayer:visible").length>0){
         $('#contentLayer').trigger('click');
     }
+    // if($( "#container" ).hasClass( "opened" )){
+    //     var container = document.querySelector('#container');
+    //     var slidemenu = document.querySelector('#sidemenu');
+    //     var content = document.querySelector('#content');
+    //     container.classList.toggle('opened');
+    //     slidemenu.classList.toggle('sidemenu--opened');
+    //     content.style.height = "auto";
+    // }
     $('#btnBack').hide();
-    $('#navbar').hide();
+    // $('#navbar').hide();
     hide_spinner();
     $('#index_content').hide();
     $('#ajax_error').hide();
@@ -114,10 +122,37 @@ function hide_all() {
     $('body').scrollTop(0);
 }
 
+// var slider = new PageSlider($("#container"));
+$(window).on('hashchange', route);
+
+// Basic page routing
+function route(event) {
+    var page,
+        hash = window.location.hash.split('/')[0];
+
+    if (hash === "#pms") {
+        show_pms();
+    } else if (hash === "#crew_cv") {
+        show_crew_cv(window.location.hash.split('/')[1]);
+    } else if (hash === "#back_crewcv") {
+        hide_all();
+        $('#dashboard').show();
+        // $('html, body').animate({scrollTop: $('#crew_tile').position().top-50}, 'slow');
+        $('body').scrollTop(0);
+    }
+    else {
+        page = show_owners();
+    }
+
+    // slider.slidePage($(page));
+
+}
+
 var step_back = function() {};
 
 var current_step = function() {};
 
+var temp;
 var pal_user_id;
 var cwa_app_id;
 var pal_user_name;
@@ -135,21 +170,21 @@ window.addEventListener('load', function () {
     FastClick.attach(document.body);
 }, false);
 
-$(document).ready(function() {    
-    var menuBtn = document.querySelector('#hamburger-btn');
-    var container = document.querySelector('#container');
-    var slidemenu = document.querySelector('#sidemenu');
-    var content = document.querySelector('#content');
+$(document).ready(function() {
+    // var menuBtn = document.querySelector('#hamburger-btn');
+    // var container = document.querySelector('#container');
+    // // var slidemenu = document.querySelector('#sidemenu');
+    // // var content = document.querySelector('#content');
 
-    menuBtn.addEventListener('click', showSidemenu, false);
+    // menuBtn.addEventListener('click', showSidemenu, false);
 
-    function showSidemenu () {
-      container.classList.toggle('opened');
-      slidemenu.classList.toggle('sidemenu--opened');
-      content.style.height = "auto";
-      // $('#container').resize();
+    // function showSidemenu () {
+    //   container.classList.toggle('opened');
+    //   // slidemenu.classList.toggle('sidemenu--opened');
+    //   // content.style.height = "auto";
+    //   // $('#container').resize();
       
-    }
+    // }
     try{
         pal_user_name = $.jStorage.get("pal_user_name");
         // $.jStorage.set("pal_user_email", '');
@@ -344,7 +379,7 @@ function show_dashboard(owner_id){
     }
 
 }
-var temp;
+
 function owner_vessel_selected(){
     var selected_vessel = document.getElementById("sel_owner_vessel").value;
     if(selected_vessel > 0){
@@ -413,7 +448,7 @@ function owner_vessel_selected(){
             for (var i = 0; i < data["crew_list"].length; i++) {
                 dataitem = data["crew_list"][i];
                 crew_array.push("<li class='topcoat-list__item'>");
-                crew_array.push("<a href='javascript:show_crew_cv("+ dataitem.emp_id +")'>" +
+                crew_array.push("<a href='#crew_cv/"+ dataitem.emp_id +"'>" +
                     "<span class='dashboard-list'> " +
                     "<span class='li-data-list-small'>" + toTitleCase(dataitem.rank) + "</span>" + 
                     " - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> " + 
@@ -529,11 +564,11 @@ function show_crew_cv (emp_id) {
         },
         success: function(data){            
             hide_spinner();
-            $('body').scrollTop(0);
-            temp = data;
+            // $('html, body').animate({scrollTop: $('#crew_tile').offset().top-80}, 'slow');
             data = data.crew_cv;
 
-             $('#dashboard').hide();
+            $('#dashboard').hide();
+            $('body').scrollTop(0);
             var selected_crew = $.grep(owner_crew , function(e){ return e.emp_id == emp_id; })[0];
 
             var results_array = new Array();
@@ -550,8 +585,20 @@ function show_crew_cv (emp_id) {
             results_array.push("<div class='dashboard_tiles'>");
             results_array.push("<h3>Experience</h3>");
             results_array.push("<ul class='topcoat-list list' data-role='listview'>");
-            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByRanks.SummaryEntity.Rank) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByRanks.SummaryEntity.Duration + "</span></li>");
-            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByVesselTypes.SummaryEntity.VesselType) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByVesselTypes.SummaryEntity.Duration + "</span></li>");
+            if (data.SummaryByRanks.SummaryEntity.Rank!=undefined) {
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByRanks.SummaryEntity.Rank) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByRanks.SummaryEntity.Duration + "</span></li>");
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByVesselTypes.SummaryEntity.VesselType) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByVesselTypes.SummaryEntity.Duration + "</span></li>");
+            }
+            else{
+                for (var i = data.SummaryByRanks.SummaryEntity.length - 1; i >= 0; i--) {
+                    var item = data.SummaryByRanks.SummaryEntity[i];
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.Rank) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
+                };
+                for (var i = data.SummaryByVesselTypes.SummaryEntity.length - 1; i >= 0; i--) {
+                    var item = data.SummaryByVesselTypes.SummaryEntity[i];
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.VesselType) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
+                };
+            };
             results_array.push("</ul>");
             results_array.push("</div>");
 
@@ -610,9 +657,10 @@ function show_crew_cv (emp_id) {
             $('#btnBack').show();
 
             step_back = function(){
-                hide_all();
-                $('#dashboard').show();
-                $('html, body').animate({scrollTop: $('#crew_tile').offset().top-55}, 'slow');
+                // hide_all();
+                // $('#dashboard').show();
+                // $('html, body').animate({scrollTop: $('#crew_tile').offset().top-55}, 'slow');
+                window.location.href = "#back_crewcv"
             };
 
             // $('.crew_list_view').listview();
@@ -928,7 +976,7 @@ function show_pms(){
 
     if(selected_vessel_id>0){    
         $('#sel_owner_vessel_pms').val(selected_vessel_id);
-        $('#sel_owner_vessel_pms').selectmenu('refresh', true);
+        // $('#sel_owner_vessel_pms').selectmenu('refresh', true);
         owner_vessel_pms_selected();
     }
     
