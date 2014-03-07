@@ -401,10 +401,12 @@ a {
 }
 
 .opened {
-  -webkit-transform: translateX(-70%);
+  transform: translateX(-70%);
+  -webkit-transition: translateX(-70%);
 }
 
 .sidemenu--opened{
+  display: block !important;
   z-index: 1 !important;
 }
 

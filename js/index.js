@@ -98,17 +98,17 @@ Number.prototype.formatMoney = function(c, d, t){
 $('#hamburger').hide();
 
 function hide_all() {    
-    if($("#contentLayer:visible").length>0){
-        $('#contentLayer').trigger('click');
-    }
-    // if($( "#container" ).hasClass( "opened" )){
-    //     var container = document.querySelector('#container');
-    //     var slidemenu = document.querySelector('#sidemenu');
-    //     var content = document.querySelector('#content');
-    //     container.classList.toggle('opened');
-    //     slidemenu.classList.toggle('sidemenu--opened');
-    //     content.style.height = "auto";
+    // if($("#contentLayer:visible").length>0){
+    //     $('#contentLayer').trigger('click');
     // }
+    if($( "#container" ).hasClass( "opened" )){
+        var container = document.querySelector('#container');
+        var slidemenu = document.querySelector('#sidemenu');
+        var content = document.querySelector('#content');
+        container.classList.toggle('opened');
+        slidemenu.classList.toggle('sidemenu--opened');
+        content.style.height = "auto";
+    }
     $('#btnBack').hide();
     // $('#navbar').hide();
     hide_spinner();
@@ -171,20 +171,20 @@ window.addEventListener('load', function () {
 }, false);
 
 $(document).ready(function() {
-    // var menuBtn = document.querySelector('#hamburger-btn');
-    // var container = document.querySelector('#container');
-    // // var slidemenu = document.querySelector('#sidemenu');
-    // // var content = document.querySelector('#content');
+    var menuBtn = document.querySelector('#hamburger-btn');
+    var container = document.querySelector('#container');
+    var slidemenu = document.querySelector('#sidemenu');
+    var content = document.querySelector('#content');
 
-    // menuBtn.addEventListener('click', showSidemenu, false);
+    menuBtn.addEventListener('click', showSidemenu, false);
 
-    // function showSidemenu () {
-    //   container.classList.toggle('opened');
-    //   // slidemenu.classList.toggle('sidemenu--opened');
-    //   // content.style.height = "auto";
-    //   // $('#container').resize();
+    function showSidemenu () {
+      container.classList.toggle('opened');
+      slidemenu.classList.toggle('sidemenu--opened');
+      content.style.height = "auto";
+      $('#container').resize();
       
-    // }
+    }
     try{
         pal_user_name = $.jStorage.get("pal_user_name");
         // $.jStorage.set("pal_user_email", '');

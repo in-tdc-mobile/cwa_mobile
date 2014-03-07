@@ -6,6 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="CWA Mobile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title></title>
 
   <link href="kendo-styles/kendoui.common.min.css" rel="stylesheet" />
@@ -34,8 +35,8 @@
   <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true&libraries=weather"></script>
   <script src="js/jquery-1.9.0.min.js"></script>
   <!-- <script src="js/jquery.mobile-1.3.1.min.js"></script> -->
-  <script src="js/jquery-ui-1.10/jquery-ui-1.10.4.custom.js"></script>
-  <script src="js/hamburger.js"></script>
+  <!-- // <script src="js/jquery-ui-1.10/jquery-ui-1.10.4.custom.js"></script> -->
+  <!-- // <script src="js/hamburger.js"></script> -->
   
   <!-- <script src="js/pageslider.js"></script> -->
   <script src="kendo-js/kendo.all.min.js"></script>
@@ -66,16 +67,17 @@
       </li>
     </ul>  
   </div> -->
-  <nav class="mobileNav">
-    <ul>
-        <li><a href="#">Dashboard</a></li>
-        <li><a href="#pms">PMS/Purchase</a></li>
-        <li><a href="#">Help</a></li>
-        <li><a href="#">Contact Us</a></li>
-        <li><a href="#">Log Out</a></li>
-    </ul>
-  </nav>
-
+  <div id="sidemenu" style="display:none">
+    <nav class="mobileNav">
+      <ul>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#pms">PMS/Purchase</a></li>
+          <li><a href="#">Help</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Log Out</a></li>
+      </ul>
+    </nav>
+  </div>
 <div id="container" class='smooth full-height'>
   <div class="topcoat-navigation-bar on-top header">
     <div class="topcoat-navigation-bar__item left quarter">
@@ -98,7 +100,7 @@
       </span>
     </div>
   </div>
-  <div id="contentLayer"></div>
+  <!-- <div id="contentLayer"></div> -->
   <div id="content" class='content on-top scroller'>
     <div class='error' id='ajax_error' style="display: none;margin: 0px;font-style: italic;font-size: 14px;color: rgb(146,146,146);padding: 20px;"> 
       Sorry, there was a temporary error. Please try again in a minute.<br/>-vidya.sagar@bs-shipmanagement.com
@@ -117,7 +119,8 @@
           </div>
         </div>
         <!-- <a class="button-main button-block" id='login_submit'>Sign In</a> -->
-        <input class="topcoat-button" type="submit" value="Sign In" id='login_submit'/>
+        <!-- <input class="topcoat-button" type="submit" value="Sign In" id='login_submit'/> -->
+        <button class="topcoat-button" type="submit">Sign In</button>
       </form>
     </div>
     <div id="index_content" style="display: block;">
