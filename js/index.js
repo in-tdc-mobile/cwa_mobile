@@ -17,7 +17,6 @@
  * under the License.
  */
 "use strict";
-
 var vessel_markers_with_imo = new Array();
 var vessel_markers = new Array();
 var markerCluster;
@@ -128,6 +127,11 @@ function hide_all() {
 
 // var slider = new PageSlider($("#container"));
 $(window).on('hashchange', route);
+$(window).on('load', route_to_dashboard);
+
+function route_to_dashboard (event) {
+    window.location.replace("#");
+}
 
 // Basic page routing
 function route(event) {
@@ -149,7 +153,6 @@ function route(event) {
     else {
         page = show_owners();
     }
-
     // slider.slidePage($(page));
 
 }
@@ -386,6 +389,12 @@ function show_dashboard(owner_id){
         $('#vsltrk_tile').hide();
     }
 
+    if(selected_vessel_id>0){    
+        $('#sel_owner_vessel').val(selected_vessel_id);
+        // $('#sel_owner_vessel_crew').selectmenu('refresh', true);
+        owner_vessel_selected();
+    }
+
 }
 
 function owner_vessel_selected(){
@@ -488,6 +497,7 @@ function owner_vessel_selected(){
                         // GetMap();
                         //var loc = new google.maps.LatLng(vessel_location[i].latitude, vessel_location[i].longitude);
                         var marker = create_marker(vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].highlight)
+                        temp = vessel_location[i];
                         popup_data(marker, vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree);
                     }
                 };
@@ -526,7 +536,8 @@ function createNoonChart(chartDs, dates) {
         },
         seriesDefaults: {
             type: "line",
-            style: "smooth"
+            style: "smooth",
+            highlight: {visible:false}
         },
         series: chartDs,
         valueAxis: {
@@ -551,7 +562,7 @@ function createNoonChart(chartDs, dates) {
                 }
             },
             tooltip: {
-                visible: true,
+                visible: false,
                 template: "<span style='color:white'>#= series.name #: #= value #</span>"
             },
             axisDefaults: {
@@ -570,8 +581,9 @@ function GetMap() {
     map = new google.maps.Map(document.getElementById('trackerMap'), {
       zoom: 2,
       center: new google.maps.LatLng(20,20),
-      mapTypeId: google.maps.MapTypeId.HYBRID,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
       labels: true,
+      disableDefaultUI: true,   
     });
 }
 
@@ -601,9 +613,18 @@ function create_marker(name, latitude, longitude, speed, datetime, imo, degree, 
             markerCluster.clearMarkers();
         }
         markerCluster = new MarkerClusterer(map, vessel_markers, mcOptions);*/
-    } else {
+    } else { 
         marker = new google.maps.Marker({
             position: new google.maps.LatLng(latitude, longitude),
+            icon: {
+                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                scale: 4,
+                fillColor: "red",
+                fillOpacity: 1,
+                flat: true,
+                strokeWeight: 2,
+                rotation: degree //this is how to rotate the pointer
+            },
             title: name,
             size: new google.maps.Size(10, 10),
         });
@@ -627,7 +648,8 @@ function show_popup_at_marker(marker, name, latitude, longitude, speed, datetime
 
 function popup_data(marker, name, latitude, longitude, speed, datetime, imo, degree) {
     var content = "<h2><b>" + name + "</b></h2>" ;
-    content += "<b>Lag / Log: </b>"+prsflt(latitude)+"/"+prsflt(longitude)+"("+datetime+")<br/> <b>Speed / Course: </b>"+speed+"<br/>";
+    content += "<b>Lag / Log: </b>"+prsflt(latitude)+"/"+prsflt(longitude)+"<br/> <b>Speed / Course: </b>"+datetime+"<br/>";
+    // content += "<b>Lag / Log: </b>"+prsflt(latitude)+"/"+prsflt(longitude)+"("+datetime+")<br/> <b>Speed / Course: </b>"+speed+"<br/>";
     content +='<span class="popup_label"><button onclick="show_vessel_path('+imo+','+degree+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>';
         //html = "<div class='star'><a class='star_a' id='"+ description[4] +"' href='javascript:void(0)' onclick='add_bookmark(this.id);'><img src='img/star.png' class='star_i' id='i_"+ description[4] +"' width=25 height=25 /></a></div>";
 /*        html += '<span class="popup_label"><button onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana;padding:5px;" title="vessel wiki">Additional Details</button></span>';
@@ -691,13 +713,13 @@ function get_imo( ownerMode) {
         for (var i = 0; i < data.length; i++) {
             var lat_lon = parse_lat_lon(data[i]);
             create_marker(data[i]['asset-name'], lat_lon['lat'], lat_lon['lon'], 
-                      prsflt(data[i]['speed-value-of-value'])+data[i]['speed-units-of-value'], 
-                      prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase() + ", " + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
+                      prsflt(data[i]['speed-value-of-value']) + data[i]['speed-units-of-value'], 
+                      prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase() + "/" + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
                       data[i]['i-m-o-number'], data[i]['heading-value-of-value'], false);
 
             dat.push(new DataModel(data[i]['asset-name'], lat_lon['lat'], lat_lon['lon'], 
                       prsflt(data[i]['speed-value-of-value'])+data[i]['speed-units-of-value'], 
-                      prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase() + ", " + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
+                      prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase() + "/" + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
                       data[i]['i-m-o-number'], data[i]['heading-value-of-value'], false));
             vessel_location = dat;
         }
@@ -746,7 +768,7 @@ var DataModel = function (name, latitude, longitude, speed, datetime, imo, degre
   this.latitude = latitude;
   this.longitude = longitude;
   this.speed = speed;
-  this.datetime = datetime;
+  this.datetime = datetime; //here datetime is combo of speed and course
   this.imo = imo;
   this.highlight = highlight;
   this.degree = degree;

@@ -237,7 +237,8 @@ h1 {
     font-size: 15px;
 }
 
-#content h3{
+#content h3,
+#content h2{
     -webkit-margin-before: 0em;
     -webkit-margin-after: 0.3em;
     -webkit-margin-start: 0px;
