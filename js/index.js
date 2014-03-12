@@ -529,6 +529,8 @@ function owner_vessel_selected(){
     });
 
     } else {
+         $('#accordion').html("")
+        //$('#dashboard_tiles').html(results_div);
         if(show_vessel_tracker.length > 0){
             GetMap();
             RequestData("O");
