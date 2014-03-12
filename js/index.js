@@ -495,22 +495,23 @@ function owner_vessel_selected(){
                 for (var i = 0; i < vessel_location.length; i++) {
                     if(vessel_location[i].Name.split('(')[0].toLowerCase() == $('#sel_owner_vessel option:selected').text().toLowerCase()){
 
-                        map = new Microsoft.Maps.Map(document.getElementById("trackerMap"), { credentials: "AvOyltb0YAu_Ldagk8wP_XiQQGfXkHo5rlWlLs-mIpsB3Gcvt87UC-BIZdgc3QbL",
-                                                         showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });
+                        /*map = new Microsoft.Maps.Map(document.getElementById("trackerMap"), { credentials: "AvOyltb0YAu_Ldagk8wP_XiQQGfXkHo5rlWlLs-mIpsB3Gcvt87UC-BIZdgc3QbL",
+                                                         showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });*/
                         var pushpin = new Microsoft.Maps.Pushpin(map.getCenter(), { text: '' });
                         pushpin.setLocation(new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude));
-                         pushpin.title =  vessel_location[i].Name;
+                        pushpin.title =  vessel_location[i].Name;
                         pushpin.description = [vessel_location[i].latitude,vessel_location[i].longitude,vessel_location[i].datetime,vessel_location[i].speed,vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].eta, vessel_location[i].destination];
+                        
                         var infoboxLayer = new Microsoft.Maps.EntityCollection();
-
-                            infobox = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0, 0), { 
-                              visible: false, offset: new Microsoft.Maps.Point(0,15) 
-                            });
-                            infoboxLayer.push(infobox);
-                            map.entities.push(infoboxLayer);
+                        infobox = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0, 0), { 
+                          visible: false, offset: new Microsoft.Maps.Point(0,15) 
+                        });
+                        infoboxLayer.push(infobox);
+                        map.entities.push(infoboxLayer);
                             
-                        Microsoft.Maps.Events.addHandler(pushpin, 'click', displayEventInfo);
+                        
                         map.entities.push(pushpin); 
+                        Microsoft.Maps.Events.addHandler(pushpin, 'click', displayEventInfo);
                         map.setView({ center: new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude), zoom  : 2});
                         /*var marker = create_marker(vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].highlight)
                         temp = vessel_location[i];
@@ -630,7 +631,6 @@ function createPin(data, clusterInfo) {
     //Add handler for the pushpin click event.
 
     Microsoft.Maps.Events.addHandler(pin, 'click', displayEventInfo);
-
     return pin;
 }
 
@@ -670,17 +670,15 @@ function RequestDataCallback(response) {
 }
 
 function displayEventClusterInfo(e) {
+    var z = map.getZoom()+3;
     if (e.targetType == "pushpin") {
         var loc = e.target.getLocation();
-
-        map.setView({zoom:5, center: loc});
-
+        map.setView({zoom:z, center: loc});
     }
 }
 
 function displayEventInfo(e) { 
-   
-
+    closeInfobox();
     var pin = e.target;
     var description = pin.description;
     var html_array = new Array();
@@ -704,6 +702,7 @@ function displayEventInfo(e) {
             htmlContent: pushpinFrameHTML.replace('{content}', html_array.join(""))
         });
     }
+     show_vessel_dashbord(pin.title);
 }
 
 function show_vessel_dashbord(name){
@@ -720,11 +719,11 @@ function show_vessel_dashbord(name){
 }
 
 function closeInfobox() {
-  infobox.setOptions({ visible: false });
+  $(".infobox").hide();
 }
 
 function hideInfobox(e) {
-  infobox.setOptions({ visible: false });
+  $(".infobox").hide();
 }
 
 /*-----Start Map Dataload---------*/
