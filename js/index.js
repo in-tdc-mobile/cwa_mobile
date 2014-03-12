@@ -383,7 +383,7 @@ function show_dashboard(owner_id){
     show_vessel_tracker = $.grep(dashboard_settings , function(e){ return e.code == 'VSLTRK'; });
     if(show_vessel_tracker.length > 0){
         GetMap();
-        get_imo("O");
+        RequestData("O");
     }
     else{
         $('#vsltrk_tile').hide();
@@ -494,11 +494,27 @@ function owner_vessel_selected(){
             if(show_vessel_tracker.length > 0){
                 for (var i = 0; i < vessel_location.length; i++) {
                     if(vessel_location[i].Name.split('(')[0].toLowerCase() == $('#sel_owner_vessel option:selected').text().toLowerCase()){
-                        // GetMap();
-                        //var loc = new google.maps.LatLng(vessel_location[i].latitude, vessel_location[i].longitude);
-                        var marker = create_marker(vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].highlight)
+
+                        map = new Microsoft.Maps.Map(document.getElementById("trackerMap"), { credentials: "AvOyltb0YAu_Ldagk8wP_XiQQGfXkHo5rlWlLs-mIpsB3Gcvt87UC-BIZdgc3QbL",
+                                                         showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });
+                        var pushpin = new Microsoft.Maps.Pushpin(map.getCenter(), { text: '' });
+                        pushpin.setLocation(new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude));
+                         pushpin.title =  vessel_location[i].Name;
+                        pushpin.description = [vessel_location[i].latitude,vessel_location[i].longitude,vessel_location[i].datetime,vessel_location[i].speed,vessel_location[i].imo, vessel_location[i].eta, vessel_location[i].port];
+                        var infoboxLayer = new Microsoft.Maps.EntityCollection();
+
+                            infobox = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0, 0), { 
+                              visible: false, offset: new Microsoft.Maps.Point(0,15) 
+                            });
+                            infoboxLayer.push(infobox);
+                            map.entities.push(infoboxLayer);
+                            
+                        Microsoft.Maps.Events.addHandler(pushpin, 'click', displayEventInfo);
+                        map.entities.push(pushpin); 
+                        map.setView({ center: new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude), zoom  : 2});
+                        /*var marker = create_marker(vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].highlight)
                         temp = vessel_location[i];
-                        popup_data(marker, vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree);
+                        popup_data(marker, vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree);*/
                     }
                 };
             }
@@ -518,7 +534,7 @@ function owner_vessel_selected(){
         $('#dashboard_tiles').html(results_div);
         if(show_vessel_tracker.length > 0){
             GetMap();
-            get_imo("O");
+            RequestData("O");
         }
     }
 }
@@ -576,96 +592,120 @@ function createNoonChart(chartDs, dates) {
 /*-----Start Bing Map-------*/
 
 var map, myLayer, infobox;
+var pushpinFrameHTML = '<div class="infobox"><a class="infobox_close" href="javascript:closeInfobox()"><img src="./img/close-icon.png"/></a><div class="infobox_content">{content}</div></div>';
 
-function GetMap() {
-    map = new google.maps.Map(document.getElementById('trackerMap'), {
-      zoom: 2,
-      center: new google.maps.LatLng(20,20),
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-      labels: true,
-      disableDefaultUI: true,   
-    });
+
+function GetMap() { 
+    map = new Microsoft.Maps.Map(document.getElementById("trackerMap"), { credentials: "AvOyltb0YAu_Ldagk8wP_XiQQGfXkHo5rlWlLs-mIpsB3Gcvt87UC-BIZdgc3QbL",
+    showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });
+
+    //Register and load the Point Based Clustering Module
+    Microsoft.Maps.registerModule("PointBasedClusteringModule", "scripts/PointBasedClustering.js");
+    Microsoft.Maps.loadModule("PointBasedClusteringModule", { callback: function () {
+      myLayer = new PointBasedClusteredEntityCollection(map, {
+        singlePinCallback: createPin,
+        clusteredPinCallback: createClusteredPin
+      });
+
+            //Add infobox layer that is above the clustered layers.
+            var infoboxLayer = new Microsoft.Maps.EntityCollection();
+            infobox = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0, 0), { 
+              visible: false, offset: new Microsoft.Maps.Point(0,15) 
+            });
+            infoboxLayer.push(infobox);
+            map.entities.push(infoboxLayer);
+            map.setView({zoom:2});
+          }
+        });
+
+    //Define custom properties for the pushpin class (this is needed for the infobox and not the clustering) 
+    Microsoft.Maps.Pushpin.prototype.title = null;
+    Microsoft.Maps.Pushpin.prototype.description = null;
 }
 
-function create_marker(name, latitude, longitude, speed, datetime, imo, degree, highlight){
-    var marker;
-    if (highlight) {
-        marker_highlighted = true;
-        marker = new google.maps.Marker({
-            position: new google.maps.LatLng(latitude, longitude),
-            icon: {
-                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                scale: 4,
-                fillColor: "red",
-                fillOpacity: 1,
-                flat: true,
-                strokeWeight: 2,
-                rotation: degrees //this is how to rotate the pointer
-            },
-            map: map,
-            title: name,
-            size: new google.maps.Size(10, 10),
-        });
-        path_vessel_imo = imo;
-        
-        /*vessel_markers.push(marker);
-        if (markerCluster) {
-            markerCluster.clearMarkers();
-        }
-        markerCluster = new MarkerClusterer(map, vessel_markers, mcOptions);*/
-    } else { 
-        marker = new google.maps.Marker({
-            position: new google.maps.LatLng(latitude, longitude),
-            icon: {
-                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                scale: 4,
-                fillColor: "red",
-                fillOpacity: 1,
-                flat: true,
-                strokeWeight: 2,
-                rotation: degree //this is how to rotate the pointer
-            },
-            title: name,
-            size: new google.maps.Size(10, 10),
+function createPin(data, clusterInfo) {
+    var pin = new Microsoft.Maps.Pushpin(clusterInfo.center);
+
+    pin.title =  data.Name;
+    pin.description = [data.latitude,data.longitude,data.datetime,data.speed,data.imo, data.eta, data.port];//data.latitude+"@/"+data.longitude+"@/"+data.datetime+"@/"+data.speed+"@/"+data.imo;
+    //Add handler for the pushpin click event.
+
+    Microsoft.Maps.Events.addHandler(pin, 'click', displayEventInfo);
+
+    return pin;
+}
+
+function createClusteredPin(clusterInfo) {
+    var pin = new Microsoft.Maps.Pushpin(clusterInfo.center, { text: '+' });
+
+    pin.title = "Cluster Group";
+    //pin.description = "Cluster Index: " + clusterInfo.index + " Cluster Size: " + clusterInfo.dataIndices.length + " Zoom in for more details.";
+
+    //Add handler for the pushpin click event.
+    Microsoft.Maps.Events.addHandler(pin, 'click', displayEventClusterInfo);
+
+    return pin;
+}
+
+//Makes a request for data
+function RequestData(ownerMode) {
+/*var size = parseInt(document.getElementById('dataSize').value);
+TestDataGenerator.GenerateData(size, RequestDataCallback);*/
+    get_imo(RequestDataCallback, ownerMode);
+}
+
+function RequestDataVesselChange(response) {
+    if (response != null) {
+        map.setView({center: new Microsoft.Maps.Location(response.latitude, response.longitude)});
+        myLayer.SetData(response);
+        $(".spinner").hide();
+    }
+}
+
+function RequestDataCallback(response) {
+    if (response != null) {
+        map.setView({center: new Microsoft.Maps.Location(response[0].latitude, response[0].longitude)});
+        myLayer.SetData(response);
+        $(".spinner").hide();
+    }
+}
+
+function displayEventClusterInfo(e) {
+    if (e.targetType == "pushpin") {
+        var loc = e.target.getLocation();
+
+        map.setView({zoom:5, center: loc});
+
+    }
+}
+
+function displayEventInfo(e) { 
+
+
+    var pin = e.target;
+    var description = pin.description;
+    var html_array = new Array();
+
+    html_array.push("<span class='infobox_title'>" + pin.title + "</span><br/>") ;
+    html_array.push("</br><b>Lag / Log:</b>"+prsflt(description[0])+"/"+prsflt(description[1])+"("+description[2]+")<br/> <b>Speed / Course:</b>"+description[3]+"<br/>");
+    html_array.push("<b>Destination ETA / Port:</b>"+prsflt(description[6])+"/"+prsflt(description[7])+"<br/>");
+   /* html_array.push('<span class="popup_label"><button onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana;padding:5px;" title="vessel wiki">Additional Details</button></span>');*/
+    html_array.push('<span class="popup_label"><button onclick="show_vessel_path('+description[4]+','+description[5]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>');
+    /*    html += '<div style="padding-top: 7px;">'+
+    '<span class="popup_label"><button  onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="vessel wiki">Additional Details</a></span>' +
+    '<span class="popup_label"><button onclick="show_fav_on_map('+description[4]+')" class="show_on_map" id=map_'+description[4]+' style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show On Map</a></span>'+
+    '</div>';*/
+
+
+    if (e.targetType == "pushpin") {
+        infobox.setLocation(e.target.getLocation());
+
+        infobox.setOptions({
+            visible:true,
+            offset: new Microsoft.Maps.Point(-33, 20),
+            htmlContent: pushpinFrameHTML.replace('{content}', html_array.join(""))
         });
     }
-    marker.setMap(map);
-    map.setCenter(new google.maps.LatLng(latitude,longitude));
-
-    google.maps.event.addListener(marker, 'click', function() {
-        show_popup_at_marker(marker, name, latitude, longitude, speed, datetime, imo, degree);
-
-    });
-    
-    return marker;
-}
-
-function show_popup_at_marker(marker, name, latitude, longitude, speed, datetime, imo, degree) {
-    // popup_data(marker, name, latitude, longitude, speed, datetime, imo, degree);
-    show_vessel_dashbord(name);
-    return false;
-}
-
-function popup_data(marker, name, latitude, longitude, speed, datetime, imo, degree) {
-    var content = "<h2><b>" + name + "</b></h2>" ;
-    content += "<b>Lag / Log: </b>"+prsflt(latitude)+"/"+prsflt(longitude)+"<br/> <b>Speed / Course: </b>"+datetime+"<br/>";
-    // content += "<b>Lag / Log: </b>"+prsflt(latitude)+"/"+prsflt(longitude)+"("+datetime+")<br/> <b>Speed / Course: </b>"+speed+"<br/>";
-    content +='<span class="popup_label"><button onclick="show_vessel_path('+imo+','+degree+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>';
-        //html = "<div class='star'><a class='star_a' id='"+ description[4] +"' href='javascript:void(0)' onclick='add_bookmark(this.id);'><img src='img/star.png' class='star_i' id='i_"+ description[4] +"' width=25 height=25 /></a></div>";
-/*        html += '<span class="popup_label"><button onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana;padding:5px;" title="vessel wiki">Additional Details</button></span>';
-        html +='<span class="popup_label"><button onclick="show_vessel_path('+description[4]+','+description[5]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>';*/
-    var infowindow = new google.maps.InfoWindow({
-        content:content,
-        maxWidth: 450
-    });
-
-    if (open_info_window) {
-        open_info_window.close();
-    }
-
-    infowindow.setContent(content);
-    infowindow.open(map, marker);
-    open_info_window = infowindow;
 }
 
 function show_vessel_dashbord(name){
@@ -681,10 +721,17 @@ function show_vessel_dashbord(name){
     owner_vessel_selected();
 }
 
+function closeInfobox() {
+  infobox.setOptions({ visible: false });
+}
+
+function hideInfobox(e) {
+  infobox.setOptions({ visible: false });
+}
 
 /*-----Start Map Dataload---------*/
 
-function get_imo( ownerMode) { 
+function get_imo(callback, ownerMode) {
 
     var imodata = 'imo=["';
     if(ownerMode == "O") {
@@ -702,28 +749,35 @@ function get_imo( ownerMode) {
         }
     }
     imodata += '"]';
+    var url = 'get_vessel_positions_cwa.php?'+imodata;
+    console.log(url);
     $.ajax({
-        url: 'get_vessel_positions_cwa.php?'+imodata,
+        url: url,
         datatype: 'text',
         beforeSend: function() {
             show_spinner();
     },
     success: function(data){
-        var dat = [], randomLatitude, randomLongitude;
-        for (var i = 0; i < data.length; i++) {
-            var lat_lon = parse_lat_lon(data[i]);
-            create_marker(data[i]['asset-name'], lat_lon['lat'], lat_lon['lon'], 
-                      prsflt(data[i]['speed-value-of-value']) + data[i]['speed-units-of-value'], 
-                      prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase() + "/" + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
-                      data[i]['i-m-o-number'], data[i]['heading-value-of-value'], false);
+        if(data!=null){
+            var dat = [], randomLatitude, randomLongitude;
+            for (var i = 0; i < data.length; i++) {
+                var lat_lon = parse_lat_lon(data[i]);
+                dat.push(new DataModel(data[i]['asset-name'], lat_lon['lat'], lat_lon['lon'], 
+                          prsflt(data[i]['speed-value-of-value'])+data[i]['speed-units-of-value'], 
+                          prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase() + "/" + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
+                          data[i]['i-m-o-number'], data[i]['heading-value-of-value'], false));
+                vessel_location = dat;
+            }
 
-            dat.push(new DataModel(data[i]['asset-name'], lat_lon['lat'], lat_lon['lon'], 
-                      prsflt(data[i]['speed-value-of-value'])+data[i]['speed-units-of-value'], 
-                      prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase() + "/" + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
-                      data[i]['i-m-o-number'], data[i]['heading-value-of-value'], false));
-            vessel_location = dat;
+            if (callback) {
+            hide_spinner();
+                callback(dat);
+            }
+        }else{
+            hide_spinner();
+            alert("No data found Please change search criteria");
         }
-        hide_spinner();
+        
     },
     error: function() {        
         alert('Please try again in a minute.');
@@ -782,7 +836,54 @@ function prsflt(e){
 /*-----End Map Dataload---------*/
 
 /******************************Start Vessel path*********************************************/
+
+var req;
 function show_vessel_path(imo, degrees) {
+    map.entities.remove(layer2);
+    closeInfobox();
+    var url = '../get_vessel_position_history.php?i-m-o-number='+imo;
+    req = $.ajax({
+        url: url,
+        beforeSend: function() {
+           show_spinner();
+        },
+
+        success : function(response) {
+            hide_spinner();
+            var previous_positions_lat_lon = new Array();
+            var cur_lat_lon = parse_lat_lon(response[0]);
+            var cur_lat = cur_lat_lon['lat'];
+            var cur_lon = cur_lat_lon['lon'];
+            // Starting from index 1 because, skipping the most recent position.
+            for (var i=1; i<response.length; ++i) {
+            // For each vessel:
+            // Parse the lat,lon
+            var lat_lon = parse_lat_lon(response[i]);
+            previous_positions_lat_lon.push(lat_lon);
+            }
+
+            plot_vessel_track(cur_lat_lon, previous_positions_lat_lon);
+        }
+    });
+}
+var vessel_path_plotted;
+var layer2;
+// Function to Show ship_track
+function plot_vessel_track(current_position_lat_lon,previous_positions_lat_lon) {
+    var location1 = new Microsoft.Maps.Location(current_position_lat_lon['lat'], current_position_lat_lon['lon']);
+    var lineVertices = new Array();
+    lineVertices.push(location1);
+    for(var i=0; i<previous_positions_lat_lon.length;++i) {
+    lineVertices.push(new Microsoft.Maps.Location(previous_positions_lat_lon[i]['lat'], previous_positions_lat_lon[i]['lon']));
+    }
+    map.setView({center: new Microsoft.Maps.Location(current_position_lat_lon['lat'], current_position_lat_lon['lon'])});
+    var line = new Microsoft.Maps.Polyline(lineVertices);
+    layer2 = new Microsoft.Maps.EntityCollection();
+    layer2.push(line);
+    map.entities.push(layer2);
+}
+
+/*function show_vessel_path(imo, degrees) {
     open_info_window.close();
     req = $.ajax({
         url: 'https://getVesselTracker.com/get_vessel_position_history.php?i-m-o-number='+imo,
@@ -823,7 +924,7 @@ function plot_vessel_track(current_position_lat_lon,previous_positions_lat_lon) 
         map: map
     });
     hide_spinner();
-}
+}*/
 /******************************End Vessel path*********************************************/
 
 function show_spinner() {
