@@ -293,7 +293,7 @@ function show_owners(){
             hide_spinner();
             
             $('#view_title').show();
-            $('#view_title').html('Owners');
+            //$('#view_title').html('Owners');
 
             $('#owners').html(results_array.join(""));
             $('#owners').show();
@@ -683,7 +683,7 @@ function displayEventInfo(e) {
     var description = pin.description;
     var html_array = new Array();
     html_array.push("<span class='infobox_title'>" + pin.title + "</span><br/>") ;
-    html_array.push("</br><b>Lag / Log:</b>"+prsflt(description[0])+"/"+prsflt(description[1])+"("+description[2]+")<br/> <b>Speed / Course:</b>"+description[3]+"<br/>");
+    html_array.push("<b>Lag / Log:</b>"+prsflt(description[0])+"/"+prsflt(description[1])+"("+description[2]+")<br/> <b>Speed / Course:</b>"+description[3]+"<br/>");
     html_array.push("<b>ETA / Destination:</b>"+description[6]+"/"+description[7]+"<br/>");
    /* html_array.push('<span class="popup_label"><button onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana;padding:5px;" title="vessel wiki">Additional Details</button></span>');*/
     html_array.push('<span class="popup_label"><button onclick="show_vessel_path('+description[4]+','+description[5]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>');
