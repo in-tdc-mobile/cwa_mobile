@@ -512,7 +512,7 @@ function owner_vessel_selected(){
                         
                         map.entities.push(pushpin); 
                         Microsoft.Maps.Events.addHandler(pushpin, 'click', displayEventInfo);
-                        map.setView({ center: new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude), zoom  : 2});
+                        map.setView({ center: new Microsoft.Maps.Location(vessel_location[i].latitude+10, vessel_location[i].longitude+10), zoom  : 2});
                         /*var marker = create_marker(vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].highlight)
                         temp = vessel_location[i];
                         popup_data(marker, vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree);*/
