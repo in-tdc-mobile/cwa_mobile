@@ -592,7 +592,7 @@ function createNoonChart(chartDs, dates) {
 /*-----Start Bing Map-------*/
 
 var map, myLayer, infobox;
-var pushpinFrameHTML = '<div class="infobox"><a class="infobox_close" href="javascript:closeInfobox()"><img src="./img/close-icon.png"/></a><div class="infobox_content">{content}</div></div>';
+var pushpinFrameHTML = '<div class="infobox"><a class="infobox_close" href="javascript:closeInfobox()"><img src="./img/close-icon.png"/></a><div class="infobox_content">{content}</div></div><img src="./img/infoarrow.png" class="infobox_pointer">';
 
 
 function GetMap() { 
@@ -719,11 +719,13 @@ function show_vessel_dashbord(name){
 }
 
 function closeInfobox() {
-  $(".infobox").hide();
+    $(".infobox").hide();
+    $(".infobox_pointer").hide();
 }
 
 function hideInfobox(e) {
-  $(".infobox").hide();
+    $(".infobox").hide();
+    $(".infobox_pointer").hide();
 }
 
 /*-----Start Map Dataload---------*/
