@@ -962,10 +962,15 @@ function show_pms(){
     results_array.push("<div id='maintenance_analysis_chart_3'></div>");
     results_array.push("</div>");
     results_array.push("</div>");
+    results_array.push("<div class='dashboard_tiles' id='crit-equip-tile'>");
+    results_array.push("<h3 style='text-align: center;'>Critical Equipments</h3>");
+    results_array.push("<div id='crit_equip_list' style='padding:10px;' class='my-navbar-content'>");
+    results_array.push("</div></div>");
 
     $('#pms').html(results_array.join(""));
 
     $('#maintenance_analysis').hide();
+    $('#crit-equip-tile').hide();
     $('#pms').show();
     // $('#sel_owner_vessel_pms').selectmenu();
 
@@ -1004,6 +1009,19 @@ function owner_vessel_pms_selected(){
             chart = $("#maintenance_analysis_chart_3").data("kendoChart");
             chart.refresh();
 
+            $('#crit-equip-tile').show();
+
+            var critequip_array = new Array();
+
+            critequip_array.push("<ul id='ol_crew_list' class='topcoat-list list'>");
+            for (var i = 0; i < data["critical_equip"].length; i++) {
+                var dataitem = data["critical_equip"][i];
+                critequip_array.push("<li class='topcoat-list__item'>");
+                critequip_array.push(toTitleCase(dataitem.name));
+                critequip_array.push("</li>");
+            };
+            critequip_array.push("</ul>");
+            $('#crit_equip_list').html(critequip_array.join(""));
         },
         error: function() {        
             alert('Please try again in a minute.');
@@ -1105,7 +1123,8 @@ function create_maintenance_analysis_chart(data){
         },
         seriesDefaults: {
             type: "line",
-            style: "smooth"
+            style: "smooth",
+            highlight: {visible:false}
         },
         series: chartDs_1,
         valueAxis: {
@@ -1129,7 +1148,7 @@ function create_maintenance_analysis_chart(data){
             }
         },
         tooltip: {
-            visible: true,
+            visible: false,
             template: "<span style='color:white'>#= series.name #: #= value #</span>"
         },
         axisDefaults: {
@@ -1150,7 +1169,8 @@ function create_maintenance_analysis_chart(data){
         },
         seriesDefaults: {
             type: "line",
-            style: "smooth"
+            style: "smooth",
+            highlight: {visible:false}
         },
         series: chartDs_2,
         valueAxis: {
@@ -1174,7 +1194,7 @@ function create_maintenance_analysis_chart(data){
             }
         },
         tooltip: {
-            visible: true,
+            visible: false,
             template: "<span style='color:white'>#= series.name #: #= value #</span>"
         },
         axisDefaults: {
@@ -1195,7 +1215,8 @@ function create_maintenance_analysis_chart(data){
         },
         seriesDefaults: {
             type: "line",
-            style: "smooth"
+            style: "smooth",
+            highlight: {visible:false}
         },
         series: chartDs_3,
         valueAxis: {
@@ -1219,7 +1240,7 @@ function create_maintenance_analysis_chart(data){
             }
         },
         tooltip: {
-            visible: true,
+            visible: false,
             template: "<span style='color:white'>#= series.name #: #= value #</span>"
         },
         axisDefaults: {
@@ -1305,7 +1326,6 @@ function owner_vessel_crew_selected (argument) {
         }
     });
 }
-
 
 function show_crew_cv (emp_id) {
     $.ajax({
@@ -1447,20 +1467,3 @@ function show_crew_cv (emp_id) {
     });
 }
 
-//Ajax templete
-// $.ajax({
-//     url: 'get_owner_pms.php?' + 
-//     "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel + "&app_id=" + cwa_app_id,
-//     datatype: 'text',
-//     beforeSend: function() {
-//         show_spinner();
-//     },
-//     success: function(data){            
-//         hide_spinner();
-//
-//     },
-//     error: function() {        
-//         alert('Please try again in a minute.');
-//         hide_spinner();            
-//     }
-// });
