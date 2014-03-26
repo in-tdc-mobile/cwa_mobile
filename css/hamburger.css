@@ -41,7 +41,7 @@ position absolute isset to cover the whole viewport
 /*
 the hamburger button with a little gradient effekt
 */
-#hamburger {
+/*#hamburger {
     border: 1px solid #575858;
     border-radius: 3px 3px 3px 3px;
     cursor: pointer;
@@ -59,7 +59,8 @@ the hamburger button with a little gradient effekt
     background: -ms-linear-gradient(top,  #3E3C3D 0%,#6D6F74 100%);
     background: linear-gradient(to bottom,  #3E3C3D 0%,#6D6F74 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3E3C3D', endColorstr='#6D6F74',GradientType=0 );
-}
+    top: 15px;
+}*/
 
 /*#F9F9F9,#EEE*/
 
@@ -136,6 +137,6 @@ so that the content is unclickable while menu is shown
     left: 0;
     top: 0;
     width: 30%;
-    z-index: 5;
+    z-index: 12;
     min-height: 1062px;
 }

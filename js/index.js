@@ -17,7 +17,6 @@
  * under the License.
  */
 "use strict";
-
 var vessel_markers_with_imo = new Array();
 var vessel_markers = new Array();
 var markerCluster;
@@ -98,26 +97,71 @@ Number.prototype.formatMoney = function(c, d, t){
 $('#hamburger').hide();
 
 function hide_all() {    
-    if($("#contentLayer:visible").length>0){
-        $('#contentLayer').trigger('click');
+    // if($("#contentLayer:visible").length>0){
+    //     $('#contentLayer').trigger('click');
+    // }
+    if($("#container").hasClass( "opened" )){
+        var container = document.querySelector('#container');
+        var slidemenu = document.querySelector('#sidemenu');
+        var content = document.querySelector('#content');
+        var contentlayer = document.querySelector('#contentLayer');
+
+        container.classList.toggle('opened');
+        slidemenu.classList.toggle('sidemenu--opened');
+        content.style.height = "auto";
+        contentlayer.classList.toggle('contentlayer-opened');
     }
     $('#btnBack').hide();
-    $('#navbar').hide();
+    // $('#navbar').hide();
     hide_spinner();
     $('#index_content').hide();
     $('#ajax_error').hide();
     $('#view_title').hide();
     $('#owners').hide();
     $('#dashboard').hide();
+    $('#crew').hide();
     $('#crew_cv').hide();
     $('#pms').hide();
     $('body').scrollTop(0);
+}
+
+// var slider = new PageSlider($("#container"));
+$(window).on('hashchange', route);
+$(window).on('load', route_to_dashboard);
+
+function route_to_dashboard (event) {
+    window.location.replace("#");
+}
+
+// Basic page routing
+function route(event) {
+    var page,
+        hash = window.location.hash.split('/')[0];
+
+    if (hash === "#pms") {
+        show_pms();
+    } else if (hash === "#crew") {
+        show_crew_list();
+    } else if (hash === "#crew_cv") {
+        show_crew_cv(window.location.hash.split('/')[1]);
+    } else if (hash === "#back_crewcv") {
+        hide_all();
+        $('#crew').show();
+        // $('html, body').animate({scrollTop: $('#crew_tile').position().top-50}, 'slow');
+        $('body').scrollTop(0);
+    }
+    else {
+        page = show_owners();
+    }
+    // slider.slidePage($(page));
+
 }
 
 var step_back = function() {};
 
 var current_step = function() {};
 
+var temp;
 var pal_user_id;
 var cwa_app_id;
 var pal_user_name;
@@ -135,7 +179,23 @@ window.addEventListener('load', function () {
     FastClick.attach(document.body);
 }, false);
 
-$(document).ready(function() {  
+$(document).ready(function() {
+    var menuBtn = document.querySelector('#hamburger-btn');
+    var container = document.querySelector('#container');
+    var slidemenu = document.querySelector('#sidemenu');
+    var content = document.querySelector('#content');
+    var contentlayer = document.querySelector('#contentLayer');
+    menuBtn.addEventListener('click', showSidemenu, false);
+    contentlayer.addEventListener('click', showSidemenu, false);
+
+    function showSidemenu () {
+      container.classList.toggle('opened');
+      slidemenu.classList.toggle('sidemenu--opened');
+      contentlayer.classList.toggle('contentlayer-opened');
+      content.style.height = "auto";
+      $('#container').resize();
+      
+    }
     try{
         pal_user_name = $.jStorage.get("pal_user_name");
         // $.jStorage.set("pal_user_email", '');
@@ -222,9 +282,9 @@ function show_owners(){
         }
         if(owners_array.length!=1){
             var results_array = new Array();
-            results_array.push("<ul data-role='listview' data-divider-theme='b' data-inset='true' id='listview'>");
+            results_array.push("<ul class='topcoat-list__container' id='listview'>");
             for(var i=0; i< owners_array.length; i++) {
-                results_array.push("<li data-theme='c'>");
+                results_array.push("<li class='topcoat-list__item'>");
                 results_array.push("<a data-transition='slide' href='javascript:show_dashboard_ajax(\""+ owners_array[i]['ID'] +"\")' id='"+ owners_array[i]['ID'] +"'>"+ owners_array[i]['label']);
                 results_array.push("</a></li>");
             }
@@ -233,12 +293,12 @@ function show_owners(){
             hide_spinner();
             
             $('#view_title').show();
-            $('#view_title').html('Owners');
+            //$('#view_title').html('Owners');
 
             $('#owners').html(results_array.join(""));
             $('#owners').show();
 
-            $('#listview').listview();
+            // $('#listview').listview();
         }
         else{
             owner_vessels = data['owner_vessels'];
@@ -299,7 +359,7 @@ function show_dashboard(owner_id){
     selected_owner_id = owner_id;
     var results_array = new Array();
 
-    results_array.push("<select id='sel_owner_vessel' onchange='owner_vessel_selected()'>");
+    results_array.push("<select id='sel_owner_vessel' class='topcoat-select' onchange='owner_vessel_selected()'>");
     results_array.push("<option value='-1'>Select Vessel</option>");
     for (var i = 0; i < owner_vessels.length; i++) {
         results_array.push("<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>");
@@ -317,20 +377,26 @@ function show_dashboard(owner_id){
     // $('#view_title').html('Dashboard');
     $('#dashboard').html(results_array.join(""));
 
-    $('#sel_owner_vessel').selectmenu();
+    // $('#sel_owner_vessel').selectmenu();
 
     $('#dashboard').show();
     show_vessel_tracker = $.grep(dashboard_settings , function(e){ return e.code == 'VSLTRK'; });
     if(show_vessel_tracker.length > 0){
         GetMap();
-        get_imo("O");
+        RequestData("O");
     }
     else{
         $('#vsltrk_tile').hide();
     }
 
+    if(selected_vessel_id>0){    
+        $('#sel_owner_vessel').val(selected_vessel_id);
+        // $('#sel_owner_vessel_crew').selectmenu('refresh', true);
+        owner_vessel_selected();
+    }
+
 }
-var temp;
+
 function owner_vessel_selected(){
     var selected_vessel = document.getElementById("sel_owner_vessel").value;
     if(selected_vessel > 0){
@@ -372,42 +438,46 @@ function owner_vessel_selected(){
 
             var results_array = new Array();
             results_array.push("<div class='dashboard_tiles' id='contact_info_tile'><h3 style='text-align: center;'>Contact Info</h3>");
-            results_array.push("<div style='padding: 5px'> <ul id='ol_contact' data-role='listview'> ");
-            results_array.push("<li class='dashboard-list'> Manager : " + data["vessel_info"].primary_manager_name + "</li>");
-            results_array.push("<li class='dashboard-list'> Email : <span> <a href='mailto:" + data["vessel_info"].email + "'>" + data["vessel_info"].email + "</a></span></li>");
-            results_array.push("<li class='dashboard-list'> Phone : ");
+            results_array.push("<div style='padding: 5px'> <ul id='ol_contact' class='topcoat-list list'> ");
+            results_array.push("<li class='topcoat-list__item dashboard-list'> Manager : " + data["vessel_info"].primary_manager_name + "</li>");
+            results_array.push("<li class='topcoat-list__item dashboard-list'> Email : <span> <a style='text-decoration: underline' href='mailto:" + data["vessel_info"].email + "'>" + data["vessel_info"].email + "</a></span></li>");
+            results_array.push("<li class='topcoat-list__item dashboard-list'> Phone : ");
             if(data["vessel_info"].telephone_1 != null){
-                results_array.push("<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
+                results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
             }
-            if(data["vessel_info"].telephone_1 != null){
-                results_array.push("<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
+            if(data["vessel_info"].telephone_2 != null){
+                results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_2 + "'>00870-" + data["vessel_info"].telephone_2 + "</a></span>");
             }
-            if(data["vessel_info"].telephone_1 != null){
-                results_array.push("<span> <a href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
+            if(data["vessel_info"].telephone_3 != null){
+                results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_3 + "'>00870-" + data["vessel_info"].telephone_3 + "</a></span>");
             }
             results_array.push("</li>");
             results_array.push("</ul></div></div>");
 
             results_array.push("<div class='dashboard_tiles' id='vslperf_tile'><h3 style='text-align: center;'>Noon Report</h3><div style='width:100%'><div id='noon_report_chart'></div></div></div>");
             // results_div += "<div style='background:black' height='5px'/>"
-            results_array.push("<div class='dashboard_tiles' id='crew_tile'><h3 style='text-align: center;'>Crew List</h3><div id='crew_list' style='padding:10px;' class='my-navbar-content'></div></div>");
+            // results_array.push("<div class='dashboard_tiles' id='crew_tile'><h3 style='text-align: center;'>Crew List</h3><div id='crew_list' style='padding:10px;' class='my-navbar-content'></div></div>");
 
-            var crew_array = new Array();
-            owner_crew = data["crew_list"];
+            // var crew_array = new Array();
+            // owner_crew = data["crew_list"];
 
-            crew_array.push("<ul id='ol_crew_list' data-role='listview'>");
-            for (var i = 0; i < data["crew_list"].length; i++) {
-                dataitem = data["crew_list"][i];
-                crew_array.push("<li>");
-                crew_array.push("<a href='javascript:show_crew_cv("+ dataitem.emp_id +")'><span class='dashboard-list'> <span class='li-data-list-small'>" + toTitleCase(dataitem.rank) + "</span> - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> (" + toTitleCase(dataitem.nationality) + ")</span></a>");
-                crew_array.push("</li>");
-            };
-            crew_array.push("</ul>");
+            // crew_array.push("<ul id='ol_crew_list' class='topcoat-list list'>");
+            // for (var i = 0; i < data["crew_list"].length; i++) {
+            //     dataitem = data["crew_list"][i];
+            //     crew_array.push("<li class='topcoat-list__item'>");
+            //     crew_array.push("<a href='#crew_cv/"+ dataitem.emp_id +"'>" +
+            //         "<span class='dashboard-list'> " +
+            //         "<span class='li-data-list-small'>" + toTitleCase(dataitem.rank) + "</span>" + 
+            //         " - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> " + 
+            //         "(" + toTitleCase(dataitem.nationality) + ")</span><span class='chevron'></span></a>");
+            //     crew_array.push("</li>");
+            // };
+            // crew_array.push("</ul>");
 
             $('#accordion').html(results_array.join(""));
-            $('#crew_list').html(crew_array.join(""));
-            $('#ol_crew_list').listview();
-            $('#ol_contact').listview();
+            // $('#crew_list').html(crew_array.join(""));
+            // $('#ol_crew_list').listview();
+            // $('#ol_contact').listview();
 
             createNoonChart(chartDs, dates);
             
@@ -424,10 +494,28 @@ function owner_vessel_selected(){
             if(show_vessel_tracker.length > 0){
                 for (var i = 0; i < vessel_location.length; i++) {
                     if(vessel_location[i].Name.split('(')[0].toLowerCase() == $('#sel_owner_vessel option:selected').text().toLowerCase()){
-                        // GetMap();
-                        //var loc = new google.maps.LatLng(vessel_location[i].latitude, vessel_location[i].longitude);
-                        var marker = create_marker(vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].highlight)
-                        popup_data(marker, vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree);
+
+                        /*map = new Microsoft.Maps.Map(document.getElementById("trackerMap"), { credentials: "AvOyltb0YAu_Ldagk8wP_XiQQGfXkHo5rlWlLs-mIpsB3Gcvt87UC-BIZdgc3QbL",
+                                                         showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });*/
+                        var pushpin = new Microsoft.Maps.Pushpin(map.getCenter(), { text: '' });
+                        pushpin.setLocation(new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude));
+                        pushpin.title =  vessel_location[i].Name;
+                        pushpin.description = [vessel_location[i].latitude,vessel_location[i].longitude,vessel_location[i].datetime,vessel_location[i].speed,vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].eta, vessel_location[i].destination, vessel_location[i].traildate, vessel_location[i].trailtime];
+                        
+                        var infoboxLayer = new Microsoft.Maps.EntityCollection();
+                        infobox = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0, 0), { 
+                          visible: false, offset: new Microsoft.Maps.Point(0,15) 
+                        });
+                        infoboxLayer.push(infobox);
+                        map.entities.push(infoboxLayer);
+                            
+                        
+                        map.entities.push(pushpin); 
+                        Microsoft.Maps.Events.addHandler(pushpin, 'click', displayEventInfo);
+                        map.setView({ center: new Microsoft.Maps.Location(vessel_location[i].latitude+10, vessel_location[i].longitude+10), zoom  : 2});
+                        /*var marker = create_marker(vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].highlight)
+                        temp = vessel_location[i];
+                        popup_data(marker, vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree);*/
                     }
                 };
             }
@@ -442,12 +530,11 @@ function owner_vessel_selected(){
     });
 
     } else {
-        results_div = "<div class='dashboard_tiles'><div id='trackerMap'></div></div>";
-        results_div += "<div id='accordion'></div>";
-        $('#dashboard_tiles').html(results_div);
+         $('#accordion').html("")
+        //$('#dashboard_tiles').html(results_div);
         if(show_vessel_tracker.length > 0){
             GetMap();
-            get_imo("O");
+            RequestData("O");
         }
     }
 }
@@ -465,7 +552,8 @@ function createNoonChart(chartDs, dates) {
         },
         seriesDefaults: {
             type: "line",
-            style: "smooth"
+            style: "smooth",
+            highlight: {visible:false}
         },
         series: chartDs,
         valueAxis: {
@@ -490,7 +578,7 @@ function createNoonChart(chartDs, dates) {
                 }
             },
             tooltip: {
-                visible: true,
+                visible: false,
                 template: "<span style='color:white'>#= series.name #: #= value #</span>"
             },
             axisDefaults: {
@@ -501,215 +589,120 @@ function createNoonChart(chartDs, dates) {
         });       
 }
 
-function show_crew_cv (emp_id) {
-    $.ajax({
-        url: 'get_crew_cv.php?' + 
-        "emp_id=" + emp_id,
-        datatype: 'text',
-        beforeSend: function() {
-            show_spinner();
-        },
-        success: function(data){            
-            hide_spinner();
-            $('body').scrollTop(0);
-            temp = data;
-            data = data.crew_cv;
-
-             $('#dashboard').hide();
-            var selected_crew = $.grep(owner_crew , function(e){ return e.emp_id == emp_id; })[0];
-
-            var results_array = new Array();
-
-            results_array.push("<div class='dashboard_tiles'>");
-            results_array.push("<h3>Crew CV</h3>");
-            results_array.push("<ul class='crew_list_view' data-role='listview'>");
-            results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Name : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.emp_name) + "</span></li>");
-            results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Nationality : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.nationality) + "</span></li>");
-            results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Rank : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.rank) + "</span></li>");
-            results_array.push("</ul>");            
-            results_array.push("</div>");
-
-            results_array.push("<div class='dashboard_tiles'>");
-            results_array.push("<h3>Experience</h3>");
-            results_array.push("<ul class='crew_list_view' data-role='listview'>");
-            results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByRanks.SummaryEntity.Rank) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByRanks.SummaryEntity.Duration + "</span></li>");
-            results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByVesselTypes.SummaryEntity.VesselType) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByVesselTypes.SummaryEntity.Duration + "</span></li>");
-            results_array.push("</ul>");
-            results_array.push("</div>");
-
-            results_array.push("<div class='dashboard_tiles'>");
-            results_array.push("<h3>Sea Service with Company</h3>");
-            results_array.push("<table class='crew_table'>");
-            results_array.push("<tr>");
-            results_array.push("<th>Company</th>");
-            results_array.push("<th>Rank</th>");
-            results_array.push("<th class='crew_detail'>Sign-on Date</th>");
-            results_array.push("<th class='crew_detail'>Sign-off Date</th>");
-            results_array.push("<th class='crew_detail'>Veseel</th>");
-            results_array.push("</tr>");
-
-            for (var i = 0; i < data.SeaServiceData.SeaServiceEntity.length; i++) {
-                var dataitem = data.SeaServiceData.SeaServiceEntity[i];
-                results_array.push("<tr class='itemRow'>");
-                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + dataitem.Company + "</span></td>");
-                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
-                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
-                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
-                results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                results_array.push('<td><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></td>');
-                results_array.push("</tr>");
-            };
-            results_array.push("</table>");
-            results_array.push("</div>");
-
-            results_array.push("<div class='dashboard_tiles'>");
-            results_array.push("<h3>Sea Service with Other Companies</h3>");            
-            results_array.push("<table class='crew_table'>");
-            results_array.push("<tr>");
-            results_array.push("<th>Company</th>");
-            results_array.push("<th>Rank</th>");
-            results_array.push("<th class='crew_detail'>Sign-on Date</th>");
-            results_array.push("<th class='crew_detail'>Sign-off Date</th>");
-            results_array.push("<th class='crew_detail'>Veseel</th>");
-            results_array.push("</tr>");
-
-            for (var i = 0; i < data.SeaServiceOtherData.SeaServiceEntity.length; i++) {
-                var dataitem = data.SeaServiceOtherData.SeaServiceEntity[i];
-                results_array.push("<tr class='itemRow'>");
-                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Company) + "</span></td>");
-                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
-                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
-                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
-                results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                results_array.push('<td><span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span></td>');
-                results_array.push("</tr>");
-            };
-            results_array.push("</table>");
-            results_array.push("</div>");
-
-            $('#crew_cv').html(results_array.join(""));
-            $('#crew_cv').show();
-            $('#btnBack').show();
-
-            step_back = function(){
-                hide_all();
-                $('#dashboard').show();
-                $('html, body').animate({scrollTop: $('#crew_tile').offset().top-55}, 'slow');
-            };
-
-            $('.crew_list_view').listview();
-            $('.crew_table').table({ defaults: true });
-
-            $('.itemRow').click(function() {
-                $(this).closest('table').find('.temp_tr').remove();
-                var results_array = new Array();
-                results_array.push('<tr class="temp_tr">');
-                results_array.push('<td colspan="100%">');
-                results_array.push('<div>');
-                results_array.push('<ul class="temp_ul">');
-                results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Vessel : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(4)').html() + "</span></li>");
-                results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Sign-on Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
-                results_array.push("<li><span class='dashboard-list'><span class='li-data-list-small'>Sign-off Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
-                results_array.push('</ul>');
-                results_array.push('</div>');
-                results_array.push('</td>');
-                results_array.push('</tr>');
-                $(this).after(results_array.join(""));
-                $('.temp_ul').listview();
-                // alert($(this).find('td:eq(0)').html());
-            });
-
-            $('.crew_detail').hide();
-        },
-        error: function() {        
-            alert('Please try again in a minute.');
-            hide_spinner();            
-        }
-    });
-}
-
 /*-----Start Bing Map-------*/
 
 var map, myLayer, infobox;
+var pushpinFrameHTML = '<div class="infobox"><a class="infobox_close" href="javascript:closeInfobox()"><img src="./img/close-icon.png"/></a><div class="infobox_content">{content}</div></div><img src="./img/infoarrow.png" class="infobox_pointer">';
 
-function GetMap() {
-    map = new google.maps.Map(document.getElementById('trackerMap'), {
-      zoom: 2,
-      center: new google.maps.LatLng(20,20),
-      mapTypeId: google.maps.MapTypeId.HYBRID,
-      labels: true,
-    });
+
+function GetMap() { 
+    map = new Microsoft.Maps.Map(document.getElementById("trackerMap"), { credentials: "AvOyltb0YAu_Ldagk8wP_XiQQGfXkHo5rlWlLs-mIpsB3Gcvt87UC-BIZdgc3QbL",
+    showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });
+
+    //Register and load the Point Based Clustering Module
+    Microsoft.Maps.registerModule("PointBasedClusteringModule", "scripts/PointBasedClustering.js");
+    Microsoft.Maps.loadModule("PointBasedClusteringModule", { callback: function () {
+      myLayer = new PointBasedClusteredEntityCollection(map, {
+        singlePinCallback: createPin,
+        clusteredPinCallback: createClusteredPin
+      });
+
+            //Add infobox layer that is above the clustered layers.
+            var infoboxLayer = new Microsoft.Maps.EntityCollection();
+            infobox = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0, 0), { 
+              visible: false, offset: new Microsoft.Maps.Point(0,15) 
+            });
+            infoboxLayer.push(infobox);
+            map.entities.push(infoboxLayer);
+            map.setView({zoom:2});
+          }
+        });
+
+    //Define custom properties for the pushpin class (this is needed for the infobox and not the clustering) 
+    Microsoft.Maps.Pushpin.prototype.title = null;
+    Microsoft.Maps.Pushpin.prototype.description = null;
 }
 
-function create_marker(name, latitude, longitude, speed, datetime, imo, degree, highlight){
-    var marker;
-    if (highlight) {
-        marker_highlighted = true;
-        marker = new google.maps.Marker({
-            position: new google.maps.LatLng(latitude, longitude),
-            icon: {
-                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                scale: 4,
-                fillColor: "red",
-                fillOpacity: 1,
-                flat: true,
-                strokeWeight: 2,
-                rotation: degrees //this is how to rotate the pointer
-            },
-            map: map,
-            title: name,
-            size: new google.maps.Size(10, 10),
-        });
-        path_vessel_imo = imo;
-        
-        /*vessel_markers.push(marker);
-        if (markerCluster) {
-            markerCluster.clearMarkers();
-        }
-        markerCluster = new MarkerClusterer(map, vessel_markers, mcOptions);*/
-    } else {
-        marker = new google.maps.Marker({
-            position: new google.maps.LatLng(latitude, longitude),
-            title: name,
-            size: new google.maps.Size(10, 10),
+function createPin(data, clusterInfo) {
+    var pin = new Microsoft.Maps.Pushpin(clusterInfo.center);
+
+    pin.title =  data.Name;
+    pin.description = [data.latitude, data.longitude, data.datetime, data.speed, data.imo, data.degree, data.eta, data.destination, data.traildate, data.trailtime];//data.latitude+"@/"+data.longitude+"@/"+data.datetime+"@/"+data.speed+"@/"+data.imo;
+    //Add handler for the pushpin click event.
+
+    Microsoft.Maps.Events.addHandler(pin, 'click', displayEventInfo);
+    return pin;
+}
+
+function createClusteredPin(clusterInfo) {
+    var pin = new Microsoft.Maps.Pushpin(clusterInfo.center, { text: '+' });
+
+    pin.title = "Cluster Group";
+    //pin.description = "Cluster Index: " + clusterInfo.index + " Cluster Size: " + clusterInfo.dataIndices.length + " Zoom in for more details.";
+
+    //Add handler for the pushpin click event.
+    Microsoft.Maps.Events.addHandler(pin, 'click', displayEventClusterInfo);
+
+    return pin;
+}
+
+//Makes a request for data
+function RequestData(ownerMode) {
+/*var size = parseInt(document.getElementById('dataSize').value);
+TestDataGenerator.GenerateData(size, RequestDataCallback);*/
+    get_imo(RequestDataCallback, ownerMode);
+}
+
+function RequestDataVesselChange(response) {
+    if (response != null) {
+        map.setView({center: new Microsoft.Maps.Location(response.latitude, response.longitude)});
+        myLayer.SetData(response);
+        $(".spinner").hide();
+    }
+}
+
+function RequestDataCallback(response) {
+    if (response != null) {
+        map.setView({center: new Microsoft.Maps.Location(response[0].latitude, response[0].longitude)});
+        myLayer.SetData(response);
+        $(".spinner").hide();
+    }
+}
+
+function displayEventClusterInfo(e) {
+    var z = map.getZoom()+3;
+    if (e.targetType == "pushpin") {
+        var loc = e.target.getLocation();
+        map.setView({zoom:z, center: loc});
+    }
+}
+
+function displayEventInfo(e) { 
+    closeInfobox();
+    var pin = e.target;
+    var description = pin.description;
+    var html_array = new Array();
+    html_array.push("<span class='infobox_title'>" + pin.title + "</span> ("+description[8]+" : "+description[9]+")<br/>") ;
+    html_array.push("<b>Lag / Log:</b>"+prsflt(description[0])+"/"+prsflt(description[1])+"("+description[2]+")<br/> <b>Speed / Course:</b>"+description[3]+"<br/>");
+    html_array.push("<b>Destination / ETA:</b>"+description[7]+" / "+description[6]+"<br/>");
+   /* html_array.push('<span class="popup_label"><button onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana;padding:5px;" title="vessel wiki">Additional Details</button></span>');*/
+    html_array.push('<span class="popup_label"><button onclick="show_vessel_path('+description[4]+','+description[5]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>');
+    /*    html += '<div style="padding-top: 7px;">'+
+    '<span class="popup_label"><button  onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="vessel wiki">Additional Details</a></span>' +
+    '<span class="popup_label"><button onclick="show_fav_on_map('+description[4]+')" class="show_on_map" id=map_'+description[4]+' style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show On Map</a></span>'+
+    '</div>';*/
+
+
+    if (e.targetType == "pushpin") {
+        infobox.setLocation(e.target.getLocation());
+
+        infobox.setOptions({
+            visible:true,
+            offset: new Microsoft.Maps.Point(-33, 20),
+            htmlContent: pushpinFrameHTML.replace('{content}', html_array.join(""))
         });
     }
-    marker.setMap(map);
-    map.setCenter(new google.maps.LatLng(latitude,longitude));
-
-    google.maps.event.addListener(marker, 'click', function() {
-        show_popup_at_marker(marker, name, latitude, longitude, speed, datetime, imo, degree);
-
-    });
-    
-    return marker;
-}
-
-function show_popup_at_marker(marker, name, latitude, longitude, speed, datetime, imo, degree) {
-    // popup_data(marker, name, latitude, longitude, speed, datetime, imo, degree);
-    show_vessel_dashbord(name);
-    return false;
-}
-
-function popup_data(marker, name, latitude, longitude, speed, datetime, imo, degree) {
-    var content = "<h2><b>" + name + "</b></h2>" ;
-    content += "<b>Lag / Log: </b>"+prsflt(latitude)+"/"+prsflt(longitude)+"("+datetime+")<br/> <b>Speed / Course: </b>"+speed+"<br/>";
-    content +='<span class="popup_label"><button onclick="show_vessel_path('+imo+','+degree+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>';
-        //html = "<div class='star'><a class='star_a' id='"+ description[4] +"' href='javascript:void(0)' onclick='add_bookmark(this.id);'><img src='img/star.png' class='star_i' id='i_"+ description[4] +"' width=25 height=25 /></a></div>";
-/*        html += '<span class="popup_label"><button onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana;padding:5px;" title="vessel wiki">Additional Details</button></span>';
-        html +='<span class="popup_label"><button onclick="show_vessel_path('+description[4]+','+description[5]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>';*/
-    var infowindow = new google.maps.InfoWindow({
-        content:content,
-        maxWidth: 450
-    });
-
-    if (open_info_window) {
-        open_info_window.close();
-    }
-
-    infowindow.setContent(content);
-    infowindow.open(map, marker);
-    open_info_window = infowindow;
+     show_vessel_dashbord(pin.title);
 }
 
 function show_vessel_dashbord(name){
@@ -720,15 +713,24 @@ function show_vessel_dashbord(name){
         }
     };
     $('#sel_owner_vessel').val(vsl.object_id);
-    $('#sel_owner_vessel').selectmenu('refresh', true);
+    // $('#sel_owner_vessel').selectmenu('refresh', true);
 
     owner_vessel_selected();
 }
 
+function closeInfobox() {
+    $(".infobox").hide();
+    $(".infobox_pointer").hide();
+}
+
+function hideInfobox(e) {
+    $(".infobox").hide();
+    $(".infobox_pointer").hide();
+}
 
 /*-----Start Map Dataload---------*/
 
-function get_imo( ownerMode) { 
+function get_imo(callback, ownerMode) {
 
     var imodata = 'imo=["';
     if(ownerMode == "O") {
@@ -746,28 +748,36 @@ function get_imo( ownerMode) {
         }
     }
     imodata += '"]';
+    var url = 'get_vessel_positions_cwa.php?'+imodata;
+    console.log(url);
     $.ajax({
-        url: 'get_vessel_positions_cwa.php?'+imodata,
+        url: url,
         datatype: 'text',
         beforeSend: function() {
             show_spinner();
     },
     success: function(data){
-        var dat = [], randomLatitude, randomLongitude;
-        for (var i = 0; i < data.length; i++) {
-            var lat_lon = parse_lat_lon(data[i]);
-            create_marker(data[i]['asset-name'], lat_lon['lat'], lat_lon['lon'], 
-                      prsflt(data[i]['speed-value-of-value'])+data[i]['speed-units-of-value'], 
-                      prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase() + ", " + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
-                      data[i]['i-m-o-number'], data[i]['heading-value-of-value'], false);
+        if(data!=null){
+            var dat = [], randomLatitude, randomLongitude;
+            for (var i = 0; i < data.length; i++) {
+                console.log(data[i]['trail-date-time-date-of-value']);
+                var lat_lon = parse_lat_lon(data[i]);
+                dat.push(new DataModel(data[i]['asset-name'], lat_lon['lat'], lat_lon['lon'], 
+                          prsflt(data[i]['speed-value-of-value'])+ " " + data[i]['speed-units-of-value'].toLowerCase(), 
+                          prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase()  + " / " + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
+                          data[i]['i-m-o-number'], data[i]['heading-value-of-value'], data[i]['eta'], data[i]['destination'], data[i]['trail-date-time-date-of-value'], data[i]['trail-date-time-time-of-value'], false));
+                vessel_location = dat;
+            }
 
-            dat.push(new DataModel(data[i]['asset-name'], lat_lon['lat'], lat_lon['lon'], 
-                      prsflt(data[i]['speed-value-of-value'])+data[i]['speed-units-of-value'], 
-                      prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase() + ", " + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
-                      data[i]['i-m-o-number'], data[i]['heading-value-of-value'], false));
-            vessel_location = dat;
+            if (callback) {
+            hide_spinner();
+                callback(dat);
+            }
+        }else{
+            hide_spinner();
+            alert("No data found Please change search criteria");
         }
-        hide_spinner();
+        
     },
     error: function() {        
         alert('Please try again in a minute.');
@@ -807,15 +817,19 @@ function parse_lat_lon(response) {
     return lat_lon;
 }
 
-var DataModel = function (name, latitude, longitude, speed, datetime, imo, degree, highlight) {
+var DataModel = function (name, latitude, longitude, speed, datetime, imo, degree, eta, destination, traildate, trailtime, highlight) {
   this.Name = name;
   this.latitude = latitude;
   this.longitude = longitude;
   this.speed = speed;
-  this.datetime = datetime;
+  this.datetime = datetime; //here datetime is combo of speed and course
   this.imo = imo;
   this.highlight = highlight;
   this.degree = degree;
+  this.eta = eta;
+  this.destination = destination;
+  this.traildate = traildate;
+  this.trailtime = trailtime;
 };
 
 
@@ -826,7 +840,54 @@ function prsflt(e){
 /*-----End Map Dataload---------*/
 
 /******************************Start Vessel path*********************************************/
+
+var req;
 function show_vessel_path(imo, degrees) {
+    map.entities.remove(layer2);
+    closeInfobox();
+    var url = '../get_vessel_position_history.php?i-m-o-number='+imo;
+    req = $.ajax({
+        url: url,
+        beforeSend: function() {
+           show_spinner();
+        },
+
+        success : function(response) {
+            hide_spinner();
+            var previous_positions_lat_lon = new Array();
+            var cur_lat_lon = parse_lat_lon(response[0]);
+            var cur_lat = cur_lat_lon['lat'];
+            var cur_lon = cur_lat_lon['lon'];
+            // Starting from index 1 because, skipping the most recent position.
+            for (var i=1; i<response.length; ++i) {
+            // For each vessel:
+            // Parse the lat,lon
+            var lat_lon = parse_lat_lon(response[i]);
+            previous_positions_lat_lon.push(lat_lon);
+            }
+
+            plot_vessel_track(cur_lat_lon, previous_positions_lat_lon);
+        }
+    });
+}
+var vessel_path_plotted;
+var layer2;
+// Function to Show ship_track
+function plot_vessel_track(current_position_lat_lon,previous_positions_lat_lon) {
+    var location1 = new Microsoft.Maps.Location(current_position_lat_lon['lat'], current_position_lat_lon['lon']);
+    var lineVertices = new Array();
+    lineVertices.push(location1);
+    for(var i=0; i<previous_positions_lat_lon.length;++i) {
+    lineVertices.push(new Microsoft.Maps.Location(previous_positions_lat_lon[i]['lat'], previous_positions_lat_lon[i]['lon']));
+    }
+    map.setView({center: new Microsoft.Maps.Location(current_position_lat_lon['lat'], current_position_lat_lon['lon'])});
+    var line = new Microsoft.Maps.Polyline(lineVertices);
+    layer2 = new Microsoft.Maps.EntityCollection();
+    layer2.push(line);
+    map.entities.push(layer2);
+}
+
+/*function show_vessel_path(imo, degrees) {
     open_info_window.close();
     req = $.ajax({
         url: 'https://getVesselTracker.com/get_vessel_position_history.php?i-m-o-number='+imo,
@@ -867,12 +928,12 @@ function plot_vessel_track(current_position_lat_lon,previous_positions_lat_lon) 
         map: map
     });
     hide_spinner();
-}
+}*/
 /******************************End Vessel path*********************************************/
 
 function show_spinner() {
-        $(".spinner_index").css('display','inline');
-        $(".spinner_index").center();
+    $(".spinner_index").css('display','inline');
+    $(".spinner_index").center();
 }
 
 function hide_spinner() {
@@ -885,7 +946,7 @@ function show_pms(){
 
     var results_array = new Array();
 
-    results_array.push("<select id='sel_owner_vessel_pms' onchange='owner_vessel_pms_selected()'>");
+    results_array.push("<select class='topcoat-select' id='sel_owner_vessel_pms' onchange='owner_vessel_pms_selected()'>");
     results_array.push("<option value='-1'>Select Vessel</option>");
     for (var i = 0; i < owner_vessels.length; i++) {
         results_array.push("<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>");
@@ -901,16 +962,21 @@ function show_pms(){
     results_array.push("<div id='maintenance_analysis_chart_3'></div>");
     results_array.push("</div>");
     results_array.push("</div>");
+    results_array.push("<div class='dashboard_tiles' id='crit-equip-tile'>");
+    results_array.push("<h3 style='text-align: center;'>Critical Equipments</h3>");
+    results_array.push("<div id='crit_equip_list' style='padding:10px;' class='my-navbar-content'>");
+    results_array.push("</div></div>");
 
     $('#pms').html(results_array.join(""));
 
     $('#maintenance_analysis').hide();
+    $('#crit-equip-tile').hide();
     $('#pms').show();
-    $('#sel_owner_vessel_pms').selectmenu();
+    // $('#sel_owner_vessel_pms').selectmenu();
 
     if(selected_vessel_id>0){    
         $('#sel_owner_vessel_pms').val(selected_vessel_id);
-        $('#sel_owner_vessel_pms').selectmenu('refresh', true);
+        // $('#sel_owner_vessel_pms').selectmenu('refresh', true);
         owner_vessel_pms_selected();
     }
     
@@ -924,6 +990,7 @@ function owner_vessel_pms_selected(){
     }
 
     var selected_vessel = document.getElementById("sel_owner_vessel_pms").value;
+    selected_vessel_id = selected_vessel;
     $.ajax({
         url: 'get_owner_pms.php?' + 
         "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel + "&app_id=" + cwa_app_id,
@@ -942,6 +1009,19 @@ function owner_vessel_pms_selected(){
             chart = $("#maintenance_analysis_chart_3").data("kendoChart");
             chart.refresh();
 
+            $('#crit-equip-tile').show();
+
+            var critequip_array = new Array();
+
+            critequip_array.push("<ul id='ol_crew_list' class='topcoat-list list'>");
+            for (var i = 0; i < data["critical_equip"].length; i++) {
+                var dataitem = data["critical_equip"][i];
+                critequip_array.push("<li class='topcoat-list__item'>");
+                critequip_array.push(toTitleCase(dataitem.name));
+                critequip_array.push("</li>");
+            };
+            critequip_array.push("</ul>");
+            $('#crit_equip_list').html(critequip_array.join(""));
         },
         error: function() {        
             alert('Please try again in a minute.');
@@ -1043,7 +1123,8 @@ function create_maintenance_analysis_chart(data){
         },
         seriesDefaults: {
             type: "line",
-            style: "smooth"
+            style: "smooth",
+            highlight: {visible:false}
         },
         series: chartDs_1,
         valueAxis: {
@@ -1067,7 +1148,7 @@ function create_maintenance_analysis_chart(data){
             }
         },
         tooltip: {
-            visible: true,
+            visible: false,
             template: "<span style='color:white'>#= series.name #: #= value #</span>"
         },
         axisDefaults: {
@@ -1088,7 +1169,8 @@ function create_maintenance_analysis_chart(data){
         },
         seriesDefaults: {
             type: "line",
-            style: "smooth"
+            style: "smooth",
+            highlight: {visible:false}
         },
         series: chartDs_2,
         valueAxis: {
@@ -1112,7 +1194,7 @@ function create_maintenance_analysis_chart(data){
             }
         },
         tooltip: {
-            visible: true,
+            visible: false,
             template: "<span style='color:white'>#= series.name #: #= value #</span>"
         },
         axisDefaults: {
@@ -1133,7 +1215,8 @@ function create_maintenance_analysis_chart(data){
         },
         seriesDefaults: {
             type: "line",
-            style: "smooth"
+            style: "smooth",
+            highlight: {visible:false}
         },
         series: chartDs_3,
         valueAxis: {
@@ -1157,7 +1240,7 @@ function create_maintenance_analysis_chart(data){
             }
         },
         tooltip: {
-            visible: true,
+            visible: false,
             template: "<span style='color:white'>#= series.name #: #= value #</span>"
         },
         axisDefaults: {
@@ -1168,20 +1251,219 @@ function create_maintenance_analysis_chart(data){
     });
 }
 
-//Ajax templete
-// $.ajax({
-//     url: 'get_owner_pms.php?' + 
-//     "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel + "&app_id=" + cwa_app_id,
-//     datatype: 'text',
-//     beforeSend: function() {
-//         show_spinner();
-//     },
-//     success: function(data){            
-//         hide_spinner();
-//
-//     },
-//     error: function() {        
-//         alert('Please try again in a minute.');
-//         hide_spinner();            
-//     }
-// });
+function show_crew_list(){
+    hide_all();
+
+    var results_array = new Array();
+
+    results_array.push("<select class='topcoat-select' id='sel_owner_vessel_crew' onchange='owner_vessel_crew_selected()'>");
+    results_array.push("<option value='-1'>Select Vessel</option>");
+    for (var i = 0; i < owner_vessels.length; i++) {
+        results_array.push("<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>");
+    };
+    results_array.push("</select>");
+
+    results_array.push("<div class='dashboard_tiles' id='crew_tile'>");
+    results_array.push("<h3 style='text-align: center;'>Crew List</h3>");
+    results_array.push("<div id='crew_list' style='padding:10px;' class='my-navbar-content'>");
+    results_array.push("</div></div>");
+
+    $('#crew').html(results_array.join(""));
+
+    $('#crew_tile').hide();
+    $('#crew').show();
+    // $('#sel_owner_vessel_crew').selectmenu();
+
+    if(selected_vessel_id>0){    
+        $('#sel_owner_vessel_crew').val(selected_vessel_id);
+        // $('#sel_owner_vessel_crew').selectmenu('refresh', true);
+        owner_vessel_crew_selected();
+    }
+}
+
+function owner_vessel_crew_selected (argument) {
+    var show_maintenance_analysis = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Maintenance Analysis'});
+
+    if(show_maintenance_analysis.length == 0){
+        return;
+    }
+
+    var selected_vessel = document.getElementById("sel_owner_vessel_crew").value;
+    selected_vessel_id = selected_vessel;
+    $.ajax({
+        url: 'get_vessel_crew_list.php?' + 
+        "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel,
+        datatype: 'text',
+        beforeSend: function() {
+            show_spinner();
+        },
+        success: function(data){            
+            hide_spinner();
+
+            $('#crew_tile').show();
+
+            var crew_array = new Array();
+            owner_crew = data["crew_list"];
+
+            crew_array.push("<ul id='ol_crew_list' class='topcoat-list list'>");
+            for (var i = 0; i < data["crew_list"].length; i++) {
+                var dataitem = data["crew_list"][i];
+                crew_array.push("<li class='topcoat-list__item'>");
+                crew_array.push("<a href='#crew_cv/"+ dataitem.emp_id +"'>" +
+                    "<div class='dashboard-list'> " +
+                    "<span class='li-data-list-small'>" + toTitleCase(dataitem.rank) + "</span>" + 
+                    " - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> " + 
+                    "(" + toTitleCase(dataitem.nationality) + ")</span><span class='chevron'></div></a>");
+                crew_array.push("</li>");
+            };
+            crew_array.push("</ul>");
+            $('#crew_list').html(crew_array.join(""));
+
+        },
+        error: function() {        
+            alert('Please try again in a minute.');
+            hide_spinner();            
+        }
+    });
+}
+
+function show_crew_cv (emp_id) {
+    $.ajax({
+        url: 'get_crew_cv.php?' + 
+        "emp_id=" + emp_id,
+        datatype: 'text',
+        beforeSend: function() {
+            show_spinner();
+        },
+        success: function(data){            
+            hide_spinner();
+            // $('html, body').animate({scrollTop: $('#crew_tile').offset().top-80}, 'slow');
+            data = data.crew_cv;
+
+            $('#crew').hide();
+            $('body').scrollTop(0);
+            var selected_crew = $.grep(owner_crew , function(e){ return e.emp_id == emp_id; })[0];
+
+            var results_array = new Array();
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<h3>Crew CV</h3>");
+            results_array.push("<ul class='topcoat-list list' data-role='listview'>");
+            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Name : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.emp_name) + "</span></li>");
+            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Nationality : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.nationality) + "</span></li>");
+            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Rank : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.rank) + "</span></li>");
+            results_array.push("</ul>");            
+            results_array.push("</div>");
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<h3>Experience</h3>");
+            results_array.push("<ul class='topcoat-list list' data-role='listview'>");
+            if (data.SummaryByRanks.SummaryEntity.Rank!=undefined) {
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByRanks.SummaryEntity.Rank) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByRanks.SummaryEntity.Duration + "</span></li>");
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByVesselTypes.SummaryEntity.VesselType) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByVesselTypes.SummaryEntity.Duration + "</span></li>");
+            }
+            else{
+                for (var i = data.SummaryByRanks.SummaryEntity.length - 1; i >= 0; i--) {
+                    var item = data.SummaryByRanks.SummaryEntity[i];
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.Rank) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
+                };
+                for (var i = data.SummaryByVesselTypes.SummaryEntity.length - 1; i >= 0; i--) {
+                    var item = data.SummaryByVesselTypes.SummaryEntity[i];
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.VesselType) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
+                };
+            };
+            results_array.push("</ul>");
+            results_array.push("</div>");
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<h3>Sea Service with Company</h3>");
+            results_array.push("<table class='crew_table'>");
+            results_array.push("<tr>");
+            results_array.push("<th>Company</th>");
+            results_array.push("<th>Rank</th>");
+            results_array.push("<th class='crew_detail'>Sign-on Date</th>");
+            results_array.push("<th class='crew_detail'>Sign-off Date</th>");
+            results_array.push("<th class='crew_detail'>Veseel</th>");
+            results_array.push("</tr>");
+
+            for (var i = 0; i < data.SeaServiceData.SeaServiceEntity.length; i++) {
+                var dataitem = data.SeaServiceData.SeaServiceEntity[i];
+                results_array.push("<tr class='itemRow'>");
+                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + dataitem.Company + "</span></td>");
+                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
+                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
+                results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                results_array.push("</tr>");
+            };
+            results_array.push("</table>");
+            results_array.push("</div>");
+
+            results_array.push("<div class='dashboard_tiles'>");
+            results_array.push("<h3>Sea Service with Other Companies</h3>");            
+            results_array.push("<table class='crew_table'>");
+            results_array.push("<tr>");
+            results_array.push("<th>Company</th>");
+            results_array.push("<th>Rank</th>");
+            results_array.push("<th class='crew_detail'>Sign-on Date</th>");
+            results_array.push("<th class='crew_detail'>Sign-off Date</th>");
+            results_array.push("<th class='crew_detail'>Veseel</th>");
+            results_array.push("</tr>");
+
+            for (var i = 0; i < data.SeaServiceOtherData.SeaServiceEntity.length; i++) {
+                var dataitem = data.SeaServiceOtherData.SeaServiceEntity[i];
+                results_array.push("<tr class='itemRow'>");
+                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Company) + "</span></td>");
+                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
+                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
+                results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
+                results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                results_array.push("</tr>");
+            };
+            results_array.push("</table>");
+            results_array.push("</div>");
+
+            $('#crew_cv').html(results_array.join(""));
+            $('#crew_cv').show();
+            $('#btnBack').show();
+
+            step_back = function(){
+                // hide_all();
+                // $('#dashboard').show();
+                // $('html, body').animate({scrollTop: $('#crew_tile').offset().top-55}, 'slow');
+                window.location.href = "#back_crewcv"
+            };
+
+            // $('.crew_list_view').listview();
+            // $('.crew_table').table({ defaults: true });
+
+            $('.itemRow').click(function() {
+                $(this).closest('table').find('.temp_tr').remove();
+                var results_array = new Array();
+                results_array.push('<tr class="temp_tr">');
+                results_array.push('<td colspan="100%">');
+                results_array.push('<div>');
+                results_array.push('<ul class="topcoat-list list">');
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Vessel : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(4)').html() + "</span></li>");
+                results_array.push("<li class='t3opcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Sign-on Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Sign-off Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
+                results_array.push('</ul>');
+                results_array.push('</div>');
+                results_array.push('</td>');
+                results_array.push('</tr>');
+                $(this).after(results_array.join(""));
+                // $('.temp_ul').listview();
+                // alert($(this).find('td:eq(0)').html());
+            });
+
+            $('.crew_detail').hide();
+        },
+        error: function() {        
+            alert('Please try again in a minute.');
+            hide_spinner();            
+        }
+    });
+}
+

@@ -6,14 +6,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="CWA Mobile">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title></title>
 
   <link href="kendo-styles/kendoui.common.min.css" rel="stylesheet" />
   <link href="kendo-styles/kendo.default.min.css" rel="stylesheet" />
   <link href="kendo-styles/kendo.dataviz.min.css" rel="stylesheet" />
   <link href="kendo-styles/kendo.dataviz.default.min.css" rel="stylesheet" />
-  <link href="css/hamburger.css" rel="stylesheet" />
+  <!-- <link href="css/hamburger.css" rel="stylesheet" /> -->
 
   <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
   <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png"/>
@@ -31,12 +30,12 @@
   <script src="kendo-js/jquery.min.js"></script>
 
   <!-- jQuery and jQuery Mobile -->
-  <script charset="UTF-8" type="text/javascript" src="https://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0&s=1"></script>
-  <!--<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true&libraries=weather"></script>-->
+  <!--<script charset="UTF-8" type="text/javascript" src="https://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0&s=1"></script>-->
+  <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true&libraries=weather"></script>
   <script src="js/jquery-1.9.0.min.js"></script>
   <!-- <script src="js/jquery.mobile-1.3.1.min.js"></script> -->
-  <!-- // <script src="js/jquery-ui-1.10/jquery-ui-1.10.4.custom.js"></script> -->
-  <!-- // <script src="js/hamburger.js"></script> -->
+  <!-- <script src="js/jquery-ui-1.10/jquery-ui-1.10.4.custom.js"></script> -->
+  <!-- <script src="js/hamburger.js"></script> -->
   
   <!-- <script src="js/pageslider.js"></script> -->
   <script src="kendo-js/kendo.all.min.js"></script>
@@ -48,12 +47,14 @@
 
 </head>
 <body class="light">
-  <!-- <div id="sidemenu" class="topcoat-list__container container--sidemenu">
+  <div id="sidemenu" class="topcoat-list__container container--sidemenu">
     <ul id="navbar" class="topcoat-list">
       <li class="topcoat-list__item">
+        <!-- <a href="javascript:show_owners();">Dashboard</a> -->
         <a href="#">Dashboard</a>
       </li>
       <li class="topcoat-list__item">
+        <!-- <a href="javascript:show_pms();">PMS</a> -->
         <a href="#pms">PMS</a>        
       </li>
       <li class="topcoat-list__item">
@@ -66,19 +67,6 @@
         <a href="#">Log Out</a>
       </li>
     </ul>  
-  </div> -->
-  <div id="sidemenu" style="display:none">
-    <nav class="mobileNav">
-      <ul>
-          <li><a href="#"><div>Dashboard</div></a></li>
-          <li><div style="color: white;">Accounts</div></li>
-          <li><a href="#crew"><div>Crewing</div></a></li>
-          <li><a href="#pms"><div>PMS</div></a></li>
-          <li><a href="#">Help</a></li>
-          <li><a href="mailto:in-tdc-mobile@bs-shipmanagement.com">Contact Us</a></li>
-          <li><a href="#">Log Out</a></li>
-      </ul>
-    </nav>
   </div>
 <div id="container" class='smooth full-height'>
   <div class="topcoat-navigation-bar on-top header">
@@ -91,9 +79,7 @@
             </a> -->
     </div>
     <div class="topcoat-navigation-bar__item center half">
-      <h1 class="topcoat-navigation-bar__title">
-      <img src="img/bsm_logo_glow.png" style="height: 19px; padding-top:2px; padding-right: 5px;">
-      CWA Mobile</h1>
+      <h1 class="topcoat-navigation-bar__title">CWA Mobile1</h1>
     </div>
     <div class="topcoat-navigation-bar__item right quarter">
       <span id="hamburger">
@@ -104,7 +90,6 @@
       </span>
     </div>
   </div>
-  <div id="contentLayer"></div>
   <div id="content" class='content on-top scroller'>
     <div class='error' id='ajax_error' style="display: none;margin: 0px;font-style: italic;font-size: 14px;color: rgb(146,146,146);padding: 20px;"> 
       Sorry, there was a temporary error. Please try again in a minute.<br/>-vidya.sagar@bs-shipmanagement.com
@@ -124,7 +109,7 @@
         </div>
         <!-- <a class="button-main button-block" id='login_submit'>Sign In</a> -->
         <!-- <input class="topcoat-button" type="submit" value="Sign In" id='login_submit'/> -->
-        <button class="topcoat-button" type="submit">Sign In</button>
+        <button class="topcoat-button" type="submit" id='login_submit'>Sign In</button>
       </form>
     </div>
     <div id="index_content" style="display: block;">
@@ -132,7 +117,6 @@
     <div id='view_title'></div>
     <div id='owners' class="my-navbar-content"></div>
     <div id='dashboard' class="my-navbar-content"></div>
-    <div id='crew' class="my-navbar-content"></div>
     <div id='crew_cv' class="my-navbar-content"></div>
     <div id='pms' class="my-navbar-content"></div>
     <div class='spinner_index'>

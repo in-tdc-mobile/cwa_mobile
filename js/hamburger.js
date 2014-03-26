@@ -26,9 +26,9 @@ jQuery(document).ready(function() {
         //disable all scrolling on mobile devices while menu is shown
         jQuery('#container').bind('touchmove', function(e){e.preventDefault()});
 
-        //set margin for the whole container with a jquery UI animation
+        // set margin for the whole container with a jquery UI animation
         jQuery("#container").animate({"marginLeft": ["-70%", 'easeOutExpo']}, {
-            duration: 200
+            duration: 100
         });
 
     });
@@ -39,9 +39,9 @@ jQuery(document).ready(function() {
         //enable all scrolling on mobile devices when menu is closed
         jQuery('#container').unbind('touchmove');
 
-        //set margin for the whole container back to original state with a jquery UI animation
+        // set margin for the whole container back to original state with a jquery UI animation
         jQuery("#container").animate({"marginLeft": ["0", 'easeOutExpo']}, {
-            duration: 200,
+            duration: 100,
             complete: function() {
                   jQuery('#content').css('width', 'auto');
                 jQuery('#contentLayer').css('display', 'none');
