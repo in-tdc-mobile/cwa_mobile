@@ -135,6 +135,7 @@ function route_to_dashboard (event) {
 
 // Basic page routing
 function route(event) {
+    $('body').scrollTop(0);
     var page,
         hash = window.location.hash.split('/')[0];
 
@@ -150,7 +151,17 @@ function route(event) {
         // $('html, body').animate({scrollTop: $('#crew_tile').position().top-50}, 'slow');
         $('body').scrollTop(0);
     }
+    else if (hash === "#logout") {
+        // hide_all();
+        // $('#hamburger').hide();
+        $.jStorage.set("pal_user_name", null);
+        // $('.login').show();
+        location.reload(true);
+    }
     else {
+        if (pal_user_name == null) {
+            return;
+        }
         page = show_owners();
     }
     // slider.slidePage($(page));
@@ -252,6 +263,7 @@ $('#login_form').submit(function(){
                 cwa_app_id = str[1];
                 $.jStorage.set("pal_user_id", pal_user_id);
                 $.jStorage.set("cwa_app_id", cwa_app_id);
+                // window.location.replace("#");
                 show_owners();
             // location.reload();
             } else {
@@ -260,10 +272,10 @@ $('#login_form').submit(function(){
             }
         }
     });
-      //}
-      $('#login_password').blur();
-      $('#login_email').blur();
-      return false;
+    //}
+    $('#login_password').blur();
+    $('#login_email').blur();
+    return false;
 });
 
 function show_owners(){
@@ -276,7 +288,11 @@ function show_owners(){
         show_spinner();
     },
     success: function(data){
+        hide_spinner();
         owners_array = data["owners_array"];
+        if(!owners_array){
+            return;
+        }
         if($.isArray(owners_array) == false){
             owners_array = $.makeArray(data["owners_array"]);
         }
@@ -289,8 +305,6 @@ function show_owners(){
                 results_array.push("</a></li>");
             }
             results_array.push("</ul>");
-
-            hide_spinner();
             
             $('#view_title').show();
             //$('#view_title').html('Owners');
@@ -409,9 +423,8 @@ function owner_vessel_selected(){
             show_spinner();
         },
         success: function(data){
-            
             var noon_report_data = data["noon_report"];
-            var len = noon_report_data.length;
+
             var chartDs = [];
             var dates = [];
             var slipData = [];
@@ -419,68 +432,52 @@ function owner_vessel_selected(){
             var speedData = [];
             var FoConsumptionData = [];
 
-            for (var x = 0; x < len; x++) {
-                var dataitem = noon_report_data[x];
-                dates.push(kendo.format('{0:dd-MM-yyyy}', dataitem.report_date.split("T")[0]));
-                slipData.push(dataitem.slip);
-                FoConsumptionData.push(dataitem.me_fo_consumption);
-                speedData.push(dataitem.speed);
-                EngineRPMData.push(dataitem.engine_rpm);
-            }
-
-            dates.reverse();
-            slipData.reverse();
-            FoConsumptionData.reverse();
-            speedData.reverse();
-            EngineRPMData.reverse();
-
-            chartDs.push({ name: "Engine RPM", data: EngineRPMData, color: "#00004A" }, { name: "Speed Knots", data: speedData, color: "Brown" }, { name: "FO Consumption", data: FoConsumptionData, color: "#6A5ACD" }, { name: "Slip(%)", data: slipData, color: "DarkGreen" });
-
             var results_array = new Array();
-            results_array.push("<div class='dashboard_tiles' id='contact_info_tile'><h3 style='text-align: center;'>Contact Info</h3>");
-            results_array.push("<div style='padding: 5px'> <ul id='ol_contact' class='topcoat-list list'> ");
-            results_array.push("<li class='topcoat-list__item dashboard-list'> Manager : " + data["vessel_info"].primary_manager_name + "</li>");
-            results_array.push("<li class='topcoat-list__item dashboard-list'> Email : <span> <a style='text-decoration: underline' href='mailto:" + data["vessel_info"].email + "'>" + data["vessel_info"].email + "</a></span></li>");
-            results_array.push("<li class='topcoat-list__item dashboard-list'> Phone : ");
-            if(data["vessel_info"].telephone_1 != null){
-                results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
+            if(data["vessel_info"]){
+                results_array.push("<div class='dashboard_tiles' id='contact_info_tile'><h3 style='text-align: center;'>Contact Info</h3>");
+                results_array.push("<div style='padding: 5px'> <ul id='ol_contact' class='topcoat-list list'> ");
+                results_array.push("<li class='topcoat-list__item dashboard-list'> Manager : " + data["vessel_info"].primary_manager_name + "</li>");
+                results_array.push("<li class='topcoat-list__item dashboard-list'> Email : <span> <a style='text-decoration: underline' href='mailto:" + data["vessel_info"].email + "'>" + data["vessel_info"].email + "</a></span></li>");
+                results_array.push("<li class='topcoat-list__item dashboard-list'> Phone : ");
+                if(data["vessel_info"].telephone_1 != null){
+                    results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_1 + "'>00870-" + data["vessel_info"].telephone_1 + "</a></span>");
+                }
+                if(data["vessel_info"].telephone_2 != null){
+                    results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_2 + "'>00870-" + data["vessel_info"].telephone_2 + "</a></span>");
+                }
+                if(data["vessel_info"].telephone_3 != null){
+                    results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_3 + "'>00870-" + data["vessel_info"].telephone_3 + "</a></span>");
+                }
+                results_array.push("</li>");
+                results_array.push("</ul></div></div>");
             }
-            if(data["vessel_info"].telephone_2 != null){
-                results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_2 + "'>00870-" + data["vessel_info"].telephone_2 + "</a></span>");
+            if(noon_report_data){
+
+                results_array.push("<div class='dashboard_tiles' id='vslperf_tile'><h3 style='text-align: center;'>Noon Report</h3><div style='width:100%'><div id='noon_report_chart'></div></div></div>");
+            
+                for (var x = 0; x < len; x++) {
+                    var dataitem = noon_report_data[x];
+                    dates.push(kendo.format('{0:dd-MM-yyyy}', dataitem.report_date.split("T")[0]));
+                    slipData.push(dataitem.slip);
+                    FoConsumptionData.push(dataitem.me_fo_consumption);
+                    speedData.push(dataitem.speed);
+                    EngineRPMData.push(dataitem.engine_rpm);
+                }
+
+                dates.reverse();
+                slipData.reverse();
+                FoConsumptionData.reverse();
+                speedData.reverse();
+                EngineRPMData.reverse();
+
+                chartDs.push({ name: "Engine RPM", data: EngineRPMData, color: "#00004A" }, { name: "Speed Knots", data: speedData, color: "Brown" }, { name: "FO Consumption", data: FoConsumptionData, color: "#6A5ACD" }, { name: "Slip(%)", data: slipData, color: "DarkGreen" });
+
+                var len = noon_report_data.length;
+                createNoonChart(chartDs, dates);
             }
-            if(data["vessel_info"].telephone_3 != null){
-                results_array.push("<span> <a style='text-decoration: underline' href='tel:00870" + data["vessel_info"].telephone_3 + "'>00870-" + data["vessel_info"].telephone_3 + "</a></span>");
-            }
-            results_array.push("</li>");
-            results_array.push("</ul></div></div>");
-
-            results_array.push("<div class='dashboard_tiles' id='vslperf_tile'><h3 style='text-align: center;'>Noon Report</h3><div style='width:100%'><div id='noon_report_chart'></div></div></div>");
-            // results_div += "<div style='background:black' height='5px'/>"
-            // results_array.push("<div class='dashboard_tiles' id='crew_tile'><h3 style='text-align: center;'>Crew List</h3><div id='crew_list' style='padding:10px;' class='my-navbar-content'></div></div>");
-
-            // var crew_array = new Array();
-            // owner_crew = data["crew_list"];
-
-            // crew_array.push("<ul id='ol_crew_list' class='topcoat-list list'>");
-            // for (var i = 0; i < data["crew_list"].length; i++) {
-            //     dataitem = data["crew_list"][i];
-            //     crew_array.push("<li class='topcoat-list__item'>");
-            //     crew_array.push("<a href='#crew_cv/"+ dataitem.emp_id +"'>" +
-            //         "<span class='dashboard-list'> " +
-            //         "<span class='li-data-list-small'>" + toTitleCase(dataitem.rank) + "</span>" + 
-            //         " - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> " + 
-            //         "(" + toTitleCase(dataitem.nationality) + ")</span><span class='chevron'></span></a>");
-            //     crew_array.push("</li>");
-            // };
-            // crew_array.push("</ul>");
 
             $('#accordion').html(results_array.join(""));
-            // $('#crew_list').html(crew_array.join(""));
-            // $('#ol_crew_list').listview();
-            // $('#ol_contact').listview();
 
-            createNoonChart(chartDs, dates);
-            
             if($.grep(dashboard_settings , function(e){ return e.code == 'CREW'; }).length == 0){
                 $('#crew_tile').hide();
             }
@@ -749,7 +746,7 @@ function get_imo(callback, ownerMode) {
     }
     imodata += '"]';
     var url = 'get_vessel_positions_cwa.php?'+imodata;
-    console.log(url);
+    // console.log(url);
     $.ajax({
         url: url,
         datatype: 'text',
@@ -760,7 +757,7 @@ function get_imo(callback, ownerMode) {
         if(data!=null){
             var dat = [], randomLatitude, randomLongitude;
             for (var i = 0; i < data.length; i++) {
-                console.log(data[i]['trail-date-time-date-of-value']);
+                // console.log(data[i]['trail-date-time-date-of-value']);
                 var lat_lon = parse_lat_lon(data[i]);
                 dat.push(new DataModel(data[i]['asset-name'], lat_lon['lat'], lat_lon['lon'], 
                           prsflt(data[i]['speed-value-of-value'])+ " " + data[i]['speed-units-of-value'].toLowerCase(), 
@@ -991,6 +988,12 @@ function owner_vessel_pms_selected(){
 
     var selected_vessel = document.getElementById("sel_owner_vessel_pms").value;
     selected_vessel_id = selected_vessel;
+
+    if(selected_vessel_id<=0){
+        $('#maintenance_analysis').hide();
+        $('#crit-equip-tile').hide();
+        return;
+    }
     $.ajax({
         url: 'get_owner_pms.php?' + 
         "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel + "&app_id=" + cwa_app_id,
@@ -1000,6 +1003,9 @@ function owner_vessel_pms_selected(){
         },
         success: function(data){            
             hide_spinner();
+            if(!data["maintenance_analysis"]) {
+                return;
+            }
             create_maintenance_analysis_chart(data["maintenance_analysis"]);
             $('#maintenance_analysis').show();
             var chart = $("#maintenance_analysis_chart_1").data("kendoChart");
@@ -1290,6 +1296,10 @@ function owner_vessel_crew_selected (argument) {
 
     var selected_vessel = document.getElementById("sel_owner_vessel_crew").value;
     selected_vessel_id = selected_vessel;
+    if(selected_vessel_id<=0){
+        $('#crew_tile').hide();
+        return;
+    }
     $.ajax({
         url: 'get_vessel_crew_list.php?' + 
         "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel,
@@ -1299,6 +1309,10 @@ function owner_vessel_crew_selected (argument) {
         },
         success: function(data){            
             hide_spinner();
+
+            if(data["crew_list"]==null){
+                return;
+            }
 
             $('#crew_tile').show();
 
@@ -1338,10 +1352,18 @@ function show_crew_cv (emp_id) {
         success: function(data){            
             hide_spinner();
             // $('html, body').animate({scrollTop: $('#crew_tile').offset().top-80}, 'slow');
-            data = data.crew_cv;
-
+            $('#btnBack').show();
             $('#crew').hide();
             $('body').scrollTop(0);
+            step_back = function(){
+                window.location.href = "#back_crewcv"
+            };
+
+            if(!data.crew_cv){
+                return;
+            }
+            data = data.crew_cv;
+
             var selected_crew = $.grep(owner_crew , function(e){ return e.emp_id == emp_id; })[0];
 
             var results_array = new Array();
@@ -1427,14 +1449,8 @@ function show_crew_cv (emp_id) {
 
             $('#crew_cv').html(results_array.join(""));
             $('#crew_cv').show();
-            $('#btnBack').show();
 
-            step_back = function(){
-                // hide_all();
-                // $('#dashboard').show();
-                // $('html, body').animate({scrollTop: $('#crew_tile').offset().top-55}, 'slow');
-                window.location.href = "#back_crewcv"
-            };
+            
 
             // $('.crew_list_view').listview();
             // $('.crew_table').table({ defaults: true });
