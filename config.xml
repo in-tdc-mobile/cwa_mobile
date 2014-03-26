@@ -3,12 +3,12 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
 		id="com.bsm-spendtracker"
 		version = "1.0.1"
-		versionCode = "78">
+		versionCode = "1">
 
-    <name>SpendTracker</name>
+    <name>CWA Mobile</name>
 
     <description>
-        Track the SDC wise vendor spend of BSM.
+        Customer web access thorugh Mobile
     </description>
 
     <author href="http://vsagar.me" email="vidya.sagar@bs-shipmanagement.com">Vidya Sagar. S</author>
