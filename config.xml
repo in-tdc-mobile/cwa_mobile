@@ -2,8 +2,8 @@
     <widget xmlns = "http://www.w3.org/ns/widgets" 
         xmlns:gap = "http://phonegap.com/ns/1.0"
 		id="com.bsm-spendtracker"
-		version = "1.0.1"
-		versionCode = "1">
+		version = "1.0.0.2"
+		versionCode = "2">
 
     <name>CWA Mobile</name>
 

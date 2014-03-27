@@ -498,18 +498,27 @@ function owner_vessel_selected(){
                         pushpin.setLocation(new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude));
                         pushpin.title =  vessel_location[i].Name;
                         pushpin.description = [vessel_location[i].latitude,vessel_location[i].longitude,vessel_location[i].datetime,vessel_location[i].speed,vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].eta, vessel_location[i].destination, vessel_location[i].traildate, vessel_location[i].trailtime];
+
+                        closeInfobox();
+                        // var pin = e.target;
+                        var description = pushpin.description;
+                        var html_array = new Array();
+                        html_array.push("<span class='infobox_title'>" + vessel_location[i].Name + "</span> ("+description[8]+" : "+description[9]+")<br/>") ;
+                        html_array.push("<b>Lat / Lon:&nbsp</b>"+prsflt(description[0])+"/"+prsflt(description[1])+"("+description[2]+")<br/> <b>Speed / Course:&nbsp</b>"+description[3]+"<br/>");
+                        html_array.push("<b>Destination / ETA:&nbsp</b>"+description[7]+" / "+description[6]+"<br/>");
+                        html_array.push('<span class="popup_label"><button onclick="show_vessel_path('+description[4]+','+description[5]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>');
                         
-                        var infoboxLayer = new Microsoft.Maps.EntityCollection();
-                        infobox = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0, 0), { 
-                          visible: false, offset: new Microsoft.Maps.Point(0,15) 
-                        });
-                        infoboxLayer.push(infobox);
-                        map.entities.push(infoboxLayer);
-                            
+                            infobox.setLocation(new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude));
+
+                            infobox.setOptions({
+                                visible:true,
+                                offset: new Microsoft.Maps.Point(-33, 20),
+                                htmlContent: pushpinFrameHTML.replace('{content}', html_array.join(""))
+                            });
                         
                         map.entities.push(pushpin); 
                         Microsoft.Maps.Events.addHandler(pushpin, 'click', displayEventInfo);
-                        map.setView({ center: new Microsoft.Maps.Location(vessel_location[i].latitude+10, vessel_location[i].longitude+10), zoom  : 2});
+                        map.setView({ center: new Microsoft.Maps.Location(vessel_location[i].latitude+20, vessel_location[i].longitude+32), zoom  : 2});
                         /*var marker = create_marker(vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].highlight)
                         temp = vessel_location[i];
                         popup_data(marker, vessel_location[i].Name, vessel_location[i].latitude, vessel_location[i].longitude, vessel_location[i].speed, vessel_location[i].datetime, vessel_location[i].imo, vessel_location[i].degree);*/
@@ -589,7 +598,7 @@ function createNoonChart(chartDs, dates) {
 /*-----Start Bing Map-------*/
 
 var map, myLayer, infobox;
-var pushpinFrameHTML = '<div class="infobox"><a class="infobox_close" href="javascript:closeInfobox()"><img src="./img/close-icon.png"/></a><div class="infobox_content">{content}</div></div><img src="./img/infoarrow.png" class="infobox_pointer">';
+var pushpinFrameHTML = '<div class="infobox"><a class="infobox_close" href="javascript:closeInfobox()"><div class="close-button">x</div></a><div class="infobox_content">{content}</div></div><img src="./img/infoarrow.png" class="infobox_pointer">';
 
 
 function GetMap() { 
@@ -675,30 +684,31 @@ function displayEventClusterInfo(e) {
 }
 
 function displayEventInfo(e) { 
-    closeInfobox();
+    console.log(e);
+   //  closeInfobox();
     var pin = e.target;
     var description = pin.description;
-    var html_array = new Array();
-    html_array.push("<span class='infobox_title'>" + pin.title + "</span> ("+description[8]+" : "+description[9]+")<br/>") ;
-    html_array.push("<b>Lag / Log:</b>"+prsflt(description[0])+"/"+prsflt(description[1])+"("+description[2]+")<br/> <b>Speed / Course:</b>"+description[3]+"<br/>");
-    html_array.push("<b>Destination / ETA:</b>"+description[7]+" / "+description[6]+"<br/>");
-   /* html_array.push('<span class="popup_label"><button onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana;padding:5px;" title="vessel wiki">Additional Details</button></span>');*/
-    html_array.push('<span class="popup_label"><button onclick="show_vessel_path('+description[4]+','+description[5]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>');
-    /*    html += '<div style="padding-top: 7px;">'+
-    '<span class="popup_label"><button  onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="vessel wiki">Additional Details</a></span>' +
-    '<span class="popup_label"><button onclick="show_fav_on_map('+description[4]+')" class="show_on_map" id=map_'+description[4]+' style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show On Map</a></span>'+
-    '</div>';*/
+   //  var html_array = new Array();
+   //  html_array.push("<span class='infobox_title'>" + pin.title + "</span> ("+description[8]+" : "+description[9]+")<br/>") ;
+   //  html_array.push("<b>Lag / Log:</b>"+prsflt(description[0])+"/"+prsflt(description[1])+"("+description[2]+")<br/> <b>Speed / Course:</b>"+description[3]+"<br/>");
+   //  html_array.push("<b>Destination / ETA:</b>"+description[7]+" / "+description[6]+"<br/>");
+   // /* html_array.push('<span class="popup_label"><button onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana;padding:5px;" title="vessel wiki">Additional Details</button></span>');*/
+   //  html_array.push('<span class="popup_label"><button onclick="show_vessel_path('+description[4]+','+description[5]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>');
+   //  /*    html += '<div style="padding-top: 7px;">'+
+   //  '<span class="popup_label"><button  onclick="fetch_vessel_wiki('+description[4]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="vessel wiki">Additional Details</a></span>' +
+   //  '<span class="popup_label"><button onclick="show_fav_on_map('+description[4]+')" class="show_on_map" id=map_'+description[4]+' style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show On Map</a></span>'+
+   //  '</div>';*/
 
 
-    if (e.targetType == "pushpin") {
-        infobox.setLocation(e.target.getLocation());
+   //  if (e.targetType == "pushpin") {
+   //      infobox.setLocation(e.target.getLocation());
 
-        infobox.setOptions({
-            visible:true,
-            offset: new Microsoft.Maps.Point(-33, 20),
-            htmlContent: pushpinFrameHTML.replace('{content}', html_array.join(""))
-        });
-    }
+   //      infobox.setOptions({
+   //          visible:true,
+   //          offset: new Microsoft.Maps.Point(-33, 20),
+   //          htmlContent: pushpinFrameHTML.replace('{content}', html_array.join(""))
+   //      });
+   //  }
      show_vessel_dashbord(pin.title);
 }
 

@@ -514,3 +514,9 @@ html, body {
 #contentLayer{
   width: 100% !important;
 }
+
+.close-button{
+  font-size: 26px;
+  top: -10px;
+  position: relative;
+}
