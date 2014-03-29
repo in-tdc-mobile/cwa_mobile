@@ -519,4 +519,5 @@ html, body {
   font-size: 26px;
   top: -10px;
   position: relative;
+  opacity: .6;
 }

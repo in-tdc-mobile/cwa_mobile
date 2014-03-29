@@ -135,7 +135,8 @@ function route_to_dashboard (event) {
 
 // Basic page routing
 function route(event) {
-    $('body').scrollTop(0);
+    // $('body').scrollTop(0);
+    $('body, html').animate({scrollTop : 0}, 0);
     var page,
         hash = window.location.hash.split('/')[0];
 
@@ -149,7 +150,7 @@ function route(event) {
         hide_all();
         $('#crew').show();
         // $('html, body').animate({scrollTop: $('#crew_tile').position().top-50}, 'slow');
-        $('body').scrollTop(0);
+        // $('body').scrollTop(0);
     }
     else if (hash === "#logout") {
         // hide_all();
@@ -234,7 +235,7 @@ function login_failure() {
 }
 
 $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
-    options.url = 'https://getVesselTracker.com/cwa_mobile_dev/' + options.url + "&pal_user_email=" + $.jStorage.get("pal_user_name");
+    options.url = 'https://getVesselTracker.com/cwa_mobile_prod/' + options.url + "&pal_user_email=" + $.jStorage.get("pal_user_name");
 });
 
 $('#login_form').submit(function(){
@@ -264,6 +265,9 @@ $('#login_form').submit(function(){
                 $.jStorage.set("pal_user_id", pal_user_id);
                 $.jStorage.set("cwa_app_id", cwa_app_id);
                 // window.location.replace("#");
+                // $('body').scrollTop(0);
+                // document.documentElement.scrollTop = 0;
+                $('body, html').animate({scrollTop : 0}, 0);
                 show_owners();
             // location.reload();
             } else {
@@ -455,6 +459,7 @@ function owner_vessel_selected(){
 
                 results_array.push("<div class='dashboard_tiles' id='vslperf_tile'><h3 style='text-align: center;'>Noon Report</h3><div style='width:100%'><div id='noon_report_chart'></div></div></div>");
             
+                var len = noon_report_data.length;
                 for (var x = 0; x < len; x++) {
                     var dataitem = noon_report_data[x];
                     dates.push(kendo.format('{0:dd-MM-yyyy}', dataitem.report_date.split("T")[0]));
@@ -471,12 +476,15 @@ function owner_vessel_selected(){
                 EngineRPMData.reverse();
 
                 chartDs.push({ name: "Engine RPM", data: EngineRPMData, color: "#00004A" }, { name: "Speed Knots", data: speedData, color: "Brown" }, { name: "FO Consumption", data: FoConsumptionData, color: "#6A5ACD" }, { name: "Slip(%)", data: slipData, color: "DarkGreen" });
+                $('#accordion').html(results_array.join(""));
 
-                var len = noon_report_data.length;
+                temp = dates;
                 createNoonChart(chartDs, dates);
             }
-
-            $('#accordion').html(results_array.join(""));
+            else{
+                $('#accordion').html(results_array.join(""));
+            }
+            
 
             if($.grep(dashboard_settings , function(e){ return e.code == 'CREW'; }).length == 0){
                 $('#crew_tile').hide();
