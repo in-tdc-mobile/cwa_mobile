@@ -512,7 +512,7 @@ function owner_vessel_selected(){
                         var description = pushpin.description;
                         var html_array = new Array();
                         html_array.push("<span class='infobox_title'>" + vessel_location[i].Name + "</span> ("+description[8]+" : "+description[9]+")<br/>") ;
-                        html_array.push("<b>Lat / Lon:&nbsp</b>"+prsflt(description[0])+"/"+prsflt(description[1])+"("+description[2]+")<br/> <b>Speed / Course:&nbsp</b>"+description[3]+"<br/>");
+                        html_array.push("<b>Lat / Lon:&nbsp</b>"+prsflt(description[0])+"/"+prsflt(description[1])+"<br/> <b>Speed / Course:&nbsp</b>"+description[2]+"<br/>");
                         html_array.push("<b>Destination / ETA:&nbsp</b>"+description[7]+" / "+description[6]+"<br/>");
                         html_array.push('<span class="popup_label"><button onclick="show_vessel_path('+description[4]+','+description[5]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>');
                         
@@ -1387,12 +1387,7 @@ function show_crew_cv (emp_id) {
             var results_array = new Array();
 
             results_array.push("<div class='dashboard_tiles'>");
-            results_array.push("<h3>"+toTitleCase(selected_crew.emp_name)+", "+toTitleCase(selected_crew.rank)+" ("+toTitleCase(selected_crew.nationality)+")</h3>");
-            // results_array.push("<ul class='topcoat-list list' data-role='listview'>");
-            // results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Name : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.emp_name) + "</span></li>");
-            // results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Nationality : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.nationality) + "</span></li>");
-            // results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Rank : </span><span style='font-weight: bold;'>"+  + "</span></li>");
-            // results_array.push("</ul>");            
+            results_array.push("<h3>"+toTitleCase(selected_crew.emp_name)+", "+toTitleCase(selected_crew.rank)+" ("+toTitleCase(selected_crew.nationality)+")</h3>");       
             results_array.push("</div>");
 
             results_array.push("<div class='dashboard_tiles'>");
