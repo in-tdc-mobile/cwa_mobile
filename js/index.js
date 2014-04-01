@@ -1387,12 +1387,12 @@ function show_crew_cv (emp_id) {
             var results_array = new Array();
 
             results_array.push("<div class='dashboard_tiles'>");
-            results_array.push("<h3>Crew CV</h3>");
-            results_array.push("<ul class='topcoat-list list' data-role='listview'>");
-            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Name : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.emp_name) + "</span></li>");
-            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Nationality : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.nationality) + "</span></li>");
-            results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Rank : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.rank) + "</span></li>");
-            results_array.push("</ul>");            
+            results_array.push("<h3>"+toTitleCase(selected_crew.emp_name)+", "+toTitleCase(selected_crew.rank)+" ("+toTitleCase(selected_crew.nationality)+")</h3>");
+            // results_array.push("<ul class='topcoat-list list' data-role='listview'>");
+            // results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Name : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.emp_name) + "</span></li>");
+            // results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Nationality : </span><span style='font-weight: bold;'>"+ toTitleCase(selected_crew.nationality) + "</span></li>");
+            // results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Rank : </span><span style='font-weight: bold;'>"+  + "</span></li>");
+            // results_array.push("</ul>");            
             results_array.push("</div>");
 
             results_array.push("<div class='dashboard_tiles'>");
@@ -1403,7 +1403,7 @@ function show_crew_cv (emp_id) {
                 results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByVesselTypes.SummaryEntity.VesselType) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByVesselTypes.SummaryEntity.Duration + "</span></li>");
             }
             else{
-                for (var i = data.SummaryByRanks.SummaryEntity.length - 1; i >= 0; i--) {
+                for (var i = 0; i < data.SummaryByRanks.SummaryEntity.length; i++) {
                     var item = data.SummaryByRanks.SummaryEntity[i];
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.Rank) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
                 };
