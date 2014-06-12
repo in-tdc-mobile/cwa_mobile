@@ -1425,6 +1425,33 @@ function show_crew_cv (emp_id) {
             results_array.push("</table>");
             results_array.push("</div>");
 
+            if(data.ExpiryDocumentsData.ExpiryDocumentsEntity != null) { 
+                results_array.push("<div class='dashboard_tiles'>");
+                results_array.push("<h3>Documents</h3>");
+                results_array.push("<table class='crew_table'>");
+                results_array.push("<tr>");
+                results_array.push("<th>Name</th>");
+                results_array.push("<th>Expiry Date</th>");
+                results_array.push("<th>Issue Date</th>");
+                results_array.push("</tr>");
+                alert(data.ExpiryDocumentsData.ExpiryDocumentsEntity.length)
+                var temp_name="new";
+                for (var i = data.ExpiryDocumentsData.ExpiryDocumentsEntity.length - 1; i >= 0; i--) {
+                    var item = data.ExpiryDocumentsData.ExpiryDocumentsEntity[i];
+                    if(temp_name != item.name) {
+                        temp_name = item.name
+                        results_array.push("<tr>");
+                        results_array.push("<td>"+toTitleCase(temp_name)+"</td>");
+                        results_array.push("<td>"+((item.expiry_date) ? item.expiry_date.split("T")[0] : "")+"</td>");
+                        results_array.push("<td>"+((item.expiry_date) ? item.issue_date.split("T")[0] : "")+"</td>");
+                        results_array.push("</tr>");
+                    }   
+                };
+                
+                results_array.push("</ul>");
+                results_array.push("</div>");
+            }
+
             $('#crew_cv').html(results_array.join(""));
             $('#crew_cv').show();
             $('#btnBack').show();
@@ -1466,4 +1493,18 @@ function show_crew_cv (emp_id) {
         }
     });
 }
+
+function dateformat(dat, format) { 
+    if(dat != null && dat != '') {
+        var d = new Date(dat);
+        //console.log(dat);
+        //console.log(d.getDate()+"-"+d.getMonth()+"-"+d.getYear());
+        if(format == "dd-mon-yyyy")
+            dat = ("0" + d.getDate()).slice(-2)+"-"+getMonthName(d.getMonth())+"-"+d.getFullYear();
+    } else {
+        dat = '';
+    }
+    return dat
+}
+
 
