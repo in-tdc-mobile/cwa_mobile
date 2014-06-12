@@ -119,6 +119,7 @@ function hide_all() {
     $('#view_title').hide();
     $('#owners').hide();
     $('#dashboard').hide();
+    $('#vessel_details').hide();
     $('#crew').hide();
     $('#crew_cv').hide();
     $('#pms').hide();
@@ -140,6 +141,8 @@ function route(event) {
 
     if (hash === "#pms") {
         show_pms();
+    } else if (hash === "#vdetails") {
+        show_vessel_details();
     } else if (hash === "#crew") {
         show_crew_list();
     } else if (hash === "#crew_cv") {
@@ -587,6 +590,81 @@ function createNoonChart(chartDs, dates) {
                 }
             }
         });       
+}
+
+function show_vessel_details() {
+    hide_all();
+
+    var results_array = new Array();
+
+    results_array.push("<select class='topcoat-select' id='sel_owner_vessel_crew' onchange='get_vessel_details()'>");
+    results_array.push("<option value='-1'>Select Vessel</option>");
+    for (var i = 0; i < owner_vessels.length; i++) {
+        results_array.push("<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>");
+    };
+    results_array.push("</select>");
+
+    results_array.push("<div class='dashboard_tiles' id='crew_tile'>");
+    results_array.push("<h3 style='text-align: center;'>Vessel Details</h3>");
+    results_array.push("<div id='vesdetails' style='padding:10px;' class='my-navbar-content'>");
+    results_array.push("</div></div>");
+
+    $('#vessel_details').html(results_array.join(""));
+    $('#vessel_details').show();
+
+    if(selected_vessel_id>0){    
+        $('#sel_owner_vessel_crew').val(selected_vessel_id);
+        owner_vessel_crew_selected();
+        get_vessel_details()
+    }
+}
+var dddd;
+function get_vessel_details() {
+    var sel_val = document.getElementById('sel_owner_vessel_crew');
+    var sel_text = sel_val.options[sel_val.selectedIndex].innerHTML;
+    for (var i = 0; i < vessel_location.length; i++) {
+        if(vessel_location[i].Name == sel_text){
+            var results_array = new Array();
+            var url = 'get_vessel_wiki.php?imo='+vessel_location[i].imo;
+            var req = $.ajax({
+                url: url,
+                datatype: 'text',
+                beforeSend: function() {
+                    show_spinner();
+                },
+                success : function(data) { 
+                    alert(data);
+                    results_array.push("<ul class='topcoat-list list'>");
+                    results_array.push("<li class='topcoat-list__item'>Vessel Type:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Maiden Name:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Flag:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Registered Owner:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Ultimate Owner:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Management Type:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Class Type, Number:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Built On:</li>");
+                    results_array.push("<li class='topcoat-list__item'>YARD:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Hull Number:</li>");
+                    results_array.push("<li class='topcoat-list__item'>MMSI:</li>");
+                    results_array.push("<li class='topcoat-list__item'>IMO:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Dead Weight:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Gross Tonnage:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Call sign:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Speed:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Main Engine:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Main Engine KW:</li>");
+                    results_array.push("</ul>");
+                    alert(results_array);
+                    $('#vesdetails').html(results_array.join(""));
+                    hide_spinner();
+                },
+                error: function (request, status, error) {
+                    hide_spinner();
+                }
+
+            });
+        }
+    }
 }
 
 /*-----Start Bing Map-------*/
