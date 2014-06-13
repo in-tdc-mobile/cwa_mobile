@@ -1109,7 +1109,7 @@ function owner_vessel_pms_selected(){
         }
     });
 }
-var dddddddddd;
+
 function create_maintenance_analysis_chart(data){
     // var len = noon_report_data.length;    
     var chartDs_1 = [];
@@ -1144,7 +1144,6 @@ function create_maintenance_analysis_chart(data){
     month[10]="Nov";
     month[11]="Dec";
     for (var i = 7; i < 12; i++) {
-        dddddddddd = data;
         dates.push(month[d.getMonth()]);
         d.setMonth(d.getMonth()-1);
 
