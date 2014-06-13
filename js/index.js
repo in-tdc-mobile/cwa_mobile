@@ -618,7 +618,6 @@ function show_vessel_details() {
         get_vessel_details()
     }
 }
-var dddd;
 function get_vessel_details() {
     var sel_val = document.getElementById('sel_owner_vessel_crew');
     var sel_text = sel_val.options[sel_val.selectedIndex].innerHTML;
@@ -633,28 +632,26 @@ function get_vessel_details() {
                     show_spinner();
                 },
                 success : function(data) { 
-                    alert(data);
                     results_array.push("<ul class='topcoat-list list'>");
-                    results_array.push("<li class='topcoat-list__item'>Vessel Type:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Maiden Name:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Flag:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Registered Owner:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Ultimate Owner:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Management Type:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Class Type, Number:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Built On:</li>");
-                    results_array.push("<li class='topcoat-list__item'>YARD:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Hull Number:</li>");
-                    results_array.push("<li class='topcoat-list__item'>MMSI:</li>");
-                    results_array.push("<li class='topcoat-list__item'>IMO:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Dead Weight:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Gross Tonnage:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Call sign:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Speed:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Main Engine:</li>");
-                    results_array.push("<li class='topcoat-list__item'>Main Engine KW:</li>");
+                    results_array.push("<li class='topcoat-list__item'>Vessel Type: "+nullcheck(data['VSLTYPE'])+" (" + nullcheck(data['VSLSUBTYPE']) +")</li>");
+                    results_array.push("<li class='topcoat-list__item'>Maiden Name: "+nullcheck(data['MAIDEN_NAME'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Flag: "+nullcheck(data['asset-parameter-flag'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Registered Owner: "+nullcheck(data['REGOWN'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Ultimate Owner: "+nullcheck(data['ULTIMATEOWN'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Management Type: "+nullcheck(data['VSMGTTYPELTYPE'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Class Type, Number: "+nullcheck(data['CLASSTYPE'])+", "+nullcheck(data['CLASS_NO'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Built On: "+data['BUILT_ON'].split("T")[0]+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>YARD: "+nullcheck(data['YARD'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Hull Number: "+data['HULL_NO']+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>MMSI: "+nullcheck(data['asset-parameter-mmsi'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>IMO: "+nullcheck(data['imo'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Dead Weight: "+nullcheck(data['DWT'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Gross Tonnage: "+nullcheck(data['GRT'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Call sign: "+nullcheck(data['CALL_SIGN'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Speed: "+nullcheck(data['VESSEL_SPEED'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Main Engine: "+nullcheck(data['MAIN_ENGINE_NO_OF_UNITS'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'>Main Engine KW: "+nullcheck(data['MAIN_ENGINE_KW'])+"</li>");
                     results_array.push("</ul>");
-                    alert(results_array);
                     $('#vesdetails').html(results_array.join(""));
                     hide_spinner();
                 },
@@ -1584,5 +1581,12 @@ function dateformat(dat, format) {
     }
     return dat
 }
+
+function nullcheck(data) {
+    if(data == null)
+        data = '';
+    return data;
+}
+
 
 
