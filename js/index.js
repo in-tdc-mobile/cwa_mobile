@@ -633,24 +633,24 @@ function get_vessel_details() {
                 },
                 success : function(data) { 
                     results_array.push("<ul class='topcoat-list list'>");
-                    results_array.push("<li class='topcoat-list__item'>Vessel Type: "+nullcheck(data['VSLTYPE'])+" (" + nullcheck(data['VSLSUBTYPE']) +")</li>");
-                    results_array.push("<li class='topcoat-list__item'>Maiden Name: "+nullcheck(data['MAIDEN_NAME'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Flag: "+nullcheck(data['asset-parameter-flag'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Registered Owner: "+nullcheck(data['REGOWN'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Ultimate Owner: "+nullcheck(data['ULTIMATEOWN'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Management Type: "+nullcheck(data['VSMGTTYPELTYPE'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Class Type, Number: "+nullcheck(data['CLASSTYPE'])+", "+nullcheck(data['CLASS_NO'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Built On: "+data['BUILT_ON'].split("T")[0]+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>YARD: "+nullcheck(data['YARD'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Hull Number: "+data['HULL_NO']+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>MMSI: "+nullcheck(data['asset-parameter-mmsi'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>IMO: "+nullcheck(data['imo'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Dead Weight: "+nullcheck(data['DWT'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Gross Tonnage: "+nullcheck(data['GRT'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Call sign: "+nullcheck(data['CALL_SIGN'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Speed: "+nullcheck(data['VESSEL_SPEED'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Main Engine: "+nullcheck(data['MAIN_ENGINE_NO_OF_UNITS'])+"</li>");
-                    results_array.push("<li class='topcoat-list__item'>Main Engine KW: "+nullcheck(data['MAIN_ENGINE_KW'])+"</li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Vessel Type:</span> "+nullcheck(data['VSLTYPE'])+" (" + nullcheck(data['VSLSUBTYPE']) +")</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Maiden Name:</span> "+nullcheck(data['MAIDEN_NAME'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Flag:</span> "+nullcheck(data['asset-parameter-flag'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Registered Owner:</span> "+nullcheck(data['REGOWN'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Ultimate Owner:</span> "+nullcheck(data['ULTIMATEOWN'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Management Type:</span> "+nullcheck(data['VSMGTTYPELTYPE'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Class Type, Number:</span> "+nullcheck(data['CLASSTYPE'])+", "+nullcheck(data['CLASS_NO'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Built On:</span> "+data['BUILT_ON'].split("T")[0]+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>YARD:</span> "+nullcheck(data['YARD'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Hull Number:</span> "+data['HULL_NO']+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>MMSI:</span> "+nullcheck(data['asset-parameter-mmsi'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>IMO:</span> "+nullcheck(data['imo'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Dead Weight:</span> "+nullcheck(data['DWT'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Gross Tonnage:</span> "+nullcheck(data['GRT'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Call sign:</span> "+nullcheck(data['CALL_SIGN'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Speed:</span> "+nullcheck(data['VESSEL_SPEED'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Main Engine:</span> "+nullcheck(data['MAIN_ENGINE_NO_OF_UNITS'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Main Engine KW:</span> "+nullcheck(data['MAIN_ENGINE_KW'])+"</span></li>");
                     results_array.push("</ul>");
                     $('#vesdetails').html(results_array.join(""));
                     hide_spinner();
@@ -1505,20 +1505,19 @@ function show_crew_cv (emp_id) {
                 results_array.push("<h3>Documents</h3>");
                 results_array.push("<table class='crew_table'>");
                 results_array.push("<tr>");
-                results_array.push("<th>Name</th>");
-                results_array.push("<th>Expiry Date</th>");
-                results_array.push("<th>Issue Date</th>");
+                results_array.push("<th class='dashboard-list'>Name</th>");
+                results_array.push("<th class='dashboard-list'>Expiry Date</th>");
+                results_array.push("<th class='dashboard-list'>Issue Date</th>");
                 results_array.push("</tr>");
-                alert(data.ExpiryDocumentsData.ExpiryDocumentsEntity.length)
                 var temp_name="new";
                 for (var i = data.ExpiryDocumentsData.ExpiryDocumentsEntity.length - 1; i >= 0; i--) {
                     var item = data.ExpiryDocumentsData.ExpiryDocumentsEntity[i];
                     if(temp_name != item.name) {
                         temp_name = item.name
                         results_array.push("<tr>");
-                        results_array.push("<td>"+toTitleCase(temp_name)+"</td>");
-                        results_array.push("<td>"+((item.expiry_date) ? item.expiry_date.split("T")[0] : "")+"</td>");
-                        results_array.push("<td>"+((item.expiry_date) ? item.issue_date.split("T")[0] : "")+"</td>");
+                        results_array.push("<td><span class='dashboard-list'>"+toTitleCase(temp_name)+"</span></td>");
+                        results_array.push("<td><span class='dashboard-list'>"+((item.expiry_date) ? item.expiry_date.split("T")[0] : "")+"</span></td>");
+                        results_array.push("<td><span class='dashboard-list'>"+((item.expiry_date) ? item.issue_date.split("T")[0] : "")+"</span></td>");
                         results_array.push("</tr>");
                     }   
                 };
