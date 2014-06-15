@@ -179,6 +179,11 @@ h1 {
     margin-bottom: 10px;
 }
 
+#crit-equip-tile {
+  /* Hide until we get running hours for each */
+  display: none !important;
+}
+
 #trackerMap {
     position:relative;
     width:100%; 
