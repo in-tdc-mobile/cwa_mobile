@@ -1587,7 +1587,7 @@ function show_crew_cv (emp_id) {
             results_array.push("</table>");
             results_array.push("</div>");
 
-            if(data.ExpiryDocumentsData.ExpiryDocumentsEntity != null) { 
+            if(data.ExpiryDocumentsData != null && data.ExpiryDocumentsData.ExpiryDocumentsEntity != null) { 
                 results_array.push("<div class='dashboard_tiles'>");
                 results_array.push("<h3>Documents</h3>");
                 results_array.push("<table class='crew_table'>");
