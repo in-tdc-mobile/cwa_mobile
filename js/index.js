@@ -119,6 +119,7 @@ function hide_all() {
     $('#view_title').hide();
     $('#owners').hide();
     $('#dashboard').hide();
+    $('#vessel_details').hide();
     $('#crew').hide();
     $('#crew_cv').hide();
     $('#pms').hide();
@@ -142,6 +143,8 @@ function route(event) {
 
     if (hash === "#pms") {
         show_pms();
+    } else if (hash === "#vdetails") {
+        show_vessel_details();
     } else if (hash === "#crew") {
         show_crew_list();
     } else if (hash === "#crew_cv") {
@@ -603,6 +606,78 @@ function createNoonChart(chartDs, dates) {
         });       
 }
 
+function show_vessel_details() {
+    hide_all();
+
+    var results_array = new Array();
+
+    results_array.push("<select class='topcoat-select' id='sel_owner_vessel_crew' onchange='get_vessel_details()'>");
+    results_array.push("<option value='-1'>Select Vessel</option>");
+    for (var i = 0; i < owner_vessels.length; i++) {
+        results_array.push("<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>");
+    };
+    results_array.push("</select>");
+
+    results_array.push("<div class='dashboard_tiles' id='crew_tile'>");
+    results_array.push("<h3 style='text-align: center;'>Vessel Details</h3>");
+    results_array.push("<div id='vesdetails' style='padding:10px;' class='my-navbar-content'>");
+    results_array.push("</div></div>");
+
+    $('#vessel_details').html(results_array.join(""));
+    $('#vessel_details').show();
+
+    if(selected_vessel_id>0){    
+        $('#sel_owner_vessel_crew').val(selected_vessel_id);
+        owner_vessel_crew_selected();
+        get_vessel_details()
+    }
+}
+function get_vessel_details() {
+    var sel_val = document.getElementById('sel_owner_vessel_crew');
+    var sel_text = sel_val.options[sel_val.selectedIndex].innerHTML;
+    for (var i = 0; i < vessel_location.length; i++) {
+        if(vessel_location[i].Name == sel_text){
+            var results_array = new Array();
+            var url = 'get_vessel_wiki.php?imo='+vessel_location[i].imo;
+            var req = $.ajax({
+                url: url,
+                datatype: 'text',
+                beforeSend: function() {
+                    show_spinner();
+                },
+                success : function(data) { 
+                    results_array.push("<ul class='topcoat-list list'>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Vessel Type:</span> "+nullcheck(data['VSLTYPE'])+" (" + nullcheck(data['VSLSUBTYPE']) +")</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Maiden Name:</span> "+nullcheck(data['MAIDEN_NAME'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Flag:</span> "+nullcheck(data['asset-parameter-flag'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Registered Owner:</span> "+nullcheck(data['REGOWN'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Ultimate Owner:</span> "+nullcheck(data['ULTIMATEOWN'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Management Type:</span> "+nullcheck(data['VSMGTTYPELTYPE'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Class Type, Number:</span> "+nullcheck(data['CLASSTYPE'])+", "+nullcheck(data['CLASS_NO'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Built On:</span> "+data['BUILT_ON'].split("T")[0]+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>YARD:</span> "+nullcheck(data['YARD'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Hull Number:</span> "+data['HULL_NO']+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>MMSI:</span> "+nullcheck(data['asset-parameter-mmsi'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>IMO:</span> "+nullcheck(data['imo'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Dead Weight:</span> "+nullcheck(data['DWT'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Gross Tonnage:</span> "+nullcheck(data['GRT'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Call sign:</span> "+nullcheck(data['CALL_SIGN'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Speed:</span> "+nullcheck(data['VESSEL_SPEED'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Main Engine:</span> "+nullcheck(data['MAIN_ENGINE_NO_OF_UNITS'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Main Engine KW:</span> "+nullcheck(data['MAIN_ENGINE_KW'])+"</span></li>");
+                    results_array.push("</ul>");
+                    $('#vesdetails').html(results_array.join(""));
+                    hide_spinner();
+                },
+                error: function (request, status, error) {
+                    hide_spinner();
+                }
+
+            });
+        }
+    }
+}
+
 /*-----Start Bing Map-------*/
 
 var map, myLayer, infobox;
@@ -972,10 +1047,13 @@ function show_pms(){
     results_array.push("<div style='width:100%'>");
     results_array.push("<div id='maintenance_analysis_chart_1'></div>");
     results_array.push("<hr>");
+    results_array.push("<div id='maintenance_analysis_chart_4'></div>");
+    results_array.push("<hr>");
     results_array.push("<div id='maintenance_analysis_chart_2'></div>");
     results_array.push("<hr>");
     results_array.push("<div id='maintenance_analysis_chart_3'></div>");
     results_array.push("</div>");
+    
     results_array.push("</div>");
     results_array.push("<div class='dashboard_tiles' id='crit-equip-tile'>");
     results_array.push("<h3 style='text-align: center;'>Critical Equipments</h3>");
@@ -1032,6 +1110,8 @@ function owner_vessel_pms_selected(){
             chart.refresh();
             chart = $("#maintenance_analysis_chart_3").data("kendoChart");
             chart.refresh();
+            chart = $("#maintenance_analysis_chart_4").data("kendoChart");
+            chart.refresh();
 
             $('#crit-equip-tile').show();
 
@@ -1059,6 +1139,7 @@ function create_maintenance_analysis_chart(data){
     var chartDs_1 = [];
     var chartDs_2 = [];
     var chartDs_3 = [];
+    var chartDs_4 = [];
     var dates = [];
     var due_this_month = [];
     var completed_this_month = [];
@@ -1092,7 +1173,6 @@ function create_maintenance_analysis_chart(data){
 
         due_this_month.push($.grep(data, function(e) {return e.record_flag == 'DUE_THIS_MONTH'})[0]["m"+(i+1)]);
         completed_this_month.push($.grep(data, function(e) {return e.record_flag == 'COMPLETED_THIS_MONTH'})[0]["m"+(i+1)]);
-        percentage_outstanding.push($.grep(data, function(e) {return e.record_flag == 'PERCENTAGE_OUTSTANDING'})[0]["m"+(i+1)]);
         
         overdue_this_month_critical.push($.grep(data, function(e) {return e.record_flag == 'OVERDUE_THIS_MONTH_CRITICAL'})[0]["m"+(i+1)]);
         over_due_this_month_non_critical.push($.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]["m"+(i+1)]);
@@ -1103,6 +1183,7 @@ function create_maintenance_analysis_chart(data){
         additional_jobs.push($.grep(data, function(e) {return e.record_flag == 'ADDITIONAL_JOBS'})[0]["m"+(i+1)]);
         outside_pms_jobs.push($.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]["m"+(i+1)]);
 
+        percentage_outstanding.push($.grep(data, function(e) {return e.record_flag == 'PERCENTAGE_OUTSTANDING'})[0]["m"+(i+1)]);
     };
 
     // DUE_THIS_MONTH
@@ -1121,8 +1202,7 @@ function create_maintenance_analysis_chart(data){
     dates.reverse();
 
     chartDs_1.push({ name: $.grep(data, function(e) {return e.record_flag == 'DUE_THIS_MONTH'})[0]['activity'], data: due_this_month, color: "#00004A" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'COMPLETED_THIS_MONTH'})[0]['activity'], data: completed_this_month, color: "Brown" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'PERCENTAGE_OUTSTANDING'})[0]['activity'], data: percentage_outstanding, color: "DarkGreen" });
+                   { name: $.grep(data, function(e) {return e.record_flag == 'COMPLETED_THIS_MONTH'})[0]['activity'], data: completed_this_month, color: "Brown" });
 
     chartDs_2.push({ name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_THIS_MONTH_CRITICAL'})[0]['activity'], data: overdue_this_month_critical, color: "#00004A" }, 
                    { name: $.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]['activity'], data: over_due_this_month_non_critical, color: "#6A5ACD" });
@@ -1134,6 +1214,7 @@ function create_maintenance_analysis_chart(data){
                    { name: $.grep(data, function(e) {return e.record_flag == 'ADDITIONAL_JOBS'})[0]['activity'], data: additional_jobs, color: "#6A5ACD" }, 
                    { name: $.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]['activity'], data: outside_pms_jobs, color: "DarkGreen" })
 
+    chartDs_4.push({ name: $.grep(data, function(e) {return e.record_flag == 'PERCENTAGE_OUTSTANDING'})[0]['activity'], data: percentage_outstanding, color: "DarkGreen" });
 
     $("#maintenance_analysis_chart_1").kendoChart({
         title: {
@@ -1270,6 +1351,52 @@ function create_maintenance_analysis_chart(data){
         axisDefaults: {
             labels: {
                 font: "10px Arial,Helvetica,sans-serif"
+            }
+        }
+    });
+    $("#maintenance_analysis_chart_4").kendoChart({
+        title: {
+            text: ""
+        },
+        legend: {
+            position: "bottom"
+        },
+        chartArea: {
+            background: ""
+        },
+        seriesDefaults: {
+            type: "line",
+            style: "smooth",
+            highlight: {visible:false}
+        },
+        series: chartDs_4,
+        valueAxis: {
+            line: {
+                visible: false
+            },
+            //axisCrossingValue: -15,
+            //majorUnit: 15,
+            title: {
+                font: "12px Arial,Helvetica,sans-serif",
+                fontweight:"bold"
+            },
+        },
+        categoryAxis: {
+            categories: dates,
+            majorGridLines: {
+                visible: false
+            },
+            labels: {
+                rotation: -45
+            }
+        },
+        tooltip: {
+            visible: false,
+            template: "<span style='color:white'>#= series.name #: #= value #</span>"
+        },
+        axisDefaults: {
+            labels: {
+                font: "10px Arial,Helvetica,sans-serif",
             }
         }
     });
@@ -1460,6 +1587,32 @@ function show_crew_cv (emp_id) {
             results_array.push("</table>");
             results_array.push("</div>");
 
+            if(data.ExpiryDocumentsData.ExpiryDocumentsEntity != null) { 
+                results_array.push("<div class='dashboard_tiles'>");
+                results_array.push("<h3>Documents</h3>");
+                results_array.push("<table class='crew_table'>");
+                results_array.push("<tr>");
+                results_array.push("<th class='dashboard-list'>Name</th>");
+                results_array.push("<th class='dashboard-list'>Expiry Date</th>");
+                results_array.push("<th class='dashboard-list'>Issue Date</th>");
+                results_array.push("</tr>");
+                var temp_name="new";
+                for (var i = data.ExpiryDocumentsData.ExpiryDocumentsEntity.length - 1; i >= 0; i--) {
+                    var item = data.ExpiryDocumentsData.ExpiryDocumentsEntity[i];
+                    if(temp_name != item.name) {
+                        temp_name = item.name
+                        results_array.push("<tr>");
+                        results_array.push("<td><span class='dashboard-list'>"+toTitleCase(temp_name)+"</span></td>");
+                        results_array.push("<td><span class='dashboard-list'>"+((item.expiry_date) ? item.expiry_date.split("T")[0] : "")+"</span></td>");
+                        results_array.push("<td><span class='dashboard-list'>"+((item.expiry_date) ? item.issue_date.split("T")[0] : "")+"</span></td>");
+                        results_array.push("</tr>");
+                    }   
+                };
+                
+                results_array.push("</ul>");
+                results_array.push("</div>");
+            }
+
             $('#crew_cv').html(results_array.join(""));
             $('#crew_cv').show();
 
@@ -1495,4 +1648,25 @@ function show_crew_cv (emp_id) {
         }
     });
 }
+
+function dateformat(dat, format) { 
+    if(dat != null && dat != '') {
+        var d = new Date(dat);
+        //console.log(dat);
+        //console.log(d.getDate()+"-"+d.getMonth()+"-"+d.getYear());
+        if(format == "dd-mon-yyyy")
+            dat = ("0" + d.getDate()).slice(-2)+"-"+getMonthName(d.getMonth())+"-"+d.getFullYear();
+    } else {
+        dat = '';
+    }
+    return dat
+}
+
+function nullcheck(data) {
+    if(data == null)
+        data = '';
+    return data;
+}
+
+
 
