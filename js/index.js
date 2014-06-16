@@ -612,7 +612,7 @@ function show_vessel_details() {
 
     var results_array = new Array();
 
-    results_array.push("<select class='topcoat-select' id='sel_owner_vessel_crew' onchange='get_vessel_details()'>");
+    results_array.push("<select class='topcoat-select' id='sel_owner_vessel_det' onchange='get_vessel_details()'>");
     results_array.push("<option value='-1'>Select Vessel</option>");
     for (var i = 0; i < owner_vessels.length; i++) {
         results_array.push("<option value='" + owner_vessels[i].object_id + "'>" + owner_vessels[i].name + "</option>");
@@ -628,13 +628,13 @@ function show_vessel_details() {
     $('#vessel_details').show();
 
     if(selected_vessel_id>0){    
-        $('#sel_owner_vessel_crew').val(selected_vessel_id);
-        owner_vessel_crew_selected();
+        $('#sel_owner_vessel_det').val(selected_vessel_id);
+        // owner_vessel_crew_selected();
         get_vessel_details()
     }
 }
 function get_vessel_details() {
-    var sel_val = document.getElementById('sel_owner_vessel_crew');
+    var sel_val = document.getElementById('sel_owner_vessel_det');
     var sel_text = sel_val.options[sel_val.selectedIndex].innerHTML;
     for (var i = 0; i < vessel_location.length; i++) {
         if(vessel_location[i].Name == sel_text){
