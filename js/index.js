@@ -160,6 +160,7 @@ function route(event) {
         location.reload(true);
     }
     else {
+        // show_dashboard();
         if (pal_user_name == null) {
             return;
         }
