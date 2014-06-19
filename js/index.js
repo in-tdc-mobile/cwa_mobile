@@ -635,6 +635,7 @@ function show_vessel_details() {
 }
 function get_vessel_details() {
     var sel_val = document.getElementById('sel_owner_vessel_det');
+    selected_vessel_id = document.getElementById("sel_owner_vessel_det").value;
     var sel_text = sel_val.options[sel_val.selectedIndex].innerHTML;
     for (var i = 0; i < vessel_location.length; i++) {
         if(vessel_location[i].Name == sel_text){
@@ -1030,7 +1031,6 @@ function show_spinner() {
 function hide_spinner() {
     $(".spinner_index").hide();
 }
-
 
 function show_pms(){
     hide_all();
