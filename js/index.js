@@ -460,11 +460,12 @@ function owner_vessel_selected(){
                 results_array.push("</ul></div></div>");
             }
             if(noon_report_data){
-
+                // temp = noon_report_data;
                 results_array.push("<div class='dashboard_tiles' id='vslperf_tile'><h3 style='text-align: center;'>Noon Report</h3><div style='width:100%'><div id='noon_report_chart'></div></div></div>");
             
                 var len = noon_report_data.length;
-                for (var x = 0; x < len; x++) {
+                // for (var x = 0; x < len; x++) {
+                for (var x = 0; x < 15; x++) {                    
                     var dataitem = noon_report_data[x];
                     dates.push(kendo.format('{0:dd-MM-yyyy}', dataitem.report_date.split("T")[0]));
                     slipData.push(dataitem.slip);
@@ -482,7 +483,7 @@ function owner_vessel_selected(){
                 chartDs.push({ name: "Engine RPM", data: EngineRPMData, color: "#00004A" }, { name: "Speed Knots", data: speedData, color: "Brown" }, { name: "FO Consumption", data: FoConsumptionData, color: "#6A5ACD" }, { name: "Slip(%)", data: slipData, color: "DarkGreen" });
                 $('#accordion').html(results_array.join(""));
 
-                temp = dates;
+                // temp = dates;
                 createNoonChart(chartDs, dates);
             }
             else{
