@@ -1599,15 +1599,20 @@ function show_crew_cv (emp_id) {
                 results_array.push("</tr>");
                 var temp_name="new";
                 for (var i = data.ExpiryDocumentsData.ExpiryDocumentsEntity.length - 1; i >= 0; i--) {
+                    
                     var item = data.ExpiryDocumentsData.ExpiryDocumentsEntity[i];
-                    if(temp_name != item.name) {
-                        temp_name = item.name
-                        results_array.push("<tr>");
-                        results_array.push("<td><span class='dashboard-list'>"+toTitleCase(temp_name)+"</span></td>");
-                        results_array.push("<td><span class='dashboard-list'>"+((item.expiry_date) ? item.expiry_date.split("T")[0] : "")+"</span></td>");
-                        results_array.push("<td><span class='dashboard-list'>"+((item.expiry_date) ? item.issue_date.split("T")[0] : "")+"</span></td>");
-                        results_array.push("</tr>");
-                    }   
+                    var doc_tpe= item.doc_type+"";
+
+                    if(doc_tpe.slice(1) != "MEDICALS") { 
+                        if(temp_name != item.name) {
+                            temp_name = item.name
+                            results_array.push("<tr>");
+                            results_array.push("<td><span class='dashboard-list'>"+toTitleCase(temp_name)+"</span></td>");
+                            results_array.push("<td><span class='dashboard-list'>"+((item.expiry_date) ? item.expiry_date.split("T")[0] : "")+"</span></td>");
+                            results_array.push("<td><span class='dashboard-list'>"+((item.expiry_date) ? item.issue_date.split("T")[0] : "")+"</span></td>");
+                            results_array.push("</tr>");
+                        }   
+                    }
                 };
                 
                 results_array.push("</ul>");
