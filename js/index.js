@@ -654,7 +654,7 @@ function get_vessel_details() {
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Flag:</span> "+nullcheck(data['asset-parameter-flag'])+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Registered Owner:</span> "+nullcheck(data['REGOWN'])+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Ultimate Owner:</span> "+nullcheck(data['ULTIMATEOWN'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Management Type:</span> "+nullcheck(data['VSMGTTYPELTYPE'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Management Type:</span> "+nullcheck(data['MGTTYPE'])+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Class Type, Number:</span> "+nullcheck(data['CLASSTYPE'])+", "+nullcheck(data['CLASS_NO'])+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Built On:</span> "+data['BUILT_ON'].split("T")[0]+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>YARD:</span> "+nullcheck(data['YARD'])+"</span></li>");
