@@ -1575,17 +1575,20 @@ function show_crew_cv (emp_id) {
             results_array.push("<th class='crew_detail'>Veseel</th>");
             results_array.push("</tr>");
 
-            for (var i = 0; i < data.SeaServiceOtherData.SeaServiceEntity.length; i++) {
-                var dataitem = data.SeaServiceOtherData.SeaServiceEntity[i];
-                results_array.push("<tr class='itemRow'>");
-                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Company) + "</span></td>");
-                results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
-                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
-                results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
-                results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
-                results_array.push("</tr>");
-            };
+            if(data.SeaServiceOtherData.SeaServiceEntity)
+            {
+                for (var i = 0; i < data.SeaServiceOtherData.SeaServiceEntity.length; i++) {
+                    var dataitem = data.SeaServiceOtherData.SeaServiceEntity[i];
+                    results_array.push("<tr class='itemRow'>");
+                    results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Company) + "</span></td>");
+                    results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
+                    results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
+                    results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
+                    results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
+                    results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                    results_array.push("</tr>");
+                };
+            }
             results_array.push("</table>");
             results_array.push("</div>");
 
