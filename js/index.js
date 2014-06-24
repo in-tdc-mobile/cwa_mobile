@@ -1496,7 +1496,8 @@ function show_crew_cv (emp_id) {
         beforeSend: function() {
             show_spinner();
         },
-        success: function(data){            
+        success: function(data){    
+            temp= data;        
             hide_spinner();
             // $('html, body').animate({scrollTop: $('#crew_tile').offset().top-80}, 'slow');
             $('#btnBack').show();
@@ -1549,9 +1550,21 @@ function show_crew_cv (emp_id) {
             results_array.push("<th class='crew_detail'>Sign-off Date</th>");
             results_array.push("<th class='crew_detail'>Veseel</th>");
             results_array.push("</tr>");
-
-            for (var i = 0; i < data.SeaServiceData.SeaServiceEntity.length; i++) {
-                var dataitem = data.SeaServiceData.SeaServiceEntity[i];
+            if($.isArray(data.SeaServiceData.SeaServiceEntity)){
+                for (var i = 0; i < data.SeaServiceData.SeaServiceEntity.length; i++) {
+                    var dataitem = data.SeaServiceData.SeaServiceEntity[i];
+                    results_array.push("<tr class='itemRow'>");
+                    results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + dataitem.Company + "</span></td>");
+                    results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
+                    results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
+                    results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
+                    results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
+                    results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                    results_array.push("</tr>");
+                };
+            }
+            else{
+                var dataitem = data.SeaServiceData.SeaServiceEntity;
                 results_array.push("<tr class='itemRow'>");
                 results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + dataitem.Company + "</span></td>");
                 results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
@@ -1560,25 +1573,38 @@ function show_crew_cv (emp_id) {
                 results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
                 results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
                 results_array.push("</tr>");
-            };
-            results_array.push("</table>");
-            results_array.push("</div>");
-
-            results_array.push("<div class='dashboard_tiles'>");
-            results_array.push("<h3>Sea Service with Other Companies</h3>");            
-            results_array.push("<table class='crew_table'>");
-            results_array.push("<tr>");
-            results_array.push("<th>Company</th>");
-            results_array.push("<th>Rank</th>");
-            results_array.push("<th class='crew_detail'>Sign-on Date</th>");
-            results_array.push("<th class='crew_detail'>Sign-off Date</th>");
-            results_array.push("<th class='crew_detail'>Veseel</th>");
-            results_array.push("</tr>");
+            }
 
             if(data.SeaServiceOtherData.SeaServiceEntity)
             {
-                for (var i = 0; i < data.SeaServiceOtherData.SeaServiceEntity.length; i++) {
-                    var dataitem = data.SeaServiceOtherData.SeaServiceEntity[i];
+                results_array.push("</table>");
+                results_array.push("</div>");
+
+                results_array.push("<div class='dashboard_tiles'>");
+                results_array.push("<h3>Sea Service with Other Companies</h3>");            
+                results_array.push("<table class='crew_table'>");
+                results_array.push("<tr>");
+                results_array.push("<th>Company</th>");
+                results_array.push("<th>Rank</th>");
+                results_array.push("<th class='crew_detail'>Sign-on Date</th>");
+                results_array.push("<th class='crew_detail'>Sign-off Date</th>");
+                results_array.push("<th class='crew_detail'>Veseel</th>");
+                results_array.push("</tr>");
+                if($.isArray(data.SeaServiceOtherData.SeaServiceEntity)){
+                    for (var i = 0; i < data.SeaServiceOtherData.SeaServiceEntity.length; i++) {
+                        var dataitem = data.SeaServiceOtherData.SeaServiceEntity[i];
+                        results_array.push("<tr class='itemRow'>");
+                        results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Company) + "</span></td>");
+                        results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
+                        results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
+                        results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
+                        results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
+                        results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                        results_array.push("</tr>");
+                    };
+                }
+                else{
+                    var dataitem = data.SeaServiceOtherData.SeaServiceEntity;
                     results_array.push("<tr class='itemRow'>");
                     results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Company) + "</span></td>");
                     results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(dataitem.Rank) + "</span></td>");
@@ -1586,8 +1612,8 @@ function show_crew_cv (emp_id) {
                     results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
                     results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
                     results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
-                    results_array.push("</tr>");
-                };
+                    results_array.push("</tr>");                    
+                }
             }
             results_array.push("</table>");
             results_array.push("</div>");
