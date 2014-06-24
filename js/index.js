@@ -1523,20 +1523,30 @@ function show_crew_cv (emp_id) {
             results_array.push("<div class='dashboard_tiles'>");
             results_array.push("<h3>Experience</h3>");
             results_array.push("<ul class='topcoat-list list' data-role='listview'>");
-            if (data.SummaryByRanks.SummaryEntity.Rank!=undefined) {
-                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByRanks.SummaryEntity.Rank) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByRanks.SummaryEntity.Duration + "</span></li>");
-                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(data.SummaryByVesselTypes.SummaryEntity.VesselType) + " : </span><span style='font-weight: bold;'>"+ data.SummaryByVesselTypes.SummaryEntity.Duration + "</span></li>");
-            }
-            else{
+            
+            if($.isArray(data.SummaryByRanks.SummaryEntity)){
                 for (var i = 0; i < data.SummaryByRanks.SummaryEntity.length; i++) {
                     var item = data.SummaryByRanks.SummaryEntity[i];
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.Rank) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
                 };
+            }
+            else{
+                var item = data.SummaryByRanks.SummaryEntity;
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.Rank) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
+            }
+
+            if($.isArray(data.SummaryByVesselTypes.SummaryEntity)){
                 for (var i = data.SummaryByVesselTypes.SummaryEntity.length - 1; i >= 0; i--) {
+
                     var item = data.SummaryByVesselTypes.SummaryEntity[i];
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.VesselType) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
                 };
-            };
+            }
+            else{
+                var item = data.SummaryByVesselTypes.SummaryEntity;
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>" + toTitleCase(item.VesselType) + " : </span><span style='font-weight: bold;'>"+ item.Duration + "</span></li>");
+            }
+            
             results_array.push("</ul>");
             results_array.push("</div>");
 
