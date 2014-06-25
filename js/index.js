@@ -651,23 +651,21 @@ function get_vessel_details() {
                 success : function(data) { 
                     results_array.push("<ul class='topcoat-list list'>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Vessel Type:</span> "+nullcheck(data['VSLTYPE'])+" (" + nullcheck(data['VSLSUBTYPE']) +")</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Maiden Name:</span> "+nullcheck(data['MAIDEN_NAME'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Management Type:</span> "+nullcheck(data['MGTTYPE'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Class Type, Number:</span> "+nullcheck(data['CLASSTYPE'])+", "+nullcheck(data['CLASS_NO'])+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Flag:</span> "+nullcheck(data['asset-parameter-flag'])+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Registered Owner:</span> "+nullcheck(data['REGOWN'])+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Ultimate Owner:</span> "+nullcheck(data['ULTIMATEOWN'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Management Type:</span> "+nullcheck(data['MGTTYPE'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Class Type, Number:</span> "+nullcheck(data['CLASSTYPE'])+", "+nullcheck(data['CLASS_NO'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Built On:</span> "+data['BUILT_ON'].split("T")[0]+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>YARD:</span> "+nullcheck(data['YARD'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Hull Number:</span> "+data['HULL_NO']+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>MMSI:</span> "+nullcheck(data['asset-parameter-mmsi'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>IMO:</span> "+nullcheck(data['imo'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Dead Weight:</span> "+nullcheck(data['DWT'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Gross Tonnage:</span> "+nullcheck(data['GRT'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Call sign:</span> "+nullcheck(data['CALL_SIGN'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>IMO, MMSI, Call sign, Hull number:</span> "+nullcheck(data['imo'])+", "+nullcheck(data['asset-parameter-mmsi'])+", "+nullcheck(data['CALL_SIGN'])+", "+data['HULL_NO']+"</span></li>");
+
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Maiden Name:</span> "+nullcheck(data['MAIDEN_NAME'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Built On:</span> "+dateformat(data['BUILT_ON'].split("T")[0])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Yard:</span> "+nullcheck(data['YARD'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Dead Weight:</span> "+nullcheck(data['DWT']).formatMoney(0)+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Gross Tonnage:</span> "+nullcheck(data['GRT']).formatMoney(0)+"</span></li>");
+                    
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Speed:</span> "+nullcheck(data['VESSEL_SPEED'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Main Engine:</span> "+nullcheck(data['MAIN_ENGINE_NO_OF_UNITS'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Main Engine KW:</span> "+nullcheck(data['MAIN_ENGINE_KW'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Main Engine:</span> "+nullcheck(data['MAIN_ENGINE_NO_OF_UNITS'])+" x "+nullcheck(data['MAIN_ENGINE_KW']).formatMoney(0)+"KW </span></li>");
                     results_array.push("</ul>");
                     $('#vesdetails').html(results_array.join(""));
                     hide_spinner();
@@ -1711,13 +1709,15 @@ function show_crew_cv (emp_id) {
     });
 }
 
+var months=['','JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
 function dateformat(dat, format) { 
     if(dat != null && dat != '') {
         var d = new Date(dat);
         //console.log(dat);
         //console.log(d.getDate()+"-"+d.getMonth()+"-"+d.getYear());
-        if(format == "dd-mon-yyyy")
-            dat = ("0" + d.getDate()).slice(-2)+"-"+getMonthName(d.getMonth())+"-"+d.getFullYear();
+        // if(format == "dd-mon-yyyy")
+            dat = ("0" + d.getDate()).slice(-2)+"-"+months[d.getMonth()]+"-"+d.getFullYear();
     } else {
         dat = '';
     }
