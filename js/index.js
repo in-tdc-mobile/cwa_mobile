@@ -1632,7 +1632,7 @@ function show_crew_cv (emp_id) {
                 results_array.push("<table class='crew_table'>");
                 results_array.push("<tr>");
                 results_array.push("<th>Name</th>");
-                results_array.push("<th>Number</th>");
+                results_array.push("<th>Type</th>");
                 results_array.push("</tr>");
 
                 var temp_name="new";
