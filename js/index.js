@@ -239,7 +239,7 @@ function login_failure() {
 }
 
 $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
-    options.url = 'https://getVesselTracker.com/cwa_mobile_prod/' + options.url + "&pal_user_email=" + $.jStorage.get("pal_user_name");
+    options.url = 'https://getVesselTracker.com/cwa_mobile_dev/' + options.url + "&pal_user_email=" + $.jStorage.get("pal_user_name");
 });
 
 $('#login_form').submit(function(){
@@ -1643,8 +1643,8 @@ function show_crew_cv (emp_id) {
                     if(doc_tpe.slice(1) != "MEDICALS") { 
                         temp_name = item.name;
                         results_array.push("<tr class='docRow'>");
-                        results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(temp_name) + "</span></td>");
-                        results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(item.document_no) + "</span></td>");
+                        results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(temp_name)+"("+item.document_no+")</span></td>");
+                        results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(doc_tpe.slice(1)) + "</span></td>");
                         results_array.push("<td class='crew_detail'>" + ((item.expiry_date) ? item.expiry_date.split("T")[0] : "")+"</td>");
                         results_array.push("<td class='crew_detail'>" + ((item.issue_date) ? item.issue_date.split("T")[0] : "") + "</td>");
                         results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
