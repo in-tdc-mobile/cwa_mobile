@@ -1208,8 +1208,8 @@ function create_maintenance_analysis_chart(data){
                    { name: $.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]['activity'], data: over_due_this_month_non_critical, color: "#6A5ACD" });
 
 
-    chartDs_3.push({ name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_COMPLETED'})[0]['activity'], data: overdue_completed, color: "#6A5ACD" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_NOT_COMPLETED'})[0]['activity'], data: overdue_not_completed, color: "#6A5ACD" }, 
+    chartDs_3.push({ name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_COMPLETED'})[0]['activity'], data: overdue_completed, color: "#0D74FF" }, 
+                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_NOT_COMPLETED'})[0]['activity'], data: overdue_not_completed, color: "#FF0000" }, 
                    { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_CURRENT_MONTH'})[0]['activity'], data: overdue_current_month, color: "Brown" },                    
                    { name: $.grep(data, function(e) {return e.record_flag == 'ADDITIONAL_JOBS'})[0]['activity'], data: additional_jobs, color: "#6A5ACD" }, 
                    { name: $.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]['activity'], data: outside_pms_jobs, color: "DarkGreen" })
