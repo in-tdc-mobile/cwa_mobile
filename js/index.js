@@ -239,7 +239,7 @@ function login_failure() {
 }
 
 $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
-    options.url = 'https://getVesselTracker.com/cwa_mobile_dev/' + options.url + "&pal_user_email=" + $.jStorage.get("pal_user_name");
+    options.url = 'https://getVesselTracker.com/cwa_mobile_prod/' + options.url + "&pal_user_email=" + $.jStorage.get("pal_user_name");
 });
 
 $('#login_form').submit(function(){
