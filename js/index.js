@@ -464,9 +464,12 @@ function owner_vessel_selected(){
                 results_array.push("<div class='dashboard_tiles' id='vslperf_tile'><h3 style='text-align: center;'>Noon Report</h3><div style='width:100%'><div id='noon_report_chart'></div></div></div>");
             
                 var len = noon_report_data.length;
+
                 // for (var x = 0; x < len; x++) {
-                for (var x = 0; x < 15; x++) {                    
+                for (var x = 0; x < 15; x++) {
                     var dataitem = noon_report_data[x];
+                    if(!dataitem)
+                        continue;
                     dates.push(kendo.format('{0:dd-MM-yyyy}', dataitem.report_date.split("T")[0]));
                     slipData.push(dataitem.slip);
                     FoConsumptionData.push(dataitem.me_fo_consumption);
@@ -768,7 +771,7 @@ function displayEventClusterInfo(e) {
 }
 
 function displayEventInfo(e) { 
-    console.log(e);
+    // console.log(e);
    //  closeInfobox();
     var pin = e.target;
     var description = pin.description;
