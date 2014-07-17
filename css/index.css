@@ -526,3 +526,19 @@ html, body {
   position: relative;
   opacity: .6;
 }
+
+.COURSES{
+  display: none;
+}
+
+.TRAVEL{
+  display: none;
+}
+
+.MEDICALS{
+  display: none;
+}
+
+.LICENSES{
+  display: none;
+}

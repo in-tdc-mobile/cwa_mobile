@@ -1684,7 +1684,7 @@ function show_crew_cv (emp_id) {
             if(data.ExpiryDocumentsData != null && data.ExpiryDocumentsData.ExpiryDocumentsEntity != null) { 
                 results_array.push("<div class='dashboard_tiles'>");
                 results_array.push("<h3>Documents</h3>");            
-                
+                results_array.push("<table class='crew_table'>");
 
                 var temp_name="new";
                 var temp_type = "new";
@@ -1693,29 +1693,24 @@ function show_crew_cv (emp_id) {
                     var doc_tpe= item.doc_type+"";
                     var temp_bool = false;
                     if(temp_type != doc_tpe.slice(1)) {
-                        if(temp_type!="new")
-                            results_array.push("</table>");
                         temp_type = doc_tpe.slice(1);
                         temp_bool = true;
-                        results_array.push("<table class='crew_table'>");
                         results_array.push("<tr>");
-                        results_array.push("<th colspan='2'>"+toTitleCase(temp_type)+"</th>");
+                        results_array.push('<td id="'+temp_type+'">'+temp_type+'</th>');
+                        results_array.push('<td ><img style="height: 25px;width: 25px;" src="css/images/next.svg"></th>');
                         results_array.push("</tr>");
                     }
 
                     if(doc_tpe.slice(1) != "MEDICALS") { 
                         temp_name = item.name;
-                        
-                        results_array.push("<tr class='docRow'>");
+                        results_array.push('<tr  class="docRow '+temp_type+'">');
                         results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(temp_name)+"</span></td>");
                         results_array.push("<td class='crew_detail'>" + ((item.expiry_date) ? item.expiry_date.split("T")[0] : "")+"</td>");
                         results_array.push("<td class='crew_detail'>" + ((item.issue_date) ? item.issue_date.split("T")[0] : "") + "</td>");
                         results_array.push("<td class='crew_detail'>" + item.document_no + "</td>");
                         results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
                         results_array.push("</tr>");
-                        
                     }
-                    
                 };
                 results_array.push("</table>");
                 results_array.push("</div>");
@@ -1766,6 +1761,35 @@ function show_crew_cv (emp_id) {
                 // $('.temp_ul').listview();
                 // alert($(this).find('td:eq(0)').html());
             });
+
+            $('#COURSES').click(function() {
+                $('.COURSES').show();
+                $('.TRAVEL').hide();
+                $('.MEDICALS').hide();
+                $('.LICENSES').hide();
+            });
+
+            $('#TRAVEL').click(function() {
+                $('.COURSES').hide();
+                $('.TRAVEL').show();
+                $('.MEDICALS').hide();
+                $('.LICENSES').hide();
+            });
+
+            $('#MEDICALS').click(function() {
+                $('.COURSES').hide();
+                $('.TRAVEL').hide();
+                $('.MEDICALS').show();
+                $('.LICENSES').hide();
+            });
+
+            $('#LICENSES').click(function() {
+                $('.COURSES').hide();
+                $('.TRAVEL').hide();
+                $('.MEDICALS').hide();
+                $('.LICENSES').show();
+            });
+
 
             $('.crew_detail').hide();
         },
