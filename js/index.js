@@ -1763,6 +1763,7 @@ function show_crew_cv (emp_id) {
             });
 
             $('#COURSES').click(function() {
+                $(this).closest('table').find('.temp_tr').remove();
                 $('.COURSES').show();
                 $('.TRAVEL').hide();
                 $('.MEDICALS').hide();
@@ -1770,6 +1771,7 @@ function show_crew_cv (emp_id) {
             });
 
             $('#TRAVEL').click(function() {
+                $(this).closest('table').find('.temp_tr').remove();
                 $('.COURSES').hide();
                 $('.TRAVEL').show();
                 $('.MEDICALS').hide();
@@ -1777,6 +1779,7 @@ function show_crew_cv (emp_id) {
             });
 
             $('#MEDICALS').click(function() {
+                $(this).closest('table').find('.temp_tr').remove();
                 $('.COURSES').hide();
                 $('.TRAVEL').hide();
                 $('.MEDICALS').show();
@@ -1784,6 +1787,7 @@ function show_crew_cv (emp_id) {
             });
 
             $('#LICENSES').click(function() {
+                $(this).closest('table').find('.temp_tr').remove();
                 $('.COURSES').hide();
                 $('.TRAVEL').hide();
                 $('.MEDICALS').hide();
