@@ -1684,28 +1684,38 @@ function show_crew_cv (emp_id) {
             if(data.ExpiryDocumentsData != null && data.ExpiryDocumentsData.ExpiryDocumentsEntity != null) { 
                 results_array.push("<div class='dashboard_tiles'>");
                 results_array.push("<h3>Documents</h3>");            
-                results_array.push("<table class='crew_table'>");
-                results_array.push("<tr>");
-                results_array.push("<th>Name</th>");
-                results_array.push("<th>Type</th>");
-                results_array.push("</tr>");
+                
 
                 var temp_name="new";
+                var temp_type = "new";
                 for (var i = data.ExpiryDocumentsData.ExpiryDocumentsEntity.length - 1; i >= 0; i--) {
                     var item = data.ExpiryDocumentsData.ExpiryDocumentsEntity[i];
                     var doc_tpe= item.doc_type+"";
+                    var temp_bool = false;
+                    if(temp_type != doc_tpe.slice(1)) {
+                        if(temp_type!="new")
+                            results_array.push("</table>");
+                        temp_type = doc_tpe.slice(1);
+                        temp_bool = true;
+                        results_array.push("<table class='crew_table'>");
+                        results_array.push("<tr>");
+                        results_array.push("<th colspan='2'>"+toTitleCase(temp_type)+"</th>");
+                        results_array.push("</tr>");
+                    }
 
                     if(doc_tpe.slice(1) != "MEDICALS") { 
                         temp_name = item.name;
+                        
                         results_array.push("<tr class='docRow'>");
                         results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(temp_name)+"</span></td>");
-                        results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(doc_tpe.slice(1)) + "</span></td>");
                         results_array.push("<td class='crew_detail'>" + ((item.expiry_date) ? item.expiry_date.split("T")[0] : "")+"</td>");
                         results_array.push("<td class='crew_detail'>" + ((item.issue_date) ? item.issue_date.split("T")[0] : "") + "</td>");
                         results_array.push("<td class='crew_detail'>" + item.document_no + "</td>");
                         results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
                         results_array.push("</tr>");
+                        
                     }
+                    
                 };
                 results_array.push("</table>");
                 results_array.push("</div>");
@@ -1745,9 +1755,9 @@ function show_crew_cv (emp_id) {
                 results_array.push('<td colspan="100%">');
                 results_array.push('<div>');
                 results_array.push('<ul class="topcoat-list list">');
-                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Document No : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(4)').html() + "</span></li>");
-                results_array.push("<li class='t3opcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Expiry Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
-                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Issue Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Document No : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
+                results_array.push("<li class='t3opcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Expiry Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(1)').html() + "</span></li>");
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Issue Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
                 results_array.push('</ul>');
                 results_array.push('</div>');
                 results_array.push('</td>');
