@@ -1055,6 +1055,8 @@ function show_pms(){
     results_array.push("<div id='maintenance_analysis_chart_2'></div>");
     results_array.push("<hr>");
     results_array.push("<div id='maintenance_analysis_chart_3'></div>");
+    results_array.push("<hr>");
+    results_array.push("<div id='maintenance_analysis_chart_5'></div>");
     results_array.push("</div>");
     
     results_array.push("</div>");
@@ -1115,6 +1117,8 @@ function owner_vessel_pms_selected(){
             chart.refresh();
             chart = $("#maintenance_analysis_chart_4").data("kendoChart");
             chart.refresh();
+            chart = $("#maintenance_analysis_chart_5").data("kendoChart");
+            chart.refresh();
 
             $('#crit-equip-tile').show();
 
@@ -1143,6 +1147,7 @@ function create_maintenance_analysis_chart(data){
     var chartDs_2 = [];
     var chartDs_3 = [];
     var chartDs_4 = [];
+    var chartDs_5 = [];
     var dates = [];
     var due_this_month = [];
     var completed_this_month = [];
@@ -1210,14 +1215,14 @@ function create_maintenance_analysis_chart(data){
     chartDs_2.push({ name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_THIS_MONTH_CRITICAL'})[0]['activity'], data: overdue_this_month_critical, color: "#00004A" }, 
                    { name: $.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]['activity'], data: over_due_this_month_non_critical, color: "#6A5ACD" });
 
-
     chartDs_3.push({ name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_COMPLETED'})[0]['activity'], data: overdue_completed, color: "#0D74FF" }, 
                    { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_NOT_COMPLETED'})[0]['activity'], data: overdue_not_completed, color: "#FF0000" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_CURRENT_MONTH'})[0]['activity'], data: overdue_current_month, color: "Brown" },                    
-                   { name: $.grep(data, function(e) {return e.record_flag == 'ADDITIONAL_JOBS'})[0]['activity'], data: additional_jobs, color: "#6A5ACD" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]['activity'], data: outside_pms_jobs, color: "DarkGreen" })
+                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_CURRENT_MONTH'})[0]['activity'], data: overdue_current_month, color: "DarkGreen" })
 
     chartDs_4.push({ name: $.grep(data, function(e) {return e.record_flag == 'PERCENTAGE_OUTSTANDING'})[0]['activity'], data: percentage_outstanding, color: "DarkGreen" });
+
+    chartDs_5.push({ name: $.grep(data, function(e) {return e.record_flag == 'ADDITIONAL_JOBS'})[0]['activity'], data: additional_jobs, color: "#6A5ACD" }, 
+                   { name: $.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]['activity'], data: outside_pms_jobs, color: "Brown" })
 
     $("#maintenance_analysis_chart_1").kendoChart({
         title: {
@@ -1373,6 +1378,53 @@ function create_maintenance_analysis_chart(data){
             highlight: {visible:false}
         },
         series: chartDs_4,
+        valueAxis: {
+            line: {
+                visible: false
+            },
+            //axisCrossingValue: -15,
+            //majorUnit: 15,
+            title: {
+                font: "12px Arial,Helvetica,sans-serif",
+                fontweight:"bold"
+            },
+        },
+        categoryAxis: {
+            categories: dates,
+            majorGridLines: {
+                visible: false
+            },
+            labels: {
+                rotation: -45
+            }
+        },
+        tooltip: {
+            visible: false,
+            template: "<span style='color:white'>#= series.name #: #= value #</span>"
+        },
+        axisDefaults: {
+            labels: {
+                font: "10px Arial,Helvetica,sans-serif",
+            }
+        }
+    });
+
+    $("#maintenance_analysis_chart_5").kendoChart({
+        title: {
+            text: ""
+        },
+        legend: {
+            position: "bottom"
+        },
+        chartArea: {
+            background: ""
+        },
+        seriesDefaults: {
+            type: "line",
+            style: "smooth",
+            highlight: {visible:false}
+        },
+        series: chartDs_5,
         valueAxis: {
             line: {
                 visible: false
