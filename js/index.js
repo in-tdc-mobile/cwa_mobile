@@ -327,6 +327,24 @@ function show_owners(){
             dashboard_settings = data['dashboard_settings'];
             user_rights_settings = data['user_rights_settings'];
 
+            // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'PMS / Purchase'});
+
+            var show_pms = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'PMS / Purchase'});
+            
+            if(show_pms.length == 0){
+                $('#lnk_pms').css('color', 'grey');
+                $('#lnk_pms').click(function (e) {e.preventDefault();});
+            }
+
+            // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'Crewing'});
+
+            var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crewing'});
+            
+            if(show_crew.length == 0){
+                $('#lnk_crew').css('color', 'grey');
+                $('#lnk_crew').click(function (e) {e.preventDefault();});
+            }
+
             if($.isArray(owner_vessels) == false){
                 owner_vessels = $.makeArray(data['owner_vessels']);
             }
