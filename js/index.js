@@ -1099,11 +1099,11 @@ function show_pms(){
 }
 
 function owner_vessel_pms_selected(){
-    var show_maintenance_analysis = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Maintenance Analysis'});
+    // var show_maintenance_analysis = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Maintenance Analysis'});
 
-    if(show_maintenance_analysis.length == 0){
-        return;
-    }
+    // if(show_maintenance_analysis.length == 0){
+    //     return;
+    // }
 
     var selected_vessel = document.getElementById("sel_owner_vessel_pms").value;
     selected_vessel_id = selected_vessel;
@@ -1506,11 +1506,11 @@ function show_crew_list(){
 }
 
 function owner_vessel_crew_selected (argument) {
-    var show_maintenance_analysis = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Maintenance Analysis'});
+    // var show_maintenance_analysis = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crewing'});
 
-    if(show_maintenance_analysis.length == 0){
-        return;
-    }
+    // if(show_maintenance_analysis.length == 0){
+    //     return;
+    // }
 
     var selected_vessel = document.getElementById("sel_owner_vessel_crew").value;
     selected_vessel_id = selected_vessel;
