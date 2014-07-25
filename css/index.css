@@ -542,3 +542,7 @@ html, body {
 .LICENSES{
   display: none;
 }
+
+.a_disabled{
+  color: grey;
+}

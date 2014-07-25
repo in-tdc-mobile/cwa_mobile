@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-"use strict";
-var vessel_markers_with_imo = new Array();
-var vessel_markers = new Array();
-var markerCluster;
-var open_info_window;
+ "use strict";
+ var vessel_markers_with_imo = new Array();
+ var vessel_markers = new Array();
+ var markerCluster;
+ var open_info_window;
 var mcOptions = {minimumClusterSize: 3,gridSize: 75, maxZoom:15, minZoom:2};//gridSize: 600, maxZoom:15, minimumClusterSize: 10};
 var infowindow;
 var marker, i,position;
@@ -111,7 +111,7 @@ function hide_all() {
         content.style.height = "auto";
         contentlayer.classList.toggle('contentlayer-opened');
     }
-    $('#btnBack').hide();
+    // $('#btnBack').hide();
     // $('#navbar').hide();
     hide_spinner();
     $('#index_content').hide();
@@ -139,7 +139,7 @@ function route(event) {
     // $('body').scrollTop(0);
     $('body, html').animate({scrollTop : 0}, 0);
     var page,
-        hash = window.location.hash.split('/')[0];
+    hash = window.location.hash.split('/')[0];
 
     if (hash === "#pms") {
         show_pms();
@@ -155,12 +155,19 @@ function route(event) {
         // $('html, body').animate({scrollTop: $('#crew_tile').position().top-50}, 'slow');
         // $('body').scrollTop(0);
     }
+    else if (hash === "#multiowners"){
+        hide_all();
+        show_multi_owners();
+    }
     else if (hash === "#logout") {
         // hide_all();
         // $('#hamburger').hide();
         $.jStorage.set("pal_user_name", null);
         // $('.login').show();
         location.reload(true);
+    }
+    else if (hash === "#dashboard") {
+        show_dashboard_ajax(window.location.hash.split('/')[1]);
     }
     else {
         // show_dashboard();
@@ -173,7 +180,7 @@ function route(event) {
 
 }
 
-var step_back = function() {};
+var step_back = function() {window.history.back()};
 
 var current_step = function() {};
 
@@ -211,27 +218,28 @@ $(document).ready(function() {
       content.style.height = "auto";
       $('#container').resize();
       
-    }
-    try{
-        pal_user_name = $.jStorage.get("pal_user_name");
+  }
+  try{
+    pal_user_name = $.jStorage.get("pal_user_name");
         // $.jStorage.set("pal_user_email", '');
         if (pal_user_name == null) {
           hide_all();
+          $("#btnBack").hide();
           $('.login').show();
-        } else {
-            pal_user_id = $.jStorage.get("pal_user_id");
-            cwa_app_id = $.jStorage.get("cwa_app_id");
-            $('#hamburger').show();
-            $('.login').hide();
-            show_owners();
-        }
+      } else {
+        pal_user_id = $.jStorage.get("pal_user_id");
+        cwa_app_id = $.jStorage.get("cwa_app_id");
+        $('#hamburger').show();
+        $('.login').hide();
+        show_owners();
     }
-    catch(err){    
-    }
-    
+}
+catch(err){    
+}
+
 });
 
-function login_failure() {
+ function login_failure() {
   $(".spinner").css('display','none');
   $("#ajax_error").show();
   $("#ajax_error").html('Wrong Email or Password. Please try again.');
@@ -274,20 +282,103 @@ $('#login_form').submit(function(){
                 $('body, html').animate({scrollTop : 0}, 0);
                 show_owners();
             // location.reload();
-            } else {
-                login_failure();
-                hide_spinner();
-            }
+        } else {
+            login_failure();
+            hide_spinner();
         }
-    });
+    }
+});
     //}
     $('#login_password').blur();
     $('#login_email').blur();
     return false;
 });
 
+ function show_multi_owners () {
+
+    var results_array = new Array();
+    results_array.push("<ul class='topcoat-list__container' id='listview'>");
+    for(var i=0; i< owners_array.length; i++) {
+        results_array.push("<li class='topcoat-list__item'>");
+        results_array.push("<a data-transition='slide' href='javascript:show_dashboard_ajax_from_multi_owners(\""+ owners_array[i]['ID'] +"\")' id='"+ owners_array[i]['ID'] +"'>"+ owners_array[i]['label']);
+        results_array.push("</a></li>");
+    }
+    results_array.push("</ul>");
+    
+    $('#view_title').show();
+    //$('#view_title').html('Owners');
+
+    $('#owners').html(results_array.join(""));
+    $('#owners').show();
+    if(!selected_owner_id){
+        set_user_rights(owners_array[0].ID);
+        selected_owner_id = owners_array[0].ID;
+        // window.location = "#dashboard/"+owners_array[0].ID;
+    }
+    $("#hamburger").hide();
+}
+
+function show_dashboard_ajax_from_multi_owners (owner_id) {
+    
+    set_user_rights(owner_id);
+
+    window.location = "#dashboard/"+owner_id;
+}
+
+function set_user_rights (owner_id) {
+    $.ajax({
+      url: "get_owner_rights.php?" +
+      "userid=" + pal_user_id + "&appid=" + cwa_app_id + "&ownerid=" + owner_id ,
+      datatype: 'json',
+      beforeSend: function() {
+        show_spinner();
+    },
+    success: function(data){
+        hide_spinner();
+
+        user_rights_settings = data['user_rights_settings'];
+        $('#lnk_pms').removeClass('a_disabled');
+        $('#lnk_crew').removeClass('a_disabled');
+        // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'PMS / Purchase'});
+
+        var show_pms = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'PMS / Purchase'});
+        
+        if(show_pms.length == 0){
+            $('#lnk_pms').addClass('a_disabled');
+        }
+
+        // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'Crewing'});
+
+        var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crewing'});
+        
+        if(show_crew.length == 0){
+            $('#lnk_crew').addClass('a_disabled');
+        }
+
+        if($.isArray(owner_vessels) == false){
+            owner_vessels = $.makeArray(data['owner_vessels']);
+        }
+        if($.isArray(dashboard_settings) == false){
+            dashboard_settings = $.makeArray(data['dashboard_settings']);
+        }
+    },
+    error: function() {        
+        alert('Please try again in a minute.');
+        hide_spinner();
+    }
+});
+}
+
+$('#lnk_pms').click(function () {
+    if($('#lnk_pms').hasClass('a_disabled')){ return false;}
+});
+$('#lnk_crew').click(function () {
+    if($('#lnk_crew').hasClass('a_disabled')){ return false;}
+});
+
 function show_owners(){
     hide_all();
+    $("#btnBack").show();
     $.ajax({
       url: "get_user_owners.php?" +
       "userid=" + pal_user_id + "&appid=" + cwa_app_id ,
@@ -305,22 +396,9 @@ function show_owners(){
             owners_array = $.makeArray(data["owners_array"]);
         }
         if(owners_array.length!=1){
-            var results_array = new Array();
-            results_array.push("<ul class='topcoat-list__container' id='listview'>");
-            for(var i=0; i< owners_array.length; i++) {
-                results_array.push("<li class='topcoat-list__item'>");
-                results_array.push("<a data-transition='slide' href='javascript:show_dashboard_ajax(\""+ owners_array[i]['ID'] +"\")' id='"+ owners_array[i]['ID'] +"'>"+ owners_array[i]['label']);
-                results_array.push("</a></li>");
-            }
-            results_array.push("</ul>");
+
+            window.location = '#multiowners';
             
-            $('#view_title').show();
-            //$('#view_title').html('Owners');
-
-            $('#owners').html(results_array.join(""));
-            $('#owners').show();
-
-            // $('#listview').listview();
         }
         else{
             owner_vessels = data['owner_vessels'];
@@ -360,11 +438,12 @@ function show_owners(){
         alert('Please try again in a minute.');
         hide_spinner();
     }
-    });
+});
 }
 
 function show_dashboard_ajax(owner_id){
     hide_all();
+    $("#hamburger").show();
     selected_owner_id = owner_id;
     $.ajax({
       url: "get_owner_vessel.php?" +
@@ -386,12 +465,12 @@ function show_dashboard_ajax(owner_id){
 
         show_dashboard(owner_id);
 
-        },
-        error: function() {        
-            alert('Please try again in a minute.');
-            hide_spinner();
-        }
-    });
+    },
+    error: function() {        
+        alert('Please try again in a minute.');
+        hide_spinner();
+    }
+});
 }
 
 function show_dashboard(owner_id){
@@ -445,7 +524,7 @@ function owner_vessel_selected(){
           url: "get_owner_dashboard.php?" +
           "owner_id=" + selected_owner_id + "&vessel_object_id=" + selected_vessel_id ,
           datatype: 'json',
-        beforeSend: function() {
+          beforeSend: function() {
             show_spinner();
         },
         success: function(data){
@@ -480,29 +559,29 @@ function owner_vessel_selected(){
             if(noon_report_data){
                 // temp = noon_report_data;
                 results_array.push("<div class='dashboard_tiles' id='vslperf_tile'><h3 style='text-align: center;'>Noon Report</h3><div style='width:100%'><div id='noon_report_chart'></div></div></div>");
-            
+                
                 var len = noon_report_data.length;
 
                 // for (var x = 0; x < len; x++) {
-                for (var x = 0; x < 15; x++) {
-                    var dataitem = noon_report_data[x];
-                    if(!dataitem)
-                        continue;
-                    dates.push(kendo.format('{0:dd-MM-yyyy}', dataitem.report_date.split("T")[0]));
-                    slipData.push(dataitem.slip);
-                    FoConsumptionData.push(dataitem.me_fo_consumption);
-                    speedData.push(dataitem.speed);
-                    EngineRPMData.push(dataitem.engine_rpm);
-                }
+                    for (var x = 0; x < 15; x++) {
+                        var dataitem = noon_report_data[x];
+                        if(!dataitem)
+                            continue;
+                        dates.push(kendo.format('{0:dd-MM-yyyy}', dataitem.report_date.split("T")[0]));
+                        slipData.push(dataitem.slip);
+                        FoConsumptionData.push(dataitem.me_fo_consumption);
+                        speedData.push(dataitem.speed);
+                        EngineRPMData.push(dataitem.engine_rpm);
+                    }
 
-                dates.reverse();
-                slipData.reverse();
-                FoConsumptionData.reverse();
-                speedData.reverse();
-                EngineRPMData.reverse();
+                    dates.reverse();
+                    slipData.reverse();
+                    FoConsumptionData.reverse();
+                    speedData.reverse();
+                    EngineRPMData.reverse();
 
-                chartDs.push({ name: "Engine RPM", data: EngineRPMData, color: "#00004A" }, { name: "Speed Knots", data: speedData, color: "Brown" }, { name: "FO Consumption", data: FoConsumptionData, color: "#6A5ACD" }, { name: "Slip(%)", data: slipData, color: "DarkGreen" });
-                $('#accordion').html(results_array.join(""));
+                    chartDs.push({ name: "Engine RPM", data: EngineRPMData, color: "#00004A" }, { name: "Speed Knots", data: speedData, color: "Brown" }, { name: "FO Consumption", data: FoConsumptionData, color: "#6A5ACD" }, { name: "Slip(%)", data: slipData, color: "DarkGreen" });
+                    $('#accordion').html(results_array.join(""));
 
                 // temp = dates;
                 createNoonChart(chartDs, dates);
@@ -527,13 +606,13 @@ function owner_vessel_selected(){
                     if(vessel_location[i].Name.split('(')[0].toLowerCase() == $('#sel_owner_vessel option:selected').text().toLowerCase()){
 
                         /*map = new Microsoft.Maps.Map(document.getElementById("trackerMap"), { credentials: "AvOyltb0YAu_Ldagk8wP_XiQQGfXkHo5rlWlLs-mIpsB3Gcvt87UC-BIZdgc3QbL",
-                                                         showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });*/
-                        var pushpin = new Microsoft.Maps.Pushpin(map.getCenter(), { text: '' });
-                        pushpin.setLocation(new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude));
-                        pushpin.title =  vessel_location[i].Name;
-                        pushpin.description = [vessel_location[i].latitude,vessel_location[i].longitude,vessel_location[i].datetime,vessel_location[i].speed,vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].eta, vessel_location[i].destination, vessel_location[i].traildate, vessel_location[i].trailtime];
+                           showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });*/
+ var pushpin = new Microsoft.Maps.Pushpin(map.getCenter(), { text: '' });
+ pushpin.setLocation(new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude));
+ pushpin.title =  vessel_location[i].Name;
+ pushpin.description = [vessel_location[i].latitude,vessel_location[i].longitude,vessel_location[i].datetime,vessel_location[i].speed,vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].eta, vessel_location[i].destination, vessel_location[i].traildate, vessel_location[i].trailtime];
 
-                        closeInfobox();
+ closeInfobox();
                         // var pin = e.target;
                         var description = pushpin.description;
                         var html_array = new Array();
@@ -542,13 +621,13 @@ function owner_vessel_selected(){
                         html_array.push("<b>Destination / ETA:&nbsp</b>"+description[7]+" / "+description[6]+"<br/>");
                         html_array.push('<span class="popup_label"><button onclick="show_vessel_path('+description[4]+','+description[5]+')" style="color:#00303f;font:bold 12px verdana; padding:5px;" title="click to see track">Show Track</button></span>');
                         
-                            infobox.setLocation(new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude));
+                        infobox.setLocation(new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude));
 
-                            infobox.setOptions({
-                                visible:true,
-                                offset: new Microsoft.Maps.Point(-33, 20),
-                                htmlContent: pushpinFrameHTML.replace('{content}', html_array.join(""))
-                            });
+                        infobox.setOptions({
+                            visible:true,
+                            offset: new Microsoft.Maps.Point(-33, 20),
+                            htmlContent: pushpinFrameHTML.replace('{content}', html_array.join(""))
+                        });
                         
                         map.entities.push(pushpin); 
                         Microsoft.Maps.Events.addHandler(pushpin, 'click', displayEventInfo);
@@ -569,8 +648,8 @@ function owner_vessel_selected(){
         }
     });
 
-    } else {
-         $('#accordion').html("")
+} else {
+   $('#accordion').html("")
         //$('#dashboard_tiles').html(results_div);
         if(show_vessel_tracker.length > 0){
             GetMap();
@@ -696,8 +775,8 @@ function get_vessel_details() {
                 }
 
             });
-        }
-    }
+}
+}
 }
 
 /*-----Start Bing Map-------*/
@@ -708,7 +787,7 @@ var pushpinFrameHTML = '<div class="infobox"><a class="infobox_close" href="java
 
 function GetMap() { 
     map = new Microsoft.Maps.Map(document.getElementById("trackerMap"), { credentials: "AvOyltb0YAu_Ldagk8wP_XiQQGfXkHo5rlWlLs-mIpsB3Gcvt87UC-BIZdgc3QbL",
-    showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });
+        showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });
 
     //Register and load the Point Based Clustering Module
     Microsoft.Maps.registerModule("PointBasedClusteringModule", "scripts/PointBasedClustering.js");
@@ -716,18 +795,18 @@ function GetMap() {
       myLayer = new PointBasedClusteredEntityCollection(map, {
         singlePinCallback: createPin,
         clusteredPinCallback: createClusteredPin
-      });
+    });
 
             //Add infobox layer that is above the clustered layers.
             var infoboxLayer = new Microsoft.Maps.EntityCollection();
             infobox = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0, 0), { 
               visible: false, offset: new Microsoft.Maps.Point(0,15) 
-            });
+          });
             infoboxLayer.push(infobox);
             map.entities.push(infoboxLayer);
             map.setView({zoom:2});
-          }
-        });
+        }
+    });
 
     //Define custom properties for the pushpin class (this is needed for the infobox and not the clustering) 
     Microsoft.Maps.Pushpin.prototype.title = null;
@@ -761,7 +840,7 @@ function createClusteredPin(clusterInfo) {
 function RequestData(ownerMode) {
 /*var size = parseInt(document.getElementById('dataSize').value);
 TestDataGenerator.GenerateData(size, RequestDataCallback);*/
-    get_imo(RequestDataCallback, ownerMode);
+get_imo(RequestDataCallback, ownerMode);
 }
 
 function RequestDataVesselChange(response) {
@@ -791,8 +870,8 @@ function displayEventClusterInfo(e) {
 function displayEventInfo(e) { 
     // console.log(e);
    //  closeInfobox();
-    var pin = e.target;
-    var description = pin.description;
+   var pin = e.target;
+   var description = pin.description;
    //  var html_array = new Array();
    //  html_array.push("<span class='infobox_title'>" + pin.title + "</span> ("+description[8]+" : "+description[9]+")<br/>") ;
    //  html_array.push("<b>Lag / Log:</b>"+prsflt(description[0])+"/"+prsflt(description[1])+"("+description[2]+")<br/> <b>Speed / Course:</b>"+description[3]+"<br/>");
@@ -814,7 +893,7 @@ function displayEventInfo(e) {
    //          htmlContent: pushpinFrameHTML.replace('{content}', html_array.join(""))
    //      });
    //  }
-     show_vessel_dashbord(pin.title);
+   show_vessel_dashbord(pin.title);
 }
 
 function show_vessel_dashbord(name){
@@ -867,22 +946,22 @@ function get_imo(callback, ownerMode) {
         datatype: 'text',
         beforeSend: function() {
             show_spinner();
-    },
-    success: function(data){
-        if(data!=null){
-            var dat = [], randomLatitude, randomLongitude;
-            for (var i = 0; i < data.length; i++) {
+        },
+        success: function(data){
+            if(data!=null){
+                var dat = [], randomLatitude, randomLongitude;
+                for (var i = 0; i < data.length; i++) {
                 // console.log(data[i]['trail-date-time-date-of-value']);
                 var lat_lon = parse_lat_lon(data[i]);
                 dat.push(new DataModel(data[i]['asset-name'], lat_lon['lat'], lat_lon['lon'], 
-                          prsflt(data[i]['speed-value-of-value'])+ " " + data[i]['speed-units-of-value'].toLowerCase(), 
-                          prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase()  + " / " + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
-                          data[i]['i-m-o-number'], data[i]['heading-value-of-value'], data[i]['eta'], data[i]['destination'], data[i]['trail-date-time-date-of-value'], data[i]['trail-date-time-time-of-value'], false));
+                  prsflt(data[i]['speed-value-of-value'])+ " " + data[i]['speed-units-of-value'].toLowerCase(), 
+                  prsflt(data[i]['speed-value-of-value']) + " " + data[i]['speed-units-of-value'].toLowerCase()  + " / " + data[i]['heading-value-of-value'] + " " + data[i]['heading-units-of-value'].toLowerCase(),
+                  data[i]['i-m-o-number'], data[i]['heading-value-of-value'], data[i]['eta'], data[i]['destination'], data[i]['trail-date-time-date-of-value'], data[i]['trail-date-time-time-of-value'], false));
                 vessel_location = dat;
             }
 
             if (callback) {
-            hide_spinner();
+                hide_spinner();
                 callback(dat);
             }
         }else{
@@ -895,7 +974,7 @@ function get_imo(callback, ownerMode) {
         alert('Please try again in a minute.');
         hide_spinner();
     }
-    });
+});
 }
 
 function parse_lat_lon(response) {
@@ -961,26 +1040,26 @@ function show_vessel_path(imo, degrees) {
     req = $.ajax({
         url: url,
         beforeSend: function() {
-           show_spinner();
-        },
+         show_spinner();
+     },
 
-        success : function(response) {
-            hide_spinner();
-            var previous_positions_lat_lon = new Array();
-            var cur_lat_lon = parse_lat_lon(response[0]);
-            var cur_lat = cur_lat_lon['lat'];
-            var cur_lon = cur_lat_lon['lon'];
+     success : function(response) {
+        hide_spinner();
+        var previous_positions_lat_lon = new Array();
+        var cur_lat_lon = parse_lat_lon(response[0]);
+        var cur_lat = cur_lat_lon['lat'];
+        var cur_lon = cur_lat_lon['lon'];
             // Starting from index 1 because, skipping the most recent position.
             for (var i=1; i<response.length; ++i) {
             // For each vessel:
             // Parse the lat,lon
             var lat_lon = parse_lat_lon(response[i]);
             previous_positions_lat_lon.push(lat_lon);
-            }
-
-            plot_vessel_track(cur_lat_lon, previous_positions_lat_lon);
         }
-    });
+
+        plot_vessel_track(cur_lat_lon, previous_positions_lat_lon);
+    }
+});
 }
 var vessel_path_plotted;
 var layer2;
@@ -990,7 +1069,7 @@ function plot_vessel_track(current_position_lat_lon,previous_positions_lat_lon) 
     var lineVertices = new Array();
     lineVertices.push(location1);
     for(var i=0; i<previous_positions_lat_lon.length;++i) {
-    lineVertices.push(new Microsoft.Maps.Location(previous_positions_lat_lon[i]['lat'], previous_positions_lat_lon[i]['lon']));
+        lineVertices.push(new Microsoft.Maps.Location(previous_positions_lat_lon[i]['lat'], previous_positions_lat_lon[i]['lon']));
     }
     map.setView({center: new Microsoft.Maps.Location(current_position_lat_lon['lat'], current_position_lat_lon['lon'])});
     var line = new Microsoft.Maps.Polyline(lineVertices);
@@ -1099,6 +1178,7 @@ function show_pms(){
 }
 
 function owner_vessel_pms_selected(){
+
     // var show_maintenance_analysis = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Maintenance Analysis'});
 
     // if(show_maintenance_analysis.length == 0){
@@ -1228,19 +1308,19 @@ function create_maintenance_analysis_chart(data){
     dates.reverse();
 
     chartDs_1.push({ name: $.grep(data, function(e) {return e.record_flag == 'DUE_THIS_MONTH'})[0]['activity'], data: due_this_month, color: "#00004A" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'COMPLETED_THIS_MONTH'})[0]['activity'], data: completed_this_month, color: "Brown" });
+     { name: $.grep(data, function(e) {return e.record_flag == 'COMPLETED_THIS_MONTH'})[0]['activity'], data: completed_this_month, color: "Brown" });
 
     chartDs_2.push({ name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_THIS_MONTH_CRITICAL'})[0]['activity'], data: overdue_this_month_critical, color: "#00004A" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]['activity'], data: over_due_this_month_non_critical, color: "#6A5ACD" });
+     { name: $.grep(data, function(e) {return e.record_flag == 'OVER_DUE_THIS_MONTH_NON_CRITICAL'})[0]['activity'], data: over_due_this_month_non_critical, color: "#6A5ACD" });
 
     chartDs_3.push({ name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_COMPLETED'})[0]['activity'], data: overdue_completed, color: "#0D74FF" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_NOT_COMPLETED'})[0]['activity'], data: overdue_not_completed, color: "#FF0000" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_CURRENT_MONTH'})[0]['activity'], data: overdue_current_month, color: "DarkGreen" })
+     { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_NOT_COMPLETED'})[0]['activity'], data: overdue_not_completed, color: "#FF0000" }, 
+     { name: $.grep(data, function(e) {return e.record_flag == 'OVERDUE_CURRENT_MONTH'})[0]['activity'], data: overdue_current_month, color: "DarkGreen" })
 
     chartDs_4.push({ name: $.grep(data, function(e) {return e.record_flag == 'PERCENTAGE_OUTSTANDING'})[0]['activity'], data: percentage_outstanding, color: "DarkGreen" });
 
     chartDs_5.push({ name: $.grep(data, function(e) {return e.record_flag == 'ADDITIONAL_JOBS'})[0]['activity'], data: additional_jobs, color: "#6A5ACD" }, 
-                   { name: $.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]['activity'], data: outside_pms_jobs, color: "Brown" })
+     { name: $.grep(data, function(e) {return e.record_flag == 'OUTSIDE_PMS_JOBS'})[0]['activity'], data: outside_pms_jobs, color: "Brown" })
 
     $("#maintenance_analysis_chart_1").kendoChart({
         title: {
@@ -1288,26 +1368,26 @@ function create_maintenance_analysis_chart(data){
             }
         }
     });
-    $("#maintenance_analysis_chart_2").kendoChart({
-        title: {
-            text: ""
+ $("#maintenance_analysis_chart_2").kendoChart({
+    title: {
+        text: ""
+    },
+    legend: {
+        position: "bottom"
+    },
+    chartArea: {
+        background: ""
+    },
+    seriesDefaults: {
+        type: "line",
+        style: "smooth",
+        highlight: {visible:false}
+    },
+    series: chartDs_2,
+    valueAxis: {
+        line: {
+            visible: false
         },
-        legend: {
-            position: "bottom"
-        },
-        chartArea: {
-            background: ""
-        },
-        seriesDefaults: {
-            type: "line",
-            style: "smooth",
-            highlight: {visible:false}
-        },
-        series: chartDs_2,
-        valueAxis: {
-            line: {
-                visible: false
-            },
             //axisCrossingValue: -15,
             //majorUnit: 15,
             title: {
@@ -1334,26 +1414,26 @@ function create_maintenance_analysis_chart(data){
             }
         }
     });
-    $("#maintenance_analysis_chart_3").kendoChart({
-        title: {
-            text: ""
+ $("#maintenance_analysis_chart_3").kendoChart({
+    title: {
+        text: ""
+    },
+    legend: {
+        position: "bottom"
+    },
+    chartArea: {
+        background: ""
+    },
+    seriesDefaults: {
+        type: "line",
+        style: "smooth",
+        highlight: {visible:false}
+    },
+    series: chartDs_3,
+    valueAxis: {
+        line: {
+            visible: false
         },
-        legend: {
-            position: "bottom"
-        },
-        chartArea: {
-            background: ""
-        },
-        seriesDefaults: {
-            type: "line",
-            style: "smooth",
-            highlight: {visible:false}
-        },
-        series: chartDs_3,
-        valueAxis: {
-            line: {
-                visible: false
-            },
             //axisCrossingValue: -15,
             //majorUnit: 15,
             title: {
@@ -1380,26 +1460,26 @@ function create_maintenance_analysis_chart(data){
             }
         }
     });
-    $("#maintenance_analysis_chart_4").kendoChart({
-        title: {
-            text: ""
+ $("#maintenance_analysis_chart_4").kendoChart({
+    title: {
+        text: ""
+    },
+    legend: {
+        position: "bottom"
+    },
+    chartArea: {
+        background: ""
+    },
+    seriesDefaults: {
+        type: "line",
+        style: "smooth",
+        highlight: {visible:false}
+    },
+    series: chartDs_4,
+    valueAxis: {
+        line: {
+            visible: false
         },
-        legend: {
-            position: "bottom"
-        },
-        chartArea: {
-            background: ""
-        },
-        seriesDefaults: {
-            type: "line",
-            style: "smooth",
-            highlight: {visible:false}
-        },
-        series: chartDs_4,
-        valueAxis: {
-            line: {
-                visible: false
-            },
             //axisCrossingValue: -15,
             //majorUnit: 15,
             title: {
@@ -1427,26 +1507,26 @@ function create_maintenance_analysis_chart(data){
         }
     });
 
-    $("#maintenance_analysis_chart_5").kendoChart({
-        title: {
-            text: ""
+ $("#maintenance_analysis_chart_5").kendoChart({
+    title: {
+        text: ""
+    },
+    legend: {
+        position: "bottom"
+    },
+    chartArea: {
+        background: ""
+    },
+    seriesDefaults: {
+        type: "line",
+        style: "smooth",
+        highlight: {visible:false}
+    },
+    series: chartDs_5,
+    valueAxis: {
+        line: {
+            visible: false
         },
-        legend: {
-            position: "bottom"
-        },
-        chartArea: {
-            background: ""
-        },
-        seriesDefaults: {
-            type: "line",
-            style: "smooth",
-            highlight: {visible:false}
-        },
-        series: chartDs_5,
-        valueAxis: {
-            line: {
-                visible: false
-            },
             //axisCrossingValue: -15,
             //majorUnit: 15,
             title: {
@@ -1574,9 +1654,9 @@ function show_crew_cv (emp_id) {
             $('#btnBack').show();
             $('#crew').hide();
             $('body').scrollTop(0);
-            step_back = function(){
-                window.location.href = "#back_crewcv"
-            };
+            // step_back = function(){
+            //     window.location.href = "#back_crewcv"
+            // };
 
             if(!data.crew_cv){
                 return;
@@ -1761,65 +1841,65 @@ function show_crew_cv (emp_id) {
                 // alert($(this).find('td:eq(0)').html());
             });
 
-            $('.docRow').click(function() {
-                $(this).closest('table').find('.temp_tr').remove();
-                var results_array = new Array();
-                results_array.push('<tr class="temp_tr">');
-                results_array.push('<td colspan="100%">');
-                results_array.push('<div>');
-                results_array.push('<ul class="topcoat-list list">');
-                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Document No : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
-                results_array.push("<li class='t3opcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Expiry Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(1)').html() + "</span></li>");
-                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Issue Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
-                results_array.push('</ul>');
-                results_array.push('</div>');
-                results_array.push('</td>');
-                results_array.push('</tr>');
-                $(this).after(results_array.join(""));
+ $('.docRow').click(function() {
+    $(this).closest('table').find('.temp_tr').remove();
+    var results_array = new Array();
+    results_array.push('<tr class="temp_tr">');
+    results_array.push('<td colspan="100%">');
+    results_array.push('<div>');
+    results_array.push('<ul class="topcoat-list list">');
+    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Document No : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
+    results_array.push("<li class='t3opcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Expiry Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(1)').html() + "</span></li>");
+    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Issue Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
+    results_array.push('</ul>');
+    results_array.push('</div>');
+    results_array.push('</td>');
+    results_array.push('</tr>');
+    $(this).after(results_array.join(""));
                 // $('.temp_ul').listview();
                 // alert($(this).find('td:eq(0)').html());
             });
 
-            $('#COURSES').click(function() {
-                $(this).closest('table').find('.temp_tr').remove();
-                $('.COURSES').show();
-                $('.TRAVEL').hide();
-                $('.MEDICALS').hide();
-                $('.LICENSES').hide();
-            });
+ $('#COURSES').click(function() {
+    $(this).closest('table').find('.temp_tr').remove();
+    $('.COURSES').show();
+    $('.TRAVEL').hide();
+    $('.MEDICALS').hide();
+    $('.LICENSES').hide();
+});
 
-            $('#TRAVEL').click(function() {
-                $(this).closest('table').find('.temp_tr').remove();
-                $('.COURSES').hide();
-                $('.TRAVEL').show();
-                $('.MEDICALS').hide();
-                $('.LICENSES').hide();
-            });
+ $('#TRAVEL').click(function() {
+    $(this).closest('table').find('.temp_tr').remove();
+    $('.COURSES').hide();
+    $('.TRAVEL').show();
+    $('.MEDICALS').hide();
+    $('.LICENSES').hide();
+});
 
-            $('#MEDICALS').click(function() {
-                $(this).closest('table').find('.temp_tr').remove();
-                $('.COURSES').hide();
-                $('.TRAVEL').hide();
-                $('.MEDICALS').show();
-                $('.LICENSES').hide();
-            });
+ $('#MEDICALS').click(function() {
+    $(this).closest('table').find('.temp_tr').remove();
+    $('.COURSES').hide();
+    $('.TRAVEL').hide();
+    $('.MEDICALS').show();
+    $('.LICENSES').hide();
+});
 
-            $('#LICENSES').click(function() {
-                $(this).closest('table').find('.temp_tr').remove();
-                $('.COURSES').hide();
-                $('.TRAVEL').hide();
-                $('.MEDICALS').hide();
-                $('.LICENSES').show();
-            });
+ $('#LICENSES').click(function() {
+    $(this).closest('table').find('.temp_tr').remove();
+    $('.COURSES').hide();
+    $('.TRAVEL').hide();
+    $('.MEDICALS').hide();
+    $('.LICENSES').show();
+});
 
 
-            $('.crew_detail').hide();
-        },
-        error: function() {        
-            alert('Please try again in a minute.');
-            hide_spinner();            
-        }
-    });
+ $('.crew_detail').hide();
+},
+error: function() {        
+    alert('Please try again in a minute.');
+    hide_spinner();            
+}
+});
 }
 
 var months=['','JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -1830,7 +1910,7 @@ function dateformat(dat, format) {
         //console.log(dat);
         //console.log(d.getDate()+"-"+d.getMonth()+"-"+d.getYear());
         // if(format == "dd-mon-yyyy")
-            dat = ("0" + d.getDate()).slice(-2)+"-"+months[d.getMonth()]+"-"+d.getFullYear();
+        dat = ("0" + d.getDate()).slice(-2)+"-"+months[d.getMonth()]+"-"+d.getFullYear();
     } else {
         dat = '';
     }
