@@ -738,10 +738,13 @@ function get_vessel_details() {
     var sel_val = document.getElementById('sel_owner_vessel_det');
     selected_vessel_id = document.getElementById("sel_owner_vessel_det").value;
     var sel_text = sel_val.options[sel_val.selectedIndex].innerHTML;
-    for (var i = 0; i < vessel_location.length; i++) {
-        if(vessel_location[i].Name == sel_text){
+    for (var i = 0; i < owner_vessels.length; i++) {
+        if(owner_vessels[i].name == sel_text){
+            (owner_vessels[i].name + " "+ sel_text);
+        }
+        if(owner_vessels[i].name == sel_text){
             var results_array = new Array();
-            var url = 'get_vessel_wiki.php?imo='+vessel_location[i].imo;
+            var url = 'get_vessel_wiki.php?imo='+owner_vessels[i].imo;
             var req = $.ajax({
                 url: url,
                 datatype: 'text',
