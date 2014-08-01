@@ -274,6 +274,7 @@ $('#login_form').submit(function(){
                 var str = response.split(",")
                 pal_user_id = str[0];
                 cwa_app_id = str[1];
+                pal_user_name = $.jStorage.get("pal_user_name");
                 $.jStorage.set("pal_user_id", pal_user_id);
                 $.jStorage.set("cwa_app_id", cwa_app_id);
                 // window.location.replace("#");
