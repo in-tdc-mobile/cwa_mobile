@@ -321,7 +321,7 @@ ul {
 }
 
 .chevron {
-    background: transparent url(images/next.svg);
+    background: transparent url(css/images/next.svg);
     background-repeat: no-repeat;
     background-size: contain;
     width: 20px;
