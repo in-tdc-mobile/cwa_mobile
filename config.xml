@@ -3,7 +3,7 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
 		id="com.bsm-cwamobile"
 		version = "1.0.0.4"
-		versionCode = "3">
+		versionCode = "4">
 
     <name>CWA Mobile</name>
 
