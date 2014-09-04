@@ -1,7 +1,6 @@
 ## Local phonegap build
 platforms/
 node_modules/
-plugins/
 
 #################
 ## Eclipse
