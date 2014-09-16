@@ -37,6 +37,7 @@
     <gap:splash src="cordova/res/screen/blackberry_transparent_300.png" gap:platform="blackberry"/>
     <gap:splash src="cordova/res/screen/iphone_portrait.png" gap:platform="ios" width="320" height="480"/>
     <gap:splash src="cordova/res/screen/iphone_retina_portrait.png" gap:platform="ios" width="640" height="960"/>
+    <gap:splash gap:platform="ios" height="1136" src="res/screen/ios/screen-iphone-portrait-568h-2x.png" width="640" />
     <gap:splash src="cordova/res/screen/ipad_portrait.png" gap:platform="ios" width="768" height="1024"/>
     <gap:splash src="cordova/res/screen/ipad_landscape.png" gap:platform="ios" width="1024" height="768"/>
     <gap:splash src="cordova/res/screen/windows_phone_portrait.jpg" gap:platform="winphone"/>
