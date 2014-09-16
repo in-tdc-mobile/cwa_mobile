@@ -144,6 +144,8 @@ function route(event) {
     $("#btnBack").show();
 
     if (hash === "#pms") {
+        hide_all();
+        $('#pms').show();
         show_pms();
     } else if (hash === "#vdetails") {
         show_vessel_details();
@@ -180,7 +182,6 @@ function route(event) {
         page = show_owners();
     }
     // slider.slidePage($(page));
-
 }
 
 var step_back = function() {window.history.back()};
@@ -221,32 +222,32 @@ $(document).ready(function() {
       content.style.height = "auto";
       $('#container').resize();
       
-  }
-  try{
-    pal_user_name = $.jStorage.get("pal_user_name");
+    }
+    try{
+        pal_user_name = $.jStorage.get("pal_user_name");
         // $.jStorage.set("pal_user_email", '');
         if (pal_user_name == null) {
-          hide_all();
-          $("#btnBack").hide();
-          $('.login').show();
-      } else {
-        pal_user_id = $.jStorage.get("pal_user_id");
-        cwa_app_id = $.jStorage.get("cwa_app_id");
-        $('#hamburger').show();
-        $('.login').hide();
-        show_owners();
+            hide_all();
+            $("#btnBack").hide();
+            $('.login').show();
+        } else {
+            pal_user_id = $.jStorage.get("pal_user_id");
+            cwa_app_id = $.jStorage.get("cwa_app_id");
+            $('#hamburger').show();
+            $('.login').hide();
+            show_owners();
+        }
     }
-}
-catch(err){    
-}
+    catch(err){    
+    }
 
 });
 
- function login_failure() {
-  $(".spinner").css('display','none');
-  $("#ajax_error").show();
-  $("#ajax_error").html('Wrong Email or Password. Please try again.');
-  $("#ajax_error").attr('style','display:block; text-align:center;');
+function login_failure() {
+    $(".spinner").css('display','none');
+    $("#ajax_error").show();
+    $("#ajax_error").html('Wrong Email or Password. Please try again.');
+    $("#ajax_error").attr('style','display:block; text-align:center;');
 }
 
 $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
@@ -285,21 +286,31 @@ $('#login_form').submit(function(){
                 // document.documentElement.scrollTop = 0;
                 $('body, html').animate({scrollTop : 0}, 0);
                 show_owners();
-            // location.reload();
-        } else {
-            login_failure();
-            hide_spinner();
+                // location.reload();
+            } else {
+                login_failure();
+                hide_spinner();
+            }
         }
-    }
-});
+    });
     //}
     $('#login_password').blur();
     $('#login_email').blur();
     return false;
 });
 
- function show_multi_owners () {
+function show_multi_owners () {
+    
+    $('#view_title').show();
+    $('#owners').show();
+    $('#owners').html("");
+    $("#hamburger").hide();
+    $("#btnBack").hide();
 
+    udpate_show_multi_owners();
+}
+
+function udpate_show_multi_owners (argument) {
     var results_array = new Array();
     results_array.push("<ul class='topcoat-list__container' id='listview'>");
     for(var i=0; i< owners_array.length; i++) {
@@ -309,18 +320,15 @@ $('#login_form').submit(function(){
     }
     results_array.push("</ul>");
     
-    $('#view_title').show();
+    
     //$('#view_title').html('Owners');
 
     $('#owners').html(results_array.join(""));
-    $('#owners').show();
     if(!selected_owner_id){
         set_user_rights(owners_array[0].ID);
         selected_owner_id = owners_array[0].ID;
         // window.location = "#dashboard/"+owners_array[0].ID;
     }
-    $("#hamburger").hide();
-    $("#btnBack").hide();
 }
 
 function show_dashboard_ajax_from_multi_owners (owner_id) {
@@ -332,46 +340,46 @@ function show_dashboard_ajax_from_multi_owners (owner_id) {
 
 function set_user_rights (owner_id) {
     $.ajax({
-      url: "get_owner_rights.php?" +
-      "userid=" + pal_user_id + "&appid=" + cwa_app_id + "&ownerid=" + owner_id ,
-      datatype: 'json',
-      beforeSend: function() {
-        show_spinner();
-    },
-    success: function(data){
-        hide_spinner();
+        url: "get_owner_rights.php?" +
+        "userid=" + pal_user_id + "&appid=" + cwa_app_id + "&ownerid=" + owner_id ,
+        datatype: 'json',
+        beforeSend: function() {
+            show_spinner();
+        },
+        success: function(data){
+            hide_spinner();
 
-        user_rights_settings = data['user_rights_settings'];
-        $('#lnk_pms').removeClass('a_disabled');
-        $('#lnk_crew').removeClass('a_disabled');
-        // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'PMS / Purchase'});
+            user_rights_settings = data['user_rights_settings'];
+            $('#lnk_pms').removeClass('a_disabled');
+            $('#lnk_crew').removeClass('a_disabled');
+            // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'PMS / Purchase'});
 
-        var show_pms = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'PMS / Purchase'});
-        
-        if(show_pms.length == 0){
+            var show_pms = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'PMS / Purchase'});
+
+            if(show_pms.length == 0){
             $('#lnk_pms').addClass('a_disabled');
-        }
+            }
 
-        // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'Crewing'});
+            // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'Crewing'});
 
-        var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crewing'});
-        
-        if(show_crew.length == 0){
+            var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crewing'});
+
+            if(show_crew.length == 0){
             $('#lnk_crew').addClass('a_disabled');
-        }
+            }
 
-        if($.isArray(owner_vessels) == false){
+            if($.isArray(owner_vessels) == false){
             owner_vessels = $.makeArray(data['owner_vessels']);
-        }
-        if($.isArray(dashboard_settings) == false){
+            }
+            if($.isArray(dashboard_settings) == false){
             dashboard_settings = $.makeArray(data['dashboard_settings']);
+            }
+        },
+        error: function() {        
+            alert('Please try again in a minute.');
+            hide_spinner();
         }
-    },
-    error: function() {        
-        alert('Please try again in a minute.');
-        hide_spinner();
-    }
-});
+    });
 }
 
 $('#lnk_pms').click(function () {
@@ -384,49 +392,87 @@ $('#lnk_crew').click(function () {
 function show_owners(){
     hide_all();
     $("#btnBack").show();
+
     $.ajax({
-      url: "get_user_owners.php?" +
-      "userid=" + pal_user_id + "&appid=" + cwa_app_id ,
+        url: "get_user_owners.php?" +
+        "userid=" + pal_user_id + "&appid=" + cwa_app_id ,
+        datatype: 'json',
+        beforeSend: function() {
+            show_spinner();
+        },
+        success: function(data){
+            hide_spinner();
+            owners_array = data["owners_array"];
+            if(!owners_array){
+                return;
+            }
+            if($.isArray(owners_array) == false){
+                owners_array = $.makeArray(data["owners_array"]);
+            }
+            if(owners_array.length!=1){
+                window.location = '#multiowners';                
+            }
+            else{
+                owner_vessels = data['owner_vessels'];
+                dashboard_settings = data['dashboard_settings'];
+                user_rights_settings = data['user_rights_settings'];
+
+                // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'PMS / Purchase'});
+
+                var show_pms = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'PMS / Purchase'});
+                
+                if(show_pms.length == 0){
+                    $('#lnk_pms').css('color', 'grey');
+                    $('#lnk_pms').click(function (e) {e.preventDefault();});
+                }
+
+                // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'Crewing'});
+
+                var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crewing'});
+                
+                if(show_crew.length == 0){
+                    $('#lnk_crew').css('color', 'grey');
+                    $('#lnk_crew').click(function (e) {e.preventDefault();});
+                }
+
+                if($.isArray(owner_vessels) == false){
+                    owner_vessels = $.makeArray(data['owner_vessels']);
+                }
+                if($.isArray(dashboard_settings) == false){
+                    dashboard_settings = $.makeArray(data['dashboard_settings']);
+                }
+
+                show_dashboard(owners_array[0].ID);
+            }
+
+        },
+        error: function() {        
+            alert('Please try again in a minute.');
+            hide_spinner();
+        }
+    });
+}
+
+function show_dashboard_ajax(owner_id){
+    hide_all();
+    $("#hamburger").show();
+    selected_owner_id = owner_id;
+    $('#dashboard').show();
+    $('#dashboard').html("");
+    
+    update_show_dashboard_ajax(owner_id);
+}
+function update_show_dashboard_ajax (owner_id) {
+    $.ajax({
+      url: "get_owner_vessel.php?" +
+      "owner_id=" + owner_id  + "&userid=" + pal_user_id + "&appid=" + cwa_app_id,
       datatype: 'json',
       beforeSend: function() {
         show_spinner();
-    },
-    success: function(data){
-        hide_spinner();
-        owners_array = data["owners_array"];
-        if(!owners_array){
-            return;
-        }
-        if($.isArray(owners_array) == false){
-            owners_array = $.makeArray(data["owners_array"]);
-        }
-        if(owners_array.length!=1){
-
-            window.location = '#multiowners';
-            
-        }
-        else{
+        },
+        success: function(data){
             owner_vessels = data['owner_vessels'];
             dashboard_settings = data['dashboard_settings'];
-            user_rights_settings = data['user_rights_settings'];
-
-            // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'PMS / Purchase'});
-
-            var show_pms = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'PMS / Purchase'});
-            
-            if(show_pms.length == 0){
-                $('#lnk_pms').css('color', 'grey');
-                $('#lnk_pms').click(function (e) {e.preventDefault();});
-            }
-
-            // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'Crewing'});
-
-            var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crewing'});
-            
-            if(show_crew.length == 0){
-                $('#lnk_crew').css('color', 'grey');
-                $('#lnk_crew').click(function (e) {e.preventDefault();});
-            }
 
             if($.isArray(owner_vessels) == false){
                 owner_vessels = $.makeArray(data['owner_vessels']);
@@ -435,51 +481,17 @@ function show_owners(){
                 dashboard_settings = $.makeArray(data['dashboard_settings']);
             }
 
-            show_dashboard(owners_array[0].ID);
-        }
+            show_dashboard(owner_id);
 
-    },
-    error: function() {        
-        alert('Please try again in a minute.');
-        hide_spinner();
-    }
-});
+        },
+        error: function() {        
+            alert('Please try again in a minute.');
+            hide_spinner();
+        }
+    });
 }
-
-function show_dashboard_ajax(owner_id){
-    hide_all();
-    $("#hamburger").show();
-    selected_owner_id = owner_id;
-    $.ajax({
-      url: "get_owner_vessel.php?" +
-      "owner_id=" + owner_id  + "&userid=" + pal_user_id + "&appid=" + cwa_app_id,
-      datatype: 'json',
-      beforeSend: function() {
-        show_spinner();
-    },
-    success: function(data){
-        owner_vessels = data['owner_vessels'];
-        dashboard_settings = data['dashboard_settings'];
-
-        if($.isArray(owner_vessels) == false){
-            owner_vessels = $.makeArray(data['owner_vessels']);
-        }
-        if($.isArray(dashboard_settings) == false){
-            dashboard_settings = $.makeArray(data['dashboard_settings']);
-        }
-
-        show_dashboard(owner_id);
-
-    },
-    error: function() {        
-        alert('Please try again in a minute.');
-        hide_spinner();
-    }
-});
-}
-
 function show_dashboard(owner_id){
-    hide_all();
+    // hide_all();
     selected_owner_id = owner_id;
     var results_array = new Array();
 
@@ -503,7 +515,7 @@ function show_dashboard(owner_id){
 
     // $('#sel_owner_vessel').selectmenu();
 
-    $('#dashboard').show();
+    // $('#dashboard').show();
     show_vessel_tracker = $.grep(dashboard_settings , function(e){ return e.code == 'VSLTRK'; });
     if(show_vessel_tracker.length > 0){
         GetMap();
@@ -518,7 +530,6 @@ function show_dashboard(owner_id){
         // $('#sel_owner_vessel_crew').selectmenu('refresh', true);
         owner_vessel_selected();
     }
-
 }
 
 function owner_vessel_selected(){
@@ -612,12 +623,12 @@ function owner_vessel_selected(){
 
                         /*map = new Microsoft.Maps.Map(document.getElementById("trackerMap"), { credentials: "AvOyltb0YAu_Ldagk8wP_XiQQGfXkHo5rlWlLs-mIpsB3Gcvt87UC-BIZdgc3QbL",
                            showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });*/
- var pushpin = new Microsoft.Maps.Pushpin(map.getCenter(), { text: '' });
- pushpin.setLocation(new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude));
- pushpin.title =  vessel_location[i].Name;
- pushpin.description = [vessel_location[i].latitude,vessel_location[i].longitude,vessel_location[i].datetime,vessel_location[i].speed,vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].eta, vessel_location[i].destination, vessel_location[i].traildate, vessel_location[i].trailtime];
+                        var pushpin = new Microsoft.Maps.Pushpin(map.getCenter(), { text: '' });
+                        pushpin.setLocation(new Microsoft.Maps.Location(vessel_location[i].latitude, vessel_location[i].longitude));
+                        pushpin.title =  vessel_location[i].Name;
+                        pushpin.description = [vessel_location[i].latitude,vessel_location[i].longitude,vessel_location[i].datetime,vessel_location[i].speed,vessel_location[i].imo, vessel_location[i].degree, vessel_location[i].eta, vessel_location[i].destination, vessel_location[i].traildate, vessel_location[i].trailtime];
 
- closeInfobox();
+                        closeInfobox();
                         // var pin = e.target;
                         var description = pushpin.description;
                         var html_array = new Array();
@@ -653,8 +664,8 @@ function owner_vessel_selected(){
         }
     });
 
-} else {
-   $('#accordion').html("")
+    } else {
+        $('#accordion').html("")
         //$('#dashboard_tiles').html(results_div);
         if(show_vessel_tracker.length > 0){
             GetMap();
@@ -739,7 +750,7 @@ function show_vessel_details() {
         get_vessel_details()
     }
 }
-var test;
+
 function get_vessel_details() {
     var sel_val = document.getElementById('sel_owner_vessel_det');
     selected_vessel_id = document.getElementById("sel_owner_vessel_det").value;
@@ -757,13 +768,12 @@ function get_vessel_details() {
                 beforeSend: function() {
                     show_spinner();
                 },
-                success : function(data) { 
-                    test = data;
+                success : function(data) {
                     results_array.push("<ul class='topcoat-list list'>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Vessel Type:</span> "+nullcheck(data['VSLTYPE'])+" (" + nullcheck(data['VSLSUBTYPE']) +")</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Management Type:</span> "+nullcheck(data['MGTTYPE'])+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Class Type, Number:</span> "+nullcheck(data['CLASSTYPE'])+", "+nullcheck(data['CLASS_NO'])+"</span></li>");
-                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Flag:</span> "+nullcheck(data['asset-parameter-flag'])+"</span></li>");
+                    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Flag:</span> "+nullcheck(data['FLAG'])+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Registered Owner:</span> "+nullcheck(data['REGOWN'])+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>Ultimate Owner:</span> "+nullcheck(data['ULTIMATEOWN'])+"</span></li>");
                     results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span style='font-weight: bold;'>IMO, MMSI, Call sign, Hull number:</span> "+nullcheck(data['imo'])+", "+nullcheck(data['asset-parameter-mmsi'])+", "+nullcheck(data['CALL_SIGN'])+", "+data['HULL_NO']+"</span></li>");
@@ -785,8 +795,8 @@ function get_vessel_details() {
                 }
 
             });
-}
-}
+        }
+    }
 }
 
 /*-----Start Bing Map-------*/
@@ -848,9 +858,9 @@ function createClusteredPin(clusterInfo) {
 
 //Makes a request for data
 function RequestData(ownerMode) {
-/*var size = parseInt(document.getElementById('dataSize').value);
-TestDataGenerator.GenerateData(size, RequestDataCallback);*/
-get_imo(RequestDataCallback, ownerMode);
+    /*var size = parseInt(document.getElementById('dataSize').value);
+    TestDataGenerator.GenerateData(size, RequestDataCallback);*/
+    get_imo(RequestDataCallback, ownerMode);
 }
 
 function RequestDataVesselChange(response) {
@@ -979,12 +989,12 @@ function get_imo(callback, ownerMode) {
             alert("No data found Please change search criteria");
         }
         
-    },
-    error: function() {        
-        alert('Please try again in a minute.');
-        hide_spinner();
-    }
-});
+        },
+        error: function() {        
+            alert('Please try again in a minute.');
+            hide_spinner();
+        }
+    });
 }
 
 function parse_lat_lon(response) {
@@ -1033,7 +1043,6 @@ var DataModel = function (name, latitude, longitude, speed, datetime, imo, degre
   this.trailtime = trailtime;
 };
 
-
 function prsflt(e){
   return parseFloat(e).toFixed(2);
 }
@@ -1050,10 +1059,9 @@ function show_vessel_path(imo, degrees) {
     req = $.ajax({
         url: url,
         beforeSend: function() {
-         show_spinner();
-     },
-
-     success : function(response) {
+        show_spinner();
+    },
+    success : function(response) {
         hide_spinner();
         var previous_positions_lat_lon = new Array();
         var cur_lat_lon = parse_lat_lon(response[0]);
@@ -1069,8 +1077,9 @@ function show_vessel_path(imo, degrees) {
 
         plot_vessel_track(cur_lat_lon, previous_positions_lat_lon);
     }
-});
+    });
 }
+
 var vessel_path_plotted;
 var layer2;
 // Function to Show ship_track
@@ -1142,7 +1151,7 @@ function hide_spinner() {
 }
 
 function show_pms(){
-    hide_all();
+    // hide_all();
 
     var results_array = new Array();
 
@@ -1176,15 +1185,14 @@ function show_pms(){
 
     $('#maintenance_analysis').hide();
     $('#crit-equip-tile').hide();
-    $('#pms').show();
+    // $('#pms').show();
     // $('#sel_owner_vessel_pms').selectmenu();
 
     if(selected_vessel_id>0){    
         $('#sel_owner_vessel_pms').val(selected_vessel_id);
         // $('#sel_owner_vessel_pms').selectmenu('refresh', true);
         owner_vessel_pms_selected();
-    }
-    
+    }   
 }
 
 function owner_vessel_pms_selected(){
@@ -1567,6 +1575,8 @@ function create_maintenance_analysis_chart(data){
 
 function show_crew_list(){
     hide_all();
+    $('#crew_tile').hide();
+    $('#crew').show();
 
     var results_array = new Array();
 
@@ -1584,8 +1594,6 @@ function show_crew_list(){
 
     $('#crew').html(results_array.join(""));
 
-    $('#crew_tile').hide();
-    $('#crew').show();
     // $('#sel_owner_vessel_crew').selectmenu();
 
     if(selected_vessel_id>0){    
@@ -1650,6 +1658,8 @@ function owner_vessel_crew_selected (argument) {
 }
 
 function show_crew_cv (emp_id) {
+    $('#crew_cv').show();
+
     $.ajax({
         url: 'get_crew_cv.php?' + 
         "emp_id=" + emp_id,
@@ -1825,12 +1835,6 @@ function show_crew_cv (emp_id) {
             }
 
             $('#crew_cv').html(results_array.join(""));
-            $('#crew_cv').show();
-
-            
-
-            // $('.crew_list_view').listview();
-            // $('.crew_table').table({ defaults: true });
 
             $('.itemRow').click(function() {
                 $(this).closest('table').find('.temp_tr').remove();
@@ -1851,65 +1855,63 @@ function show_crew_cv (emp_id) {
                 // alert($(this).find('td:eq(0)').html());
             });
 
- $('.docRow').click(function() {
-    $(this).closest('table').find('.temp_tr').remove();
-    var results_array = new Array();
-    results_array.push('<tr class="temp_tr">');
-    results_array.push('<td colspan="100%">');
-    results_array.push('<div>');
-    results_array.push('<ul class="topcoat-list list">');
-    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Document No : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
-    results_array.push("<li class='t3opcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Expiry Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(1)').html() + "</span></li>");
-    results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Issue Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
-    results_array.push('</ul>');
-    results_array.push('</div>');
-    results_array.push('</td>');
-    results_array.push('</tr>');
-    $(this).after(results_array.join(""));
-                // $('.temp_ul').listview();
-                // alert($(this).find('td:eq(0)').html());
+            $('.docRow').click(function() {
+                $(this).closest('table').find('.temp_tr').remove();
+                var results_array = new Array();
+                results_array.push('<tr class="temp_tr">');
+                results_array.push('<td colspan="100%">');
+                results_array.push('<div>');
+                results_array.push('<ul class="topcoat-list list">');
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Document No : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(3)').html() + "</span></li>");
+                results_array.push("<li class='t3opcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Expiry Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(1)').html() + "</span></li>");
+                results_array.push("<li class='topcoat-list__item'><span class='dashboard-list'><span class='li-data-list-small'>Issue Date : </span><span style='font-weight: bold;'>"+ $(this).find('td:eq(2)').html() + "</span></li>");
+                results_array.push('</ul>');
+                results_array.push('</div>');
+                results_array.push('</td>');
+                results_array.push('</tr>');
+                $(this).after(results_array.join(""));
+                            // $('.temp_ul').listview();
+                            // alert($(this).find('td:eq(0)').html());
             });
 
- $('#COURSES').click(function() {
-    $(this).closest('table').find('.temp_tr').remove();
-    $('.COURSES').show();
-    $('.TRAVEL').hide();
-    $('.MEDICALS').hide();
-    $('.LICENSES').hide();
-});
+            $('#COURSES').click(function() {
+                $(this).closest('table').find('.temp_tr').remove();
+                $('.COURSES').show();
+                $('.TRAVEL').hide();
+                $('.MEDICALS').hide();
+                $('.LICENSES').hide();
+            });
 
- $('#TRAVEL').click(function() {
-    $(this).closest('table').find('.temp_tr').remove();
-    $('.COURSES').hide();
-    $('.TRAVEL').show();
-    $('.MEDICALS').hide();
-    $('.LICENSES').hide();
-});
+            $('#TRAVEL').click(function() {
+                $(this).closest('table').find('.temp_tr').remove();
+                $('.COURSES').hide();
+                $('.TRAVEL').show();
+                $('.MEDICALS').hide();
+                $('.LICENSES').hide();
+            });
 
- $('#MEDICALS').click(function() {
-    $(this).closest('table').find('.temp_tr').remove();
-    $('.COURSES').hide();
-    $('.TRAVEL').hide();
-    $('.MEDICALS').show();
-    $('.LICENSES').hide();
-});
+            $('#MEDICALS').click(function() {
+                $(this).closest('table').find('.temp_tr').remove();
+                $('.COURSES').hide();
+                $('.TRAVEL').hide();
+                $('.MEDICALS').show();
+                $('.LICENSES').hide();
+            });
 
- $('#LICENSES').click(function() {
-    $(this).closest('table').find('.temp_tr').remove();
-    $('.COURSES').hide();
-    $('.TRAVEL').hide();
-    $('.MEDICALS').hide();
-    $('.LICENSES').show();
-});
- 
-
- $('.crew_detail').hide();
-},
-error: function() {        
-    alert('Please try again in a minute.');
-    hide_spinner();            
-}
-});
+            $('#LICENSES').click(function() {
+                $(this).closest('table').find('.temp_tr').remove();
+                $('.COURSES').hide();
+                $('.TRAVEL').hide();
+                $('.MEDICALS').hide();
+                $('.LICENSES').show();
+            });
+            $('.crew_detail').hide();
+        },
+        error: function() {        
+            alert('Please try again in a minute.');
+            hide_spinner();            
+        }
+    });
 }
 
 var months=['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
