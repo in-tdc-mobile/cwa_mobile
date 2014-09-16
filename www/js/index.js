@@ -26,6 +26,25 @@ var mcOptions = {minimumClusterSize: 3,gridSize: 75, maxZoom:15, minZoom:2};//gr
 var infowindow;
 var marker, i,position;
 
+var step_back = function() {window.history.back()};
+
+var current_step = function() {};
+
+var temp;
+var pal_user_id;
+var cwa_app_id;
+var pal_user_name;
+var owners_array;
+var owner_vessels;
+var owner_crew;
+var dashboard_settings;
+var user_rights_settings;
+var selected_owner_id;
+var selected_vessel_id;
+var vessel_location;
+var show_vessel_tracker;
+
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -70,9 +89,8 @@ function onBackKeyDown() {
     step_back();
 }
 
-
-function toTitleCase(str)
-{ if(str)
+function toTitleCase(str){
+    if(str)
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
@@ -97,7 +115,7 @@ Number.prototype.formatMoney = function(c, d, t){
 };
 $('#hamburger').hide();
 
-function hide_all() {    
+function hide_all() {
     // if($("#contentLayer:visible").length>0){
     //     $('#contentLayer').trigger('click');
     // }
@@ -144,8 +162,6 @@ function route(event) {
     $("#btnBack").show();
 
     if (hash === "#pms") {
-        hide_all();
-        $('#pms').show();
         show_pms();
     } else if (hash === "#vdetails") {
         show_vessel_details();
@@ -183,24 +199,6 @@ function route(event) {
     }
     // slider.slidePage($(page));
 }
-
-var step_back = function() {window.history.back()};
-
-var current_step = function() {};
-
-var temp;
-var pal_user_id;
-var cwa_app_id;
-var pal_user_name;
-var owners_array;
-var owner_vessels;
-var owner_crew;
-var dashboard_settings;
-var user_rights_settings;
-var selected_owner_id;
-var selected_vessel_id;
-var vessel_location;
-var show_vessel_tracker;
 
 window.addEventListener('load', function () {
     FastClick.attach(document.body);
@@ -413,6 +411,9 @@ function show_owners(){
                 window.location = '#multiowners';                
             }
             else{
+                $('#dashboard').show();
+                $('#dashboard').html("");
+                
                 owner_vessels = data['owner_vessels'];
                 dashboard_settings = data['dashboard_settings'];
                 user_rights_settings = data['user_rights_settings'];
@@ -462,6 +463,7 @@ function show_dashboard_ajax(owner_id){
     
     update_show_dashboard_ajax(owner_id);
 }
+
 function update_show_dashboard_ajax (owner_id) {
     $.ajax({
       url: "get_owner_vessel.php?" +
@@ -490,6 +492,7 @@ function update_show_dashboard_ajax (owner_id) {
         }
     });
 }
+
 function show_dashboard(owner_id){
     // hide_all();
     selected_owner_id = owner_id;
@@ -805,7 +808,7 @@ var map, myLayer, infobox;
 var pushpinFrameHTML = '<div class="infobox"><a class="infobox_close" href="javascript:closeInfobox()"><div class="close-button">x</div></a><div class="infobox_content">{content}</div></div><img src="./img/infoarrow.png" class="infobox_pointer">';
 
 
-function GetMap() { 
+function GetMap() {
     map = new Microsoft.Maps.Map(document.getElementById("trackerMap"), { credentials: "AvOyltb0YAu_Ldagk8wP_XiQQGfXkHo5rlWlLs-mIpsB3Gcvt87UC-BIZdgc3QbL",
         showDashboard:false, showScalebar:false, showMapTypeSelector:false, enableSearchLogo: false });
 
@@ -1151,7 +1154,9 @@ function hide_spinner() {
 }
 
 function show_pms(){
-    // hide_all();
+    hide_all();
+    $('#pms').show();
+    $('#pms').html("");
 
     var results_array = new Array();
 
@@ -1577,6 +1582,7 @@ function show_crew_list(){
     hide_all();
     $('#crew_tile').hide();
     $('#crew').show();
+    $('#crew').html("");
 
     var results_array = new Array();
 
@@ -1659,6 +1665,7 @@ function owner_vessel_crew_selected (argument) {
 
 function show_crew_cv (emp_id) {
     $('#crew_cv').show();
+    $('#crew_cv').html("");
 
     $.ajax({
         url: 'get_crew_cv.php?' + 
