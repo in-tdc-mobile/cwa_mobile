@@ -141,6 +141,7 @@ function route(event) {
     $('body, html').animate({scrollTop : 0}, 0);
     var page,
     hash = window.location.hash.split('/')[0];
+    $("#btnBack").show();
 
     if (hash === "#pms") {
         show_pms();
@@ -171,6 +172,7 @@ function route(event) {
         show_dashboard_ajax(window.location.hash.split('/')[1]);
     }
     else {
+        $("#btnBack").hide();
         // show_dashboard();
         if (pal_user_name == null) {
             return;
@@ -318,6 +320,7 @@ $('#login_form').submit(function(){
         // window.location = "#dashboard/"+owners_array[0].ID;
     }
     $("#hamburger").hide();
+    $("#btnBack").hide();
 }
 
 function show_dashboard_ajax_from_multi_owners (owner_id) {
