@@ -312,8 +312,8 @@ function udpate_show_multi_owners (argument) {
     var results_array = new Array();
     results_array.push("<ul class='topcoat-list__container' id='listview'>");
     for(var i=0; i< owners_array.length; i++) {
-        results_array.push("<li class='topcoat-list__item'>");
-        results_array.push("<a data-transition='slide' href='javascript:show_dashboard_ajax_from_multi_owners(\""+ owners_array[i]['ID'] +"\")' id='"+ owners_array[i]['ID'] +"'>"+ owners_array[i]['label']);
+        results_array.push("<li class='topcoat-list__item' onclick='javascript:show_dashboard_ajax_from_multi_owners(\""+ owners_array[i]['ID'] +"\")'>");
+        results_array.push("<a data-transition='slide' href='' id='"+ owners_array[i]['ID'] +"'>"+ owners_array[i]['label']);
         results_array.push("</a></li>");
     }
     results_array.push("</ul>");
