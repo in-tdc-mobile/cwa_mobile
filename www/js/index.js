@@ -310,6 +310,7 @@ function show_multi_owners () {
 
 function udpate_show_multi_owners (argument) {
     var results_array = new Array();
+    results_array.push("<div style='text-align:center'><h3>List of owners  Available</h3></div>");
     results_array.push("<ul class='topcoat-list__container' id='listview'>");
     for(var i=0; i< owners_array.length; i++) {
         results_array.push("<li class='topcoat-list__item' onclick='javascript:show_dashboard_ajax_from_multi_owners(\""+ owners_array[i]['ID'] +"\")'>");
@@ -1820,8 +1821,8 @@ function show_crew_cv (emp_id) {
                     if(temp_type != doc_tpe.slice(1)) {
                         temp_type = doc_tpe.slice(1);
                         temp_bool = true;
-                        results_array.push("<tr>");
-                        results_array.push('<td id="'+temp_type+'">'+temp_type+'</th>');
+                        results_array.push('<tr id="'+temp_type+'">');
+                        results_array.push('<td >'+temp_type+'</td>');          
                         results_array.push('<td ><img style="height: 25px;width: 25px;" src="css/images/next.svg"></th>');
                         results_array.push("</tr>");
                     }
@@ -1844,7 +1845,12 @@ function show_crew_cv (emp_id) {
             $('#crew_cv').html(results_array.join(""));
 
             $('.itemRow').click(function() {
-                $(this).closest('table').find('.temp_tr').remove();
+                // alert("h");
+                if($(this).next().hasClass('temp_tr')==true){
+                    $(this).parent().closest('table').find('.temp_tr').remove();
+                    return;
+                }
+                $(this).parent().closest('table').find('.temp_tr').remove();
                 var results_array = new Array();
                 results_array.push('<tr class="temp_tr">');
                 results_array.push('<td colspan="100%">');
@@ -1863,6 +1869,10 @@ function show_crew_cv (emp_id) {
             });
 
             $('.docRow').click(function() {
+                if($(this).next().hasClass('temp_tr')==true){
+                    $(this).parent().closest('table').find('.temp_tr').remove();
+                    return;
+                }
                 $(this).closest('table').find('.temp_tr').remove();
                 var results_array = new Array();
                 results_array.push('<tr class="temp_tr">');
@@ -1882,6 +1892,10 @@ function show_crew_cv (emp_id) {
             });
 
             $('#COURSES').click(function() {
+                if($('.COURSES :visible').length>0){
+                    $('.COURSES').hide();
+                    return;
+                }
                 $(this).closest('table').find('.temp_tr').remove();
                 $('.COURSES').show();
                 $('.TRAVEL').hide();
@@ -1890,6 +1904,10 @@ function show_crew_cv (emp_id) {
             });
 
             $('#TRAVEL').click(function() {
+                if($('.TRAVEL :visible').length>0){
+                    $('.TRAVEL').hide();
+                    return;
+                }
                 $(this).closest('table').find('.temp_tr').remove();
                 $('.COURSES').hide();
                 $('.TRAVEL').show();
@@ -1898,6 +1916,10 @@ function show_crew_cv (emp_id) {
             });
 
             $('#MEDICALS').click(function() {
+                if($('.MEDICALS :visible').length>0){
+                    $('.MEDICALS').hide();
+                    return;
+                }
                 $(this).closest('table').find('.temp_tr').remove();
                 $('.COURSES').hide();
                 $('.TRAVEL').hide();
@@ -1906,6 +1928,10 @@ function show_crew_cv (emp_id) {
             });
 
             $('#LICENSES').click(function() {
+                if($('.LICENSES :visible').length>0){
+                    $('.LICENSES').hide();
+                    return;
+                }
                 $(this).closest('table').find('.temp_tr').remove();
                 $('.COURSES').hide();
                 $('.TRAVEL').hide();

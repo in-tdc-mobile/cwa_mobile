@@ -42,7 +42,7 @@
     <gap:splash src="cordova/res/screen/ipad_landscape.png" gap:platform="ios" width="1024" height="768"/>
     <gap:splash src="cordova/res/screen/windows_phone_portrait.jpg" gap:platform="winphone"/>
     <gap:config-file platform="ios" parent="UIViewControllerBasedStatusBarAppearance" overwrite="true">
-        <true/>
+        <false/>
     </gap:config-file>
     <!-- PLATFORM SELECTION -->
 
