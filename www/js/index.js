@@ -1748,7 +1748,7 @@ function show_crew_cv (emp_id) {
                     results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
                     results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
                     results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                    results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                    results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
                     results_array.push("</tr>");
                 };
             }
@@ -1760,7 +1760,7 @@ function show_crew_cv (emp_id) {
                 results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
                 results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
                 results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
                 results_array.push("</tr>");
             }
 
@@ -1788,7 +1788,7 @@ function show_crew_cv (emp_id) {
                         results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
                         results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
                         results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                        results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                        results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
                         results_array.push("</tr>");
                     };
                 }
@@ -1800,7 +1800,7 @@ function show_crew_cv (emp_id) {
                     results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
                     results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
                     results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                    results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                    results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
                     results_array.push("</tr>");                    
                 }
             }
@@ -1823,7 +1823,7 @@ function show_crew_cv (emp_id) {
                         temp_bool = true;
                         results_array.push('<tr id="'+temp_type+'">');
                         results_array.push('<td >'+temp_type+'</td>');          
-                        results_array.push('<td ><img style="height: 25px;width: 25px;" src="css/images/next.svg"></th>');
+                        results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
                         results_array.push("</tr>");
                     }
 
@@ -1834,7 +1834,7 @@ function show_crew_cv (emp_id) {
                         results_array.push("<td class='crew_detail'>" + ((item.expiry_date) ? item.expiry_date.split("T")[0] : "")+"</td>");
                         results_array.push("<td class='crew_detail'>" + ((item.issue_date) ? item.issue_date.split("T")[0] : "") + "</td>");
                         results_array.push("<td class='crew_detail'>" + item.document_no + "</td>");
-                        results_array.push('<td><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                        results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
                         results_array.push("</tr>");
                     }
                 };
