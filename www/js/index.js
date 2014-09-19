@@ -733,6 +733,7 @@ function show_vessel_details() {
 
     var results_array = new Array();
 
+    results_array.push("<h3 style='text-align: center;'>Vessel Details</h3>");
     results_array.push("<select class='topcoat-select' id='sel_owner_vessel_det' onchange='get_vessel_details()'>");
     results_array.push("<option value='-1'>Select Vessel</option>");
     for (var i = 0; i < owner_vessels.length; i++) {
@@ -740,7 +741,7 @@ function show_vessel_details() {
     };
     results_array.push("</select>");
 
-    results_array.push("<div class='dashboard_tiles' id='crew_tile'>");
+    results_array.push("<div class='dashboard_tiles' id='vsl_tile'>");
     results_array.push("<h3 style='text-align: center;'>Vessel Details</h3>");
     results_array.push("<div id='vesdetails' style='padding:10px;' class='my-navbar-content'>");
     results_array.push("</div></div>");
@@ -753,11 +754,23 @@ function show_vessel_details() {
         // owner_vessel_crew_selected();
         get_vessel_details()
     }
+    else{
+        $('#vsl_tile').hide();
+    }
 }
 
 function get_vessel_details() {
+
     var sel_val = document.getElementById('sel_owner_vessel_det');
     selected_vessel_id = document.getElementById("sel_owner_vessel_det").value;
+    
+    if(selected_vessel_id<=0){
+        $('#vsl_tile').hide();
+        return;
+    }
+    
+    $('#vsl_tile').show();
+
     var sel_text = sel_val.options[sel_val.selectedIndex].innerHTML;
     for (var i = 0; i < owner_vessels.length; i++) {
         if(owner_vessels[i].name == sel_text){
@@ -1161,6 +1174,7 @@ function show_pms(){
 
     var results_array = new Array();
 
+    results_array.push("<h3 style='text-align: center;'>PMS</h3>");
     results_array.push("<select class='topcoat-select' id='sel_owner_vessel_pms' onchange='owner_vessel_pms_selected()'>");
     results_array.push("<option value='-1'>Select Vessel</option>");
     for (var i = 0; i < owner_vessels.length; i++) {
@@ -1587,6 +1601,7 @@ function show_crew_list(){
 
     var results_array = new Array();
 
+    results_array.push("<h3 style='text-align: center;'>Crewing</h3>");
     results_array.push("<select class='topcoat-select' id='sel_owner_vessel_crew' onchange='owner_vessel_crew_selected()'>");
     results_array.push("<option value='-1'>Select Vessel</option>");
     for (var i = 0; i < owner_vessels.length; i++) {
@@ -1607,6 +1622,9 @@ function show_crew_list(){
         $('#sel_owner_vessel_crew').val(selected_vessel_id);
         // $('#sel_owner_vessel_crew').selectmenu('refresh', true);
         owner_vessel_crew_selected();
+    }
+    else{
+        $('#crew_tile').hide();
     }
 }
 

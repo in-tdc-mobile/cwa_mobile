@@ -397,6 +397,7 @@ a {
     background-color: #FFFFFF;
     margin: 1px;
     min-height: 3rem;
+    margin-bottom: .5rem;
 }
 
 .topcoat-text-input:focus{
