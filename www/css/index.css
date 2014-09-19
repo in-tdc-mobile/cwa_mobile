@@ -548,3 +548,7 @@ html, body {
 .a_disabled{
   color: grey;
 }
+
+tr.border_bottom td {
+  border-bottom:1pt solid black;
+}

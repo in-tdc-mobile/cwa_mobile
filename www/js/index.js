@@ -1663,8 +1663,10 @@ function owner_vessel_crew_selected (argument) {
             crew_array.push("<ul id='ol_crew_list' class='topcoat-list list'>");
             for (var i = 0; i < data["crew_list"].length; i++) {
                 var dataitem = data["crew_list"][i];
-                crew_array.push("<li class='topcoat-list__item'>");
-                crew_array.push("<a href='#crew_cv/"+ dataitem.emp_id +"'>" +
+                                                    // <li onclick="location.href = '#vdetails';"><a ><div>Vessel Details</div></a></li>
+
+                crew_array.push("<li class='topcoat-list__item' onclick='nav_show_crew_cv("+ dataitem.emp_id +")'>");
+                crew_array.push("<a >" +
                     "<div class='dashboard-list'> " +
                     "<span class='li-data-list-small'>" + toTitleCase(dataitem.rank) + "</span>" + 
                     " - <span style='font-weight: bold;'>" + toTitleCase(dataitem.emp_name) + "</span> " + 
@@ -1680,6 +1682,10 @@ function owner_vessel_crew_selected (argument) {
             hide_spinner();            
         }
     });
+}
+
+function nav_show_crew_cv (emp_id) {
+    window.location.href = "#crew_cv/"+emp_id
 }
 
 function show_crew_cv (emp_id) {
@@ -1766,7 +1772,7 @@ function show_crew_cv (emp_id) {
                     results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
                     results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
                     results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                    results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                    results_array.push('<td style="float: right;"><img style="height: 15px;width: 15px;" src="css/images/next.svg"></td>');
                     results_array.push("</tr>");
                 };
             }
@@ -1778,7 +1784,7 @@ function show_crew_cv (emp_id) {
                 results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
                 results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
                 results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                results_array.push('<td style="float: right;"><img style="height: 15px;width: 15px;" src="css/images/next.svg"></td>');
                 results_array.push("</tr>");
             }
 
@@ -1806,7 +1812,7 @@ function show_crew_cv (emp_id) {
                         results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
                         results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
                         results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                        results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                        results_array.push('<td style="float: right;"><img style="height: 15px;width: 15px;" src="css/images/next.svg"></td>');
                         results_array.push("</tr>");
                     };
                 }
@@ -1818,7 +1824,7 @@ function show_crew_cv (emp_id) {
                     results_array.push("<td class='crew_detail'>" + ((dataitem.SignOnDate) ? dataitem.SignOnDate.split("T")[0] : "") + "</td>");
                     results_array.push("<td class='crew_detail'>" + ((dataitem.SignOffDate) ? dataitem.SignOffDate.split("T")[0] : "") + "</td>");
                     results_array.push("<td class='crew_detail'>" + dataitem.Vessel + "</td>");
-                    results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                    results_array.push('<td style="float: right;"><img style="height: 15px;width: 15px;" src="css/images/next.svg"></td>');
                     results_array.push("</tr>");                    
                 }
             }
@@ -1840,19 +1846,19 @@ function show_crew_cv (emp_id) {
                         temp_type = doc_tpe.slice(1);
                         temp_bool = true;
                         results_array.push('<tr id="'+temp_type+'">');
-                        results_array.push('<td >'+temp_type+'</td>');          
-                        results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                        results_array.push('<td ><span class="dashboard-list" style="font-weight: bold;">'+toTitleCase(temp_type)+'</span></td>');
+                        results_array.push('<td style="float: right;"><img style="height: 15px;width: 15px;" src="css/images/next.svg"></td>');
                         results_array.push("</tr>");
                     }
 
                     if(doc_tpe.slice(1) != "MEDICALS") { 
                         temp_name = item.name;
-                        results_array.push('<tr  class="docRow '+temp_type+'">');
-                        results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;'>" + toTitleCase(temp_name)+"</span></td>");
+                        results_array.push('<tr class="docRow '+temp_type+'" >');
+                        results_array.push("<td> <span class='dashboard-list' style='font-weight: bold;padding-left:5px;'>" + toTitleCase(temp_name)+"</span></td>");
                         results_array.push("<td class='crew_detail'>" + ((item.expiry_date) ? item.expiry_date.split("T")[0] : "")+"</td>");
                         results_array.push("<td class='crew_detail'>" + ((item.issue_date) ? item.issue_date.split("T")[0] : "") + "</td>");
                         results_array.push("<td class='crew_detail'>" + item.document_no + "</td>");
-                        results_array.push('<td style="float: right;"><img style="height: 25px;width: 25px;" src="css/images/next.svg"></td>');
+                        results_array.push('<td style="float: right;"><img style="height: 15px;width: 15px;" src="css/images/next.svg"></td>');
                         results_array.push("</tr>");
                     }
                 };
