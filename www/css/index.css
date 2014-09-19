@@ -549,6 +549,6 @@ html, body {
   color: grey;
 }
 
-tr.border_bottom td {
-  border-bottom:1pt solid black;
+.itemRow,.docRow{
+  height: 2rem;
 }

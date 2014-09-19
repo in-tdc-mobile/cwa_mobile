@@ -1792,7 +1792,7 @@ input[type="checkbox"]:disabled:active + .topcoat-checkbox__checkmark:before {
 
 .topcoat-navigation-bar__item {
   margin: 0;
-  line-height: 4.375rem;
+  line-height: 3.95rem;
   vertical-align: top;
 }
 
