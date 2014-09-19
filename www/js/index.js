@@ -1846,7 +1846,7 @@ function show_crew_cv (emp_id) {
                         temp_type = doc_tpe.slice(1);
                         temp_bool = true;
                         results_array.push('<tr id="'+temp_type+'" style="height: 2rem;">');
-                        results_array.push('<td ><span class="dashboard-list" style="font-weight: bold;">'+toTitleCase(temp_type)+'</span></td>');
+                        results_array.push('<th ><span style="font-weight: bold;">'+toTitleCase(temp_type)+'</span></th>');
                         results_array.push('<td style="float: right;"><img style="height: 15px;width: 15px; vertical-align: middle;" src="css/images/next.svg"></td>');
                         results_array.push("</tr>");
                     }
