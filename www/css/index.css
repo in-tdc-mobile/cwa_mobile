@@ -552,3 +552,8 @@ html, body {
 .itemRow,.docRow{
   height: 2rem;
 }
+
+.topcoat-navigation-bar{
+  padding-left: 0;
+  padding-right: 0;
+}
