@@ -361,8 +361,8 @@ function set_user_rights (owner_id) {
 
             // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'Crewing'});
 
-            var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crewing'});
-
+            var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crew List'});
+            temp = show_crew;
             if(show_crew.length == 0){
             $('#lnk_crew').addClass('a_disabled');
             }
