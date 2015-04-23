@@ -1586,13 +1586,13 @@ input[type="checkbox"]:disabled:active + .topcoat-checkbox__checkmark:before {
 }
 
 .topcoat-list__item {
-  padding: 1.25rem;
+  padding: 1rem;
   border-top: 1px solid #fff;
-  border-bottom: 1px solid #9daca9;
+/*  border-bottom: 1px solid #ccc;*/
 }
 
 .topcoat-list__item:first-child {
-  border-top: 1px solid #d6dcdb;
+  border-top: 1px solid #eee;
 }
 
 /**
@@ -3557,6 +3557,7 @@ body {
 .topcoat-icon--menu-stack {
   background: url("../img/hamburger_light.svg") no-repeat;
   background-size: cover;
+  right: 10px;
 }
 
 .quarter {

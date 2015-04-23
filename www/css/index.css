@@ -125,7 +125,14 @@ h1 {
     position: fixed;
     left: 50%;
     top: 50%;
-    opacity: .7;
+    background-color: #fff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+}
+
+.spinner_index img{
+  margin: 5px !important;
 }
 
 #ajax_error {
@@ -391,6 +398,7 @@ a {
     -webkit-background-size: cover;
     -moz-background-size: cover;
     background-size: cover;
+    left: 10px;
 }
 
 .topcoat-text-input{
@@ -484,7 +492,7 @@ html, body {
 
 .topcoat-navigation-bar{
     height: 3.95rem;
-    background-color: #3e3c3d;
+    background-color: #3b5998;
 
 }
 
@@ -556,4 +564,66 @@ html, body {
 .topcoat-navigation-bar{
   padding-left: 0;
   padding-right: 0;
+}
+
+#owners ul#listview li:nth-child(even){
+   background-color:#EBEEF6;
+}
+
+#owners #listview li{
+  background-image:url("../img/arrow.png");
+  background-repeat:no-repeat;
+  background-position: 97%;
+  background-size: 2.3%;
+}
+
+nav li:hover {
+  background: #24395D;
+}
+
+nav ul li a div{
+  display: inline-block;
+}
+
+nav ul li a span{
+  width: 25px;
+  height: 23px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 3px;
+}
+
+nav ul li a span.dashboard{
+  background: url("../img/app_dashboard.png") no-repeat;
+  background-size: 80%;
+}
+
+nav ul li a span.accounts{
+  background: url("../img/app_accounts.png") no-repeat;
+  background-size: 73%;
+}
+
+nav ul li a span.pms{
+  background: url("../img/app_pms.png") no-repeat;
+  background-size: 73%;
+}
+
+nav ul li a span.crewing{
+  background: url("../img/app_crewing.png") no-repeat;
+  background-size: 73%;
+}
+
+nav ul li a span.vesseldetails{
+  background: url("../img/app_vesseldetails.png") no-repeat;
+  background-size: 87%;
+}
+
+nav ul li a span.contact{
+  background: url("../img/contact.png") no-repeat;
+  background-size: 87%;
+}
+
+nav ul li a span.logout{
+  background: url("../img/icon-logout.png") no-repeat;
+  background-size: 73%;
 }

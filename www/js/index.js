@@ -299,7 +299,7 @@ $('#login_form').submit(function(){
 
 function show_multi_owners () {
     
-    $('#view_title').show();
+    //$('#view_title').show();
     $('#owners').show();
     $('#owners').html("");
     $("#hamburger").hide();
