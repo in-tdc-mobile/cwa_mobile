@@ -71,14 +71,14 @@
   <div id="sidemenu" style="display:none">
     <nav class="mobileNav">
       <ul>
-          <li><a href="#"><span class="dashboard"></span><div>Dashboard</div></a></li>
-          <li><a href="#"><span class="accounts"></span><div style="color: grey;">Accounts</div></a></li>
-          <li onclick="location.href = '#pms';"><a id="lnk_pms" href="#"><span class="pms"></span><div>PMS</div></a></li>
-          <li onclick="location.href = '#crew';"><a id="lnk_crew" href="#"><span class="crewing"></span><div>Crewing</div></a></li>
-          <li onclick="location.href = '#vdetails';"><a href="#"><span class="vesseldetails"></span><div>Vessel Details</div></a></li>
+          <li onclick="before_route('');"><a><span class="dashboard"></span><div>Dashboard</div></a></li>
+          <li><a><span class="accounts"></span><div style="color: grey;">Accounts</div></a></li>
+          <li onclick="before_route('#pms');" id="lnk_pms"><a><span class="pms"></span><div>PMS</div></a></li>
+          <li onclick="before_route('#crew');" id="lnk_crew"><a><span class="crewing"></span><div>Crewing</div></a></li>
+          <li onclick="before_route('#vdetails');"><a><span class="vesseldetails"></span><div>Vessel Details</div></a></li>
           <!-- <li><a href="#">Help</a></li> -->
-          <li onclick="location.href = 'mailto:vidya.sagar@mariapps.com';"><a href="#"><span class="contact"></span><div>Contact Us</div></a></li>
-          <li onclick="location.href = '#logout';"><a href="#"><span class="logout"></span><div>Log Out</div></a></li>
+          <li onclick="location.href = 'mailto:vidya.sagar@mariapps.com';"><a><span class="contact"></span><div>Contact Us</div></a></li>
+          <li onclick="before_route('#logout');"><a href="#"><span class="logout"></span><div>Log Out</div></a></li>
       </ul>
     </nav>
   </div>

@@ -200,6 +200,26 @@ function route(event) {
     // slider.slidePage($(page));
 }
 
+function before_route (hash) {
+    var curhash = window.location.hash.split('/')[0];
+    // console.log("curhash " + curhash + " hash " + hash)
+    if (hash == curhash) {
+        if($("#container").hasClass( "opened" )){
+            var container = document.querySelector('#container');
+            var slidemenu = document.querySelector('#sidemenu');
+            var content = document.querySelector('#content');
+            var contentlayer = document.querySelector('#contentLayer');
+
+            container.classList.toggle('opened');
+            slidemenu.classList.toggle('sidemenu--opened');
+            content.style.height = "auto";
+            contentlayer.classList.toggle('contentlayer-opened');
+        }
+        return;
+    };
+    location.href = hash;
+}
+
 window.addEventListener('load', function () {
     FastClick.attach(document.body);
 }, false);
@@ -219,8 +239,8 @@ $(document).ready(function() {
       contentlayer.classList.toggle('contentlayer-opened');
       content.style.height = "auto";
       $('#container').resize();
-      
     }
+
     try{
         pal_user_name = $.jStorage.get("pal_user_name");
         // $.jStorage.set("pal_user_email", '');
@@ -238,7 +258,6 @@ $(document).ready(function() {
     }
     catch(err){    
     }
-
 });
 
 function login_failure() {
@@ -358,22 +377,23 @@ function set_user_rights (owner_id) {
             var show_pms = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'PMS / Purchase'});
 
             if(show_pms.length == 0){
-            $('#lnk_pms').addClass('a_disabled');
+                $('#lnk_pms').removeAttr('onclick');
             }
 
             // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'Crewing'});
 
             var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crew List'});
             temp = show_crew;
+            alert(temp);
             if(show_crew.length == 0){
-            $('#lnk_crew').addClass('a_disabled');
+                $('#lnk_crew').removeAttr('onclick');
             }
 
             if($.isArray(owner_vessels) == false){
-            owner_vessels = $.makeArray(data['owner_vessels']);
+                owner_vessels = $.makeArray(data['owner_vessels']);
             }
             if($.isArray(dashboard_settings) == false){
-            dashboard_settings = $.makeArray(data['dashboard_settings']);
+                dashboard_settings = $.makeArray(data['dashboard_settings']);
             }
         },
         error: function() {        
@@ -427,7 +447,7 @@ function show_owners(){
                 
                 if(show_pms.length == 0){
                     $('#lnk_pms').css('color', 'grey');
-                    $('#lnk_pms').click(function (e) {e.preventDefault();});
+                    $('#lnk_crew').removeAttr('onclick');
                 }
 
                 // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'Crewing'});
@@ -435,8 +455,8 @@ function show_owners(){
                 var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crewing'});
                 
                 if(show_crew.length == 0){
-                    $('#lnk_crew').css('color', 'grey');
-                    $('#lnk_crew').click(function (e) {e.preventDefault();});
+                    $('#lnk_crew').css('color', 'grey');                    
+                    $('#lnk_crew').removeAttr('onclick');
                 }
 
                 if($.isArray(owner_vessels) == false){
