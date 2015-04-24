@@ -249,14 +249,15 @@ function login_failure() {
 }
 
 $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
-    options.url = 'https://getVesselTracker.com/cwa_mobile_prod/' + options.url + "&pal_user_email=" + $.jStorage.get("pal_user_name");
+    options.url = 'https://getVesselTracker.com/cwa_mobile_democustomer/' + options.url + "&pal_user_email=" + $.jStorage.get("pal_user_name");
 });
 
 $('#login_form').submit(function(){
     var username = $('#login_email').val();
     var password = $('#login_password').val();
 
-    // $.jStorage.set("pal_user_name", username);
+  
+
     var form_data= {
         'username': username,
         'password': password
@@ -270,12 +271,13 @@ $('#login_form').submit(function(){
         },
 
         success : function(response) {
-            if (response != '' && response != 'failed') {
+           if (response !=null && response != '' && response != 'failed' && response.login_user_details.ID>0) {
                 $('#hamburger').show();
                 $('.login').hide();
-                var str = response.split(",")
-                pal_user_id = str[0];
-                cwa_app_id = str[1];
+                // var str = response.split(",")
+                  $.jStorage.set("pal_user_name", username);
+                pal_user_id = response.login_user_details.ID;
+                cwa_app_id = response.login_user_details.DEFAULT_APP_ID;
                 pal_user_name = $.jStorage.get("pal_user_name");
                 $.jStorage.set("pal_user_id", pal_user_id);
                 $.jStorage.set("cwa_app_id", cwa_app_id);
