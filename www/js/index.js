@@ -452,7 +452,7 @@ function show_owners(){
 
                 // user_rights_settings = $.grep(user_rights_settings, function(e) {return e.page_header_name != 'Crewing'});
 
-                var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crewing'});
+                var show_crew = $.grep(user_rights_settings, function(e) {return e.page_header_name == 'Crew List'});
                 
                 if(show_crew.length == 0){
                     $('#lnk_crew').css('color', 'grey');                    
